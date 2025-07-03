@@ -25,12 +25,12 @@ export default function Card({ imageSrc, berthId, berthNumber, countryFlag }: Ca
       </div>
 
       {/* Image Wrapper */}
-      <div className="relative w-full h-42 mb-3">
+      <div className="relative w-full h-40 mb-3">
         <Image
           src={imageSrc}
           alt={berthId}
           fill
-          className="rounded object-cover"
+          className="object-contain"
         />
       </div>
 
