@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import {
   FiLogOut,
@@ -11,7 +10,6 @@ import {
   FiFolder,
   FiBarChart2,
 } from 'react-icons/fi';
-
 export default function Sidebar() {
   const submenuLinks = [
     { label: 'BerthTracker', icon: <FiMap /> },
@@ -20,17 +18,14 @@ export default function Sidebar() {
     { label: 'Sample2', icon: <FiFolder /> },
     { label: 'Sample3', icon: <FiBarChart2 /> },
   ];
-
   const [selected, setSelected] = useState('BerthTracker');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const handleNavClick = (item: string) => {
     setSelected(item);
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
   };
-
   return (
     <div className="flex">
       {/* Hamburger menu for small screens */}
@@ -45,9 +40,8 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        } transform transition-transform duration-300 ease-in-out 
+        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          } transform transition-transform duration-300 ease-in-out 
         fixed md:static z-40 top-0 left-0 h-full w-64 
         bg-gradient-to-b from-[#014F86] via-[#006494] to-[#003049] 
         text-white shadow-xl md:flex flex-col justify-between py-6 px-4`}
@@ -55,7 +49,7 @@ export default function Sidebar() {
         {/* Top section */}
         <div>
           <h1 className="text-2xl font-extrabold text-center text-white mb-4 drop-shadow tracking-wide">
-            KOCHI PORT
+            PORTRAC
           </h1>
           <hr className="border-t border-white/30 mb-6" />
 
@@ -63,11 +57,10 @@ export default function Sidebar() {
             <a
               href="#"
               onClick={() => handleNavClick('Dashboard')}
-              className={`flex items-center gap-3 text-lg py-2 px-3 rounded hover:bg-white/20 transition-all ${
-                selected === 'Dashboard'
-                  ? 'bg-white/20 text-white font-bold shadow'
-                  : ''
-              }`}
+              className={`flex items-center gap-3 text-lg py-2 px-3 rounded hover:bg-white/20 transition-all ${selected === 'Dashboard'
+                ? 'bg-white/20 text-white font-bold shadow'
+                : ''
+                }`}
             >
               <FiGrid />
               Dashboard
@@ -79,11 +72,10 @@ export default function Sidebar() {
                   key={label}
                   href="#"
                   onClick={() => handleNavClick(label)}
-                  className={`flex items-center gap-3 py-2 px-3 rounded transition-all ${
-                    selected === label
-                      ? 'bg-white/20 text-white font-semibold shadow'
-                      : 'hover:bg-white/10 text-white'
-                  }`}
+                  className={`flex items-center gap-3 py-2 px-3 rounded transition-all ${selected === label
+                    ? 'bg-white/20 text-white font-semibold shadow'
+                    : 'hover:bg-white/10 text-white'
+                    }`}
                 >
                   {icon}
                   {label}
@@ -109,7 +101,6 @@ export default function Sidebar() {
           </div>
 
           <hr className="border-t border-white/30 mb-2" />
-
           <div className="flex items-center space-x-3 justify-center">
             <img
               src="/images/users-icon.jpg"
@@ -118,7 +109,6 @@ export default function Sidebar() {
             />
             <span className="font-medium text-white">John Doe</span>
           </div>
-
           <hr className="border-t border-white/30 mb-8" />
         </div>
       </aside>
