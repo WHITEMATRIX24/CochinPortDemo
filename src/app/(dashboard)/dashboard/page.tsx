@@ -2,6 +2,7 @@
 
 import Card from '@/components/BerthTrackerCard';
 import { useState } from 'react';
+import CargoStats from '@/components/CargoStats';
 
 type Berth = {
   imageSrc: string;
@@ -119,6 +120,9 @@ export default function HomePage() {
           />
         ))}
       </div>
+            {/* icon Grid */}
+        <CargoStats berthData={berthData} />
+
     </main>
   );
 }
