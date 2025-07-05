@@ -33,7 +33,7 @@ export default function BerthTrackerCard({
   });
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center transition-transform duration-300 transform hover:scale-100 hover:shadow-lg hover:border-blue-400 hover:ring-2 hover:ring-blue-200">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 text-center transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:border-blue-400 hover:ring-2 hover:ring-blue-200 mt-3">
       {/* Top: Flag + Berth Number */}
       <div className="flex items-center justify-between mt-2 mb-3">
         {/* Flag on Left */}
