@@ -13,8 +13,8 @@ import {
 export default function Sidebar() {
   const submenuLinks = [
     { label: 'BerthTracker', icon: <FiMap /> },
-    { label: 'Sample', icon: <FiBox /> },
-    { label: 'Sample1', icon: <FiFileText /> },
+    { label: 'Ship Movement Summary', icon: <FiBox /> },
+    { label: 'Notification', icon: <FiFileText /> },
     { label: 'Sample2', icon: <FiFolder /> },
     { label: 'Sample3', icon: <FiBarChart2 /> },
   ];
@@ -65,7 +65,6 @@ export default function Sidebar() {
               <FiGrid />
               Dashboard
             </a>
-
             <div className="ml-2 space-y-2 text-sm">
               {submenuLinks.map(({ label, icon }) => (
                 <a
