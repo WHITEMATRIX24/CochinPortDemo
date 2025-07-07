@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link'
+
 import {
   FiLogOut,
   FiMenu,
@@ -9,106 +11,143 @@ import {
   FiFileText,
   FiFolder,
   FiBarChart2,
+  FiChevronDown,
+  FiChevronRight,
+  FiSettings,
+  FiUsers,
+  FiCalendar,
+  FiArchive,
+  FiMapPin
 } from 'react-icons/fi';
+
 export default function Sidebar() {
-  const submenuLinks = [
-    { label: 'BerthTracker', icon: <FiMap /> },
-    { label: 'Ship Movement Summary', icon: <FiBox /> },
-    { label: 'Notification', icon: <FiFileText /> },
-    { label: 'Sample2', icon: <FiFolder /> },
-    { label: 'Sample3', icon: <FiBarChart2 /> },
+  const menuItems = [
+    {
+  label: 'Dashboard',
+  icon: <FiGrid />,
+  children: [
+    { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
+    { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
+    { label: 'Notification', icon: <FiFolder />, href: '#' },
+  ],
+},
+
+    { label: 'Ship Management', icon: <FiBox /> },
+    { label: 'Berth Management', icon: <FiMap /> },
+    { label: 'Cargo Management', icon: <FiArchive /> },
+    { label: 'User Management', icon: <FiUsers /> },
+    { label: 'Port Schedule', icon: <FiCalendar /> },
+    { label: 'Reports & Analytics', icon: <FiBarChart2 /> },
+    { label: 'Live Shipping Tracking', icon: <FiMapPin /> },
   ];
-  const [selected, setSelected] = useState('BerthTracker');
+
+  const [selected, setSelected] = useState('Berth Tracker');
+  const [expandedMenu, setExpandedMenu] = useState<string | null>('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const handleNavClick = (item: string) => {
     setSelected(item);
-    if (window.innerWidth < 768) {
-      setSidebarOpen(false);
-    }
+    if (window.innerWidth < 768) setSidebarOpen(false);
   };
+
+  const toggleMenu = (label: string) => {
+    setExpandedMenu(expandedMenu === label ? null : label);
+  };
+
   return (
     <div className="flex">
-      {/* Hamburger menu for small screens */}
+      {/* Hamburger for small screens */}
       <div className="md:hidden p-4">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-2xl text-white"
-        >
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-2xl text-white">
           <FiMenu />
         </button>
       </div>
 
-      {/* Sidebar */}
       <aside
-        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-          } transform transition-transform duration-300 ease-in-out 
+        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        transform transition-transform duration-300 ease-in-out 
         fixed md:static z-40 top-0 left-0 h-full w-64 
         bg-gradient-to-b from-[#014F86] via-[#006494] to-[#003049] 
         text-white shadow-xl md:flex flex-col justify-between py-6 px-4`}
       >
-        {/* Top section */}
+        {/* Top */}
         <div>
-          <h1 className="text-2xl font-extrabold text-center text-white mb-4 drop-shadow tracking-wide">
-            PORTRAC
-          </h1>
-          <hr className="border-t border-white/30 mb-6" />
+<h1 className="text-2xl font-extrabold text-center mb-4 tracking-wide flex items-center justify-center gap-3">
+  <img
+    src="/images/cochinporticon.jpg"
+    alt="Logo"
+    className="w-10 h-10 object-contain rounded-full"
+  />
+  PORTRAC
+</h1>
 
-          <nav className="space-y-4">
-            <a
-              href="#"
-              onClick={() => handleNavClick('Dashboard')}
-              className={`flex items-center gap-3 text-lg py-2 px-3 rounded hover:bg-white/20 transition-all ${selected === 'Dashboard'
-                ? 'bg-white/20 text-white font-bold shadow'
-                : ''
-                }`}
-            >
-              <FiGrid />
-              Dashboard
-            </a>
-            <div className="ml-2 space-y-2 text-sm">
-              {submenuLinks.map(({ label, icon }) => (
-                <a
-                  key={label}
-                  href="#"
-                  onClick={() => handleNavClick(label)}
-                  className={`flex items-center gap-3 py-2 px-3 rounded transition-all ${selected === label
-                    ? 'bg-white/20 text-white font-semibold shadow'
-                    : 'hover:bg-white/10 text-white'
-                    }`}
+          <hr className="border-white/30 mb-6" />
+
+          <nav className="space-y-2">
+            {menuItems.map((item) => (
+              <div key={item.label}>
+                <button
+                  onClick={() => item.children ? toggleMenu(item.label) : handleNavClick(item.label)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded hover:bg-white/20 transition-all ${
+                    selected === item.label ? 'bg-white/20 font-bold shadow' : ''
+                  }`}
                 >
-                  {icon}
-                  {label}
-                </a>
-              ))}
-            </div>
+                  <span className="flex items-center gap-3">
+                    {item.icon}
+                    {item.label}
+                  </span>
+                  {item.children &&
+                    (expandedMenu === item.label ? <FiChevronDown /> : <FiChevronRight />)}
+                </button>
+
+                {item.children && expandedMenu === item.label && (
+                  <div className="ml-6 mt-1 space-y-1 text-sm">
+                    {item.children.map((sub) => (
+                      <Link key={sub.label}
+  href={sub.href || '#'}
+  onClick={() => handleNavClick(sub.label)}
+  className={`flex items-center gap-2 w-full text-left px-2 py-1 rounded transition-all ${
+    selected === sub.label
+      ? 'bg-white/20 text-white font-semibold shadow'
+      : 'hover:bg-white/10 text-white'
+  }`}
+>
+                        {sub.icon}
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </nav>
         </div>
 
-        {/* Bottom section */}
+        {/* Bottom */}
         <div className="space-y-4">
-          <div className="flex justify-center">
-            <button
-              onClick={() => {
-                console.log('Logging out...');
-                if (window.innerWidth < 768) setSidebarOpen(false);
-              }}
-              className="flex items-center gap-2 text-white hover:text-yellow-300 transition-colors text-lg"
-            >
-              <FiLogOut />
-              <span className="text-base font-medium">Logout</span>
-            </button>
-          </div>
-
-          <hr className="border-t border-white/30 mb-2" />
+          
+          <hr className="border-white/30 mb-2" />
           <div className="flex items-center space-x-3 justify-center">
             <img
               src="/images/users-icon.jpg"
               alt="User Avatar"
               className="w-10 h-10 rounded-full object-cover border border-white shadow"
             />
-            <span className="font-medium text-white">John Doe</span>
+            <span className="font-medium">John Doe</span>
           </div>
-          <hr className="border-t border-white/30 mb-8" />
+          <hr className="border-white/30 mb-8" />
+          <div className="flex justify-center">
+            <button
+              onClick={() => {
+                console.log('Logging out...');
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+              className="flex items-center gap-2 hover:text-yellow-300 transition-colors text-lg"
+            >
+              <FiLogOut />
+              <span className="text-base font-medium">Logout</span>
+            </button>
+          </div>
         </div>
       </aside>
     </div>

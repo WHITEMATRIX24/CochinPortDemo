@@ -17,7 +17,7 @@ const statsMeta = [
 
 export default function CargoStats({ berthData }: Props) {
   return (
-    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-50 bg-white border-x border-t border-gray-300 shadow-md rounded-t-xl px-10 py-6 flex gap-12 items-center">
+    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-50 bg-white border-x border-t border-gray-300 shadow-md rounded-t-xl px-10 py-3 flex gap-12 items-center">
       {statsMeta.map(({ label, Icon }) => {
         const count = berthData.filter(b => b.cargoType === label).length;
         return (
@@ -27,7 +27,7 @@ export default function CargoStats({ berthData }: Props) {
           >
             <Icon className="w-6 h-6" />
             <span>{count}</span>
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-sm bg-gray-800 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
               {label}
             </div>
           </div>
