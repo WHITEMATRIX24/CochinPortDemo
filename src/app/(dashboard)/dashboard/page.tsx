@@ -136,7 +136,7 @@ export default function HomePage() {
           {/* Heading */}
           <div className="mb-4 p-2">
             <h5 className="text-2xl font-bold text-[#003049]">
-              Welcome to, <span className="text-[#8B0000]">John Doe</span>
+              Welcome, <span className="text-[#8B0000]">John Doe</span>
             </h5>
           </div>
 
