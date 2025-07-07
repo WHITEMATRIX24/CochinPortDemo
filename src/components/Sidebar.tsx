@@ -1,6 +1,8 @@
 'use client';
-import { useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import {
   FiLogOut,
@@ -18,8 +20,12 @@ import {
   FiArchive,
   FiMapPin,
 } from 'react-icons/fi';
-
 export default function Sidebar() {
+  const pathname = usePathname();
+const [isMounted, setIsMounted] = useState(false);
+useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const menuItems = [
     {
       label: 'Dashboard',
@@ -30,28 +36,22 @@ export default function Sidebar() {
         { label: 'Notification', icon: <FiFolder />, href: '#' },
       ],
     },
-    { label: 'Ship Management', icon: <FiBox /> },
+    { label: 'Ship Management', icon: <FiBox />, href: '#' },
     { label: 'Berth Management', icon: <FiMap />, href: '/berth-management' },
-    { label: 'Cargo Management', icon: <FiArchive /> },
-    { label: 'User Management', icon: <FiUsers /> },
-    { label: 'Port Schedule', icon: <FiCalendar /> },
-    { label: 'Reports & Analytics', icon: <FiBarChart2 /> },
-    { label: 'Live Shipping Tracking', icon: <FiMapPin /> },
+    { label: 'Cargo Management', icon: <FiArchive />, href: '#' },
+    { label: 'User Management', icon: <FiUsers />, href: '#' },
+    { label: 'Port Schedule', icon: <FiCalendar />, href: '#' },
+    { label: 'Reports & Analytics', icon: <FiBarChart2 />, href: '#' },
+    { label: 'Live Shipping Tracking', icon: <FiMapPin />, href: '|#' },
   ];
 
-  const [selected, setSelected] = useState('Berth Tracker');
   const [expandedMenu, setExpandedMenu] = useState<string | null>('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const handleNavClick = (item: string) => {
-    setSelected(item);
-    if (window.innerWidth < 768) setSidebarOpen(false);
-  };
 
   const toggleMenu = (label: string) => {
     setExpandedMenu(expandedMenu === label ? null : label);
   };
-
+if (!isMounted) return null;
   return (
     <div className="flex">
       {/* Hamburger for small screens */}
@@ -83,66 +83,64 @@ export default function Sidebar() {
           <hr className="border-white/30 mb-6" />
 
           <nav className="space-y-2">
-            {menuItems.map((item) => (
-              <div key={item.label}>
-                {item.children ? (
-                  <button
-                    onClick={() => toggleMenu(item.label)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded hover:bg-white/20 transition-all ${
-                      selected === item.label ? 'bg-white/20 font-bold shadow' : ''
-                    }`}
-                  >
-                    <span className="flex items-center gap-3">
+            {menuItems.map((item) => {
+              return (
+                <div key={item.label}>
+                  {item.children ? (
+                    <button
+                      onClick={() => toggleMenu(item.label)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded hover:bg-white/20 transition-all`}
+                    >
+                      <span className="flex items-center gap-3">
+                        {item.icon}
+                        {item.label}
+                      </span>
+                      {expandedMenu === item.label ? <FiChevronDown /> : <FiChevronRight />}
+                    </button>
+                  ) : item.href ? (
+                    <Link
+                      href={item.href}
+                      onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-white/20 transition-all ${
+                        pathname === item.href ? 'bg-white/20 font-bold shadow' : ''
+                      }`}
+                    >
                       {item.icon}
                       {item.label}
-                    </span>
-                    {expandedMenu === item.label ? <FiChevronDown /> : <FiChevronRight />}
-                  </button>
-                ) : item.href ? (
-                  <Link
-                    href={item.href}
-                    onClick={() => handleNavClick(item.label)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-white/20 transition-all ${
-                      selected === item.label ? 'bg-white/20 font-bold shadow' : ''
-                    }`}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => handleNavClick(item.label)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-white/20 transition-all ${
-                      selected === item.label ? 'bg-white/20 font-bold shadow' : ''
-                    }`}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </button>
-                )}
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-white/20 transition-all"
+                    >
+                      {item.icon}
+                      {item.label}
+                    </button>
+                  )}
 
-                {/* Submenu items */}
-                {item.children && expandedMenu === item.label && (
-                  <div className="ml-6 mt-1 space-y-1 text-sm">
-                    {item.children.map((sub) => (
-                      <Link
-                        key={sub.label}
-                        href={sub.href || '#'}
-                        onClick={() => handleNavClick(sub.label)}
-                        className={`flex items-center gap-2 w-full text-left px-2 py-1 rounded transition-all ${
-                          selected === sub.label
-                            ? 'bg-white/20 text-white font-semibold shadow'
-                            : 'hover:bg-white/10 text-white'
-                        }`}
-                      >
-                        {sub.icon}
-                        {sub.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+                  {/* Submenu items */}
+                  {item.children && expandedMenu === item.label && (
+                    <div className="ml-6 mt-1 space-y-1 text-sm">
+                      {item.children.map((sub) => (
+                        <Link
+                          key={sub.label}
+                          href={sub.href || '#'}
+                          onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
+                          className={`flex items-center gap-2 w-full text-left px-2 py-1 rounded transition-all ${
+                            pathname === sub.href
+                              ? 'bg-white/20 text-white font-semibold shadow'
+                              : 'hover:bg-white/10 text-white'
+                          }`}
+                        >
+                          {sub.icon}
+                          {sub.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
         </div>
 
