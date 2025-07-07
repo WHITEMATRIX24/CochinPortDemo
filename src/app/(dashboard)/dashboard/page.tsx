@@ -142,8 +142,9 @@ export default function HomePage() {
 
           {/* Filters */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-3">
-            <h6 className="text-l text-black">DashBoard / Berth Tracker</h6>
-
+            <div className="text-sm text-gray-500">
+              <span>Dashboard</span> <span className="mx-2">/</span> <span className="text-blue-600">Berth Tracker</span>
+            </div>
             <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
               {/* Cargo Type Filter */}
               <div className="flex flex-col" suppressHydrationWarning>
