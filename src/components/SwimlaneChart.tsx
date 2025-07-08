@@ -303,32 +303,36 @@ return `${label} duration: ${durationStr}`
   return (
     <div className="w-full bg-white space-y-6">
             {/* Filter + Reset on same line */}
-      <div className="flex items-center justify-between p-3 px-5">
-        <div className="flex space-x-4">
-          <label htmlFor="berth" className="font-medium">
-            Select Berth:
-          </label>
-          <select
-            id="berth"
-            value={selectedBerth}
-            onChange={e => setSelectedBerth(e.target.value)}
-            className="border px-2 py-1 rounded"
-          >
-            <option value="All">All</option>
-            {allBerths.map(berth => (
-              <option key={berth} value={berth}>
-                {berth}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          onClick={() => chartRef.current?.resetZoom()}
-          className="px-4 py-2  border-x border border-gray-300 text-black rounded hover:bg-[#014F86] hover:text-white transition"
-        >
-          Reset Zoom
-        </button>
-      </div>
+<div className="flex items-center justify-between p-3 px-5">
+  {/* Label + Select */}
+  <div className="flex space-x-4 items-center">
+    <label htmlFor="berth" className="font-semibold text-gray-800">
+      Select Berth:
+    </label>
+    <select
+      id="berth"
+      value={selectedBerth}
+      onChange={e => setSelectedBerth(e.target.value)}
+      className="border px-2 py-1 rounded text-gray-900 font-medium bg-white"
+    >
+      <option value="All">All</option>
+      {allBerths.map(berth => (
+        <option key={berth} value={berth}>
+          {berth}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Reset Zoom Button */}
+  <button
+    onClick={() => chartRef.current?.resetZoom()}
+    className="px-4 py-2 border border-gray-300 text-gray-800 rounded hover:bg-[#014F86] hover:text-white transition"
+  >
+    Reset Zoom
+  </button>
+</div>
+
 
       {/* Chart */}
       <div className="w-full h-[600px] overflow-x-auto">

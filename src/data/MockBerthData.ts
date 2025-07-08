@@ -4,6 +4,7 @@ export type ShipDetails = {
   departureDate: string;
   cargoType: string;
   country: string;
+  flag:string;
 };
 
 export type Berth = {
@@ -27,8 +28,9 @@ export const berthData: Berth[][] = [
         name: 'MV Kochi Express',
         arrivalDate: '2025-07-06',
         departureDate: '2025-07-07',
-        cargoType: 'Containers',
-        country: 'India',
+        cargoType: 'Containerised',
+        country: 'VIET NAM',
+        flag: '/flags/VIET NAM.jpeg',
       },
     },
     {
@@ -48,8 +50,9 @@ export const berthData: Berth[][] = [
         name: 'Sea Voyager',
         arrivalDate: '2025-07-05',
         departureDate: '2025-07-06',
-        cargoType: 'Oil',
-        country: 'UAE',
+        cargoType: 'Liquid Bulk',
+        country: 'Singapore',
+        flag: '/flags/singapore.webp',
       },
     },
     {
@@ -69,8 +72,9 @@ export const berthData: Berth[][] = [
         name: 'Cargo Star',
         arrivalDate: '2025-07-04',
         departureDate: '2025-07-05',
-        cargoType: 'Steel',
-        country: 'Germany',
+        cargoType: 'Dry Bulk / Mechanical',
+        country: 'Panama',
+        flag: '/flags/panamaFlag.png',
       },
     },
   ],
@@ -92,8 +96,9 @@ export const berthData: Berth[][] = [
         name: 'Blue Horizon',
         arrivalDate: '2025-07-06',
         departureDate: '2025-07-07',
-        cargoType: 'Machinery',
-        country: 'Japan',
+        cargoType: 'Dry Bulk / Mechanical',
+        country: 'Nether Lands',
+        flag: '/flags/nl-flag.jpg',
       },
     },
     {
@@ -113,8 +118,9 @@ export const berthData: Berth[][] = [
         name: 'Eastern Wind',
         arrivalDate: '2025-07-05',
         departureDate: '2025-07-06',
-        cargoType: 'Textiles',
-        country: 'Bangladesh',
+        cargoType: 'Dry Bulk / Mechanical',
+        country: 'India',
+        flag: '/flags/india.jpg',
       },
     },
     {
@@ -136,8 +142,9 @@ export const berthData: Berth[][] = [
         name: 'Mariner One',
         arrivalDate: '2025-07-02',
         departureDate: '2025-07-03',
-        cargoType: 'Electronics',
+        cargoType: 'Dry Bulk / Mechanical',
         country: 'Singapore',
+        flag: '/flags/singapore.webp',
       },
     },
     {
@@ -157,8 +164,9 @@ export const berthData: Berth[][] = [
         name: 'Ocean Trader',
         arrivalDate: '2025-07-05',
         departureDate: '2025-07-06',
-        cargoType: 'Food Grains',
-        country: 'Thailand',
+        cargoType: 'Dry Bulk / Mechanical',
+        country: 'Bahamas',
+        flag: '/flags/Flag-of-The-Bahamas.webp',
       },
     },
     {
@@ -178,8 +186,9 @@ export const berthData: Berth[][] = [
         name: 'Atlantic Rose',
         arrivalDate: '2025-07-03',
         departureDate: '2025-07-04',
-        cargoType: 'Crude Oil',
-        country: 'USA',
+        cargoType: 'Liquid Bulk',
+        country: 'Comoros',
+        flag: '/flags/Flag-Comoros.webp',
       },
     },
   ],
@@ -201,8 +210,9 @@ export const berthData: Berth[][] = [
         name: 'Nordic Breeze',
         arrivalDate: '2025-07-01',
         departureDate: '2025-07-02',
-        cargoType: 'Coal',
-        country: 'Norway',
+        cargoType: 'Dry Bulk / Mechanical',
+        country: 'Bahamas',
+        flag: '/flags/Flag-of-The-Bahamas.webp',
       },
     },
     {
@@ -222,8 +232,9 @@ export const berthData: Berth[][] = [
         name: 'Red Falcon',
         arrivalDate: '2025-07-02',
         departureDate: '2025-07-03',
-        cargoType: 'Vehicles',
-        country: 'South Korea',
+        cargoType: 'Dry Bulk / Mechanical',
+        country: 'Cook-Islands',
+        flag: '/flags/Cook-Islands-Flag.jpg',
       },
     },
     {
@@ -250,8 +261,9 @@ export const berthData: Berth[][] = [
         name: 'Silver Wave',
         arrivalDate: '2025-07-06',
         departureDate: '2025-07-07',
-        cargoType: 'Livestock',
-        country: 'Australia',
+        cargoType: 'Non-Cargo',
+        country: 'Singapore.webp',
+        flag: '/flags/singapore.webp',
       },
     },
   ],

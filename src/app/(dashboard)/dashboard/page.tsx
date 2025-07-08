@@ -3,101 +3,9 @@
 import Card from '@/components/BerthTrackerCard';
 import { useState } from 'react';
 import CargoStats from '@/components/CargoStats';
-
-type Berth = {
-  imageSrc: string;
-  berthId: string;
-  cargoType: string;
-  berthNumber: string;
-  countryFlag: string;
-  country: string;
-  arrivalDate: string;    // format: 'YYYY-MM-DD'
-  departureDate: string;  // format: 'YYYY-MM-DD'
-};
-
-const berthData: Berth[] = [
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00103IANNEHC-IC',
-    cargoType: 'Containerised',
-    berthNumber: 'V2',
-    countryFlag: '/images/india.jpg',
-    country: 'India',
-    arrivalDate: '2025-07-01',
-    departureDate: '2025-07-02'
-  },
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00104BAYLINE-JC',
-    cargoType: 'Liquid Bulk',
-    berthNumber: 'V3',
-    countryFlag: '/images/Cook-Islands-Flag.jpg',
-    country: 'Cook Islands',
-    arrivalDate: '2025-07-02',
-    departureDate: '2025-07-03'
-  },
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00105CARGOMAX-SC',
-    cargoType: 'Non Cargo',
-    berthNumber: 'Q1',
-    countryFlag: '/images/VIET NAM.jpeg',
-    country: 'Vietnam',
-    arrivalDate: '2025-07-03',
-    departureDate: '2025-07-04'
-  },
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00106VIRGINIA-CO',
-    cargoType: 'Dry Bulk Mechanical',
-    berthNumber: 'Q4',
-    countryFlag: '/images/singapore.webp',
-    country: 'Singapore',
-    arrivalDate: '2025-07-04',
-    departureDate: '2025-07-05'
-  },
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00107OCEANIC-TX',
-    cargoType: 'Containerised',
-    berthNumber: 'Q5',
-    countryFlag: '/images/nl-flag.jpg',
-    country: 'Netherlands',
-    arrivalDate: '2025-07-05',
-    departureDate: '2025-07-06'
-  },
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00108DEEPSEA-MC',
-    cargoType: 'Liquid Bulk',
-    berthNumber: 'Q6',
-    countryFlag: '/images/panamaFlag.png',
-    country: 'Panama',
-    arrivalDate: '2025-07-06',
-    departureDate: '2025-07-07'
-  },
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00109EXPORTER-KH',
-    cargoType: 'Dry Bulk Mechanical',
-    berthNumber: 'Q7',
-    countryFlag: '/images/Flag-Comoros.webp',
-    country: 'Comoros',
-    arrivalDate: '2025-07-07',
-    departureDate: '2025-07-08'
-  },
-  {
-    imageSrc: '/images/ship.png',
-    berthId: '00110FASTFERRY-RJ',
-    cargoType: 'Non Cargo',
-    berthNumber: 'Q8',
-    countryFlag: '/images/Flag-of-The-Bahamas.webp',
-    country: 'Bahamas',
-    arrivalDate: '2025-07-08',
-    departureDate: '2025-07-09'
-  }
-];
-
+import ShipListModal from '@/components/ShipListModal';
+import ShipDetailsModal from '@/components/ShipDetailsModal';
+import { ShipDetails, Berth,berthData } from '@/data/MockDashboardData';
 const cargoTypes = [
   'All',
   'Containerised',
@@ -111,43 +19,50 @@ export default function HomePage() {
   const [selectedCountry, setSelectedCountry] = useState<string>('All');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [selectedBerth, setSelectedBerth] = useState<Berth | null>(null);
+  const [selectedShip, setSelectedShip] = useState<ShipDetails | null>(null);
+  const [showShipListModal, setShowShipListModal] = useState(false);
+  const [showShipDetailModal, setShowShipDetailModal] = useState(false);
 
   const countries = ['All', ...new Set(berthData.map(item => item.country))];
 
   const filteredData = berthData.filter(item => {
     const cargoMatch = filter === 'All' || item.cargoType === filter;
     const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
-
     const arrival = item.arrivalDate;
     const departure = item.departureDate;
-
-    const dateMatch =
-      (!startDate || arrival >= startDate) &&
-      (!endDate || departure <= endDate);
-
+    const dateMatch = (!startDate || arrival >= startDate) && (!endDate || departure <= endDate);
     return cargoMatch && countryMatch && dateMatch;
   });
+
+  const handleBerthClick = (berth: Berth) => {
+    setSelectedBerth(berth);
+    setShowShipListModal(true);
+  };
+
+  const closeModals = () => {
+    setShowShipListModal(false);
+    setShowShipDetailModal(false);
+    setSelectedShip(null);
+    setSelectedBerth(null);
+  };
 
   return (
     <div className="relative h-screen bg-gray-100">
       <main className="flex flex-col h-full">
-        {/* Header and Filters */}
         <div className="flex-shrink-0 p-4">
-          {/* Heading */}
           <div className="mb-4 p-2">
             <h5 className="text-2xl font-bold text-[#003049]">
               Welcome, <span className="text-[#8B0000]">John Doe</span>
             </h5>
           </div>
 
-          {/* Filters */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-3">
             <div className="text-sm text-gray-500">
               <span>Dashboard</span> <span className="mx-2">/</span> <span className="text-blue-600">Berth Tracker</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
-              {/* Cargo Type Filter */}
-              <div className="flex flex-col" suppressHydrationWarning>
+              <div className="flex flex-col">
                 <label className="text-sm font-semibold text-gray-700 mb-2">Cargo Type</label>
                 <select
                   value={filter}
@@ -160,8 +75,7 @@ export default function HomePage() {
                 </select>
               </div>
 
-              {/* Country Filter */}
-              <div className="flex flex-col" suppressHydrationWarning>
+              <div className="flex flex-col">
                 <label className="text-sm font-semibold text-gray-700 mb-2">Country</label>
                 <select
                   value={selectedCountry}
@@ -174,7 +88,6 @@ export default function HomePage() {
                 </select>
               </div>
 
-              {/* Start Date */}
               <div className="flex flex-col">
                 <label className="text-sm font-semibold text-gray-700 mb-2">Start Date</label>
                 <input
@@ -185,7 +98,6 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* End Date */}
               <div className="flex flex-col">
                 <label className="text-sm font-semibold text-gray-700 mb-2">End Date</label>
                 <input
@@ -199,7 +111,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Card Container */}
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredData.map((berth, index) => (
@@ -211,6 +122,7 @@ export default function HomePage() {
                 countryFlag={berth.countryFlag}
                 arrivalDate={berth.arrivalDate}
                 departureDate={berth.departureDate}
+                onClick={() => handleBerthClick(berth)}
               />
             ))}
           </div>
@@ -218,6 +130,22 @@ export default function HomePage() {
           <div className="mt-8">
             <CargoStats berthData={berthData} />
           </div>
+
+          <ShipListModal
+            berth={selectedBerth}
+            isOpen={showShipListModal}
+            onSelectShip={(ship) => {
+              setSelectedShip(ship);
+              setShowShipDetailModal(true);
+            }}
+            onClose={closeModals}
+          />
+
+          <ShipDetailsModal
+            ship={selectedShip}
+            isOpen={showShipDetailModal}
+            onClose={() => setShowShipDetailModal(false)}
+          />
         </div>
       </main>
     </div>
