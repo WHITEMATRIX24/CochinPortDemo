@@ -3,6 +3,17 @@
 import { useState } from 'react';
 import { CalendarDays, MoreVertical, Search } from 'lucide-react';
 
+
+type Payment = {
+  id: string;
+  vessel: string;
+  berth: string;
+  amount: string;
+  method: string;
+  status: string;
+  paidOn: string;
+};
+
 const payments = [
   {
     id: '#P8723',
@@ -43,7 +54,7 @@ const payments = [
   {
     id: '#P8729',
     vessel: 'MT Ocean ',
-    berth: 'Q!',
+    berth: 'Q1',
     amount: '₹39,000',
     method: 'Credit Card',
     status: 'Paid',
@@ -88,7 +99,7 @@ const payments = [
   {
     id: '#P8729',
     vessel: 'MT Ocean ',
-    berth: 'Q!',
+    berth: 'Q1',
     amount: '₹39,000',
     method: 'UPI',
     status: 'Paid',
@@ -113,6 +124,9 @@ export default function PaymentHistoryTable() {
   const [selectedBerth, setSelectedBerth] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
 const [itemsPerPage, setItemsPerPage] = useState(10);
+const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+
 const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const filteredPayments = payments.filter((payment) => {
@@ -270,9 +284,17 @@ const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
                   </button>
                   {openMenu === index && (
                     <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-md z-10">
-                      <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-                        View Receipt
-                      </button>
+                      <button
+  onClick={() => {
+    setSelectedPayment(payment);
+    setOpenMenu(null);
+  }}
+  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+>
+  View Receipt
+</button>
+
+
                       <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
                         Message
                       </button>
@@ -339,6 +361,61 @@ const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
     entries per page
   </div>
 </div>
+{selectedPayment && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center  bg-black/30">
+    <div className="bg-white dark:bg-[#1c2232] rounded-xl shadow-lg p-6 w-[90%] max-w-md relative">
+      <button
+        onClick={() => setSelectedPayment(null)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-black dark:text-gray-300 dark:hover:text-white"
+      >
+        ✕
+      </button>
+
+      <h2 className="text-lg font-bold mb-4 text-center border-b pb-2">
+        Payment Receipt
+      </h2>
+
+      <div className="text-sm space-y-3 text-gray-700 dark:text-gray-200">
+        <div className="flex justify-between">
+          <span className="font-medium">Payment ID</span>
+          <span>{selectedPayment.id}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Vessel</span>
+          <span>{selectedPayment.vessel}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Berth</span>
+          <span>{selectedPayment.berth}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Cargo Type</span>
+          <span>Containerised</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Amount</span>
+          <span>{selectedPayment.amount}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Payment Method</span>
+          <span>{selectedPayment.method}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Status</span>
+          <span className={`font-semibold ${statusColors[selectedPayment.status]}`}>
+            {selectedPayment.status}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Paid On</span>
+          <span>{selectedPayment.paidOn}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
 
 
     </div>
