@@ -26,24 +26,39 @@ const [isMounted, setIsMounted] = useState(false);
 useEffect(() => {
     setIsMounted(true);
   }, []);
-  const menuItems = [
-    {
-      label: 'Dashboard',
-      icon: <FiGrid />,
-      children: [
-        { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
-        { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
-        { label: 'Notification', icon: <FiFolder />, href: '#' },
-      ],
-    },
-    { label: 'Ship Management', icon: <FiBox />, href: '#' },
-    { label: 'Berth Management', icon: <FiMap />, href: '/berth-management' },
-    { label: 'Cargo Management', icon: <FiArchive />, href: '#' },
-    { label: 'User Management', icon: <FiUsers />, href: '#' },
-    { label: 'Port Schedule', icon: <FiCalendar />, href: '#' },
-    { label: 'Reports & Analytics', icon: <FiBarChart2 />, href: '#' },
-    { label: 'Live Shipping Tracking', icon: <FiMapPin />, href: '|#' },
-  ];
+const menuItems = [
+  {
+    label: 'Dashboard',
+    icon: <FiGrid />,
+    children: [
+      { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
+      { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
+      { label: 'Notification', icon: <FiFolder />, href: '#' },
+    ],
+  },
+  { label: 'Ship Management', icon: <FiBox />, href: '#' },
+  { label: 'Berth Management', icon: <FiMap />, href: '/berth-management' },
+  { label: 'Cargo Management', icon: <FiArchive />, href: '#' },
+  { label: 'User Management', icon: <FiUsers />, href: '#' },
+  { label: 'Port Schedule', icon: <FiCalendar />, href: '#' },
+
+  // 🔽 New Menu Added Here
+  /* {
+    label: 'Payment History',
+    icon: <FiFileText />,
+    children: [
+      { label: 'Berth Payment History', icon: <FiFileText />, href: '/berth-payment-history' },
+    ],
+  }, */
+{
+    label: 'Payment History',
+    icon: <FiFileText />,
+    href: '/berth-payment-history' 
+    
+  },
+  { label: 'Reports & Analytics', icon: <FiBarChart2 />, href: '#' },
+  { label: 'Live Shipping Tracking', icon: <FiMapPin />, href: '|#' },
+];
 
   const [expandedMenu, setExpandedMenu] = useState<string | null>('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -65,7 +80,7 @@ if (!isMounted) return null;
         className={`${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         } transform transition-transform duration-300 ease-in-out 
-        fixed md:static z-40 top-0 left-0 h-full w-64 
+        fixed md:static z-40 top-0 left-0 h-full w-68 
         bg-gradient-to-b from-[#014F86] via-[#006494] to-[#003049] 
         text-white shadow-xl md:flex flex-col justify-between py-6 px-4`}
       >
@@ -162,7 +177,7 @@ if (!isMounted) return null;
                 console.log('Logging out...');
                 if (window.innerWidth < 768) setSidebarOpen(false);
               }}
-              className="flex items-center gap-2 hover:text-yellow-300 transition-colors text-lg"
+              className="flex items-center gap-5 hover:text-yellow-300 transition-colors text-lg"
             >
               <FiLogOut />
               <span className="text-base font-medium">Logout</span>

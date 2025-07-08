@@ -33,9 +33,9 @@ const shipMovements = [
     shipId: '00103IANNEHC-IC',
     berth: 'V3',
     events: {
-      ETA: new Date('2025-07-07T01:00:00'),
-      ATA: new Date('2025-07-07T04:00:00'),
-      ETD: new Date('2025-07-08T06:00:00'),
+      ATA: new Date('2025-07-07T01:00:00'),
+      ATB: new Date('2025-07-07T04:00:00'),
+      ATU: new Date('2025-07-08T06:00:00'),
       ATD: new Date('2025-07-08T07:00:00'),
     },
   },
@@ -43,9 +43,9 @@ const shipMovements = [
     shipId: '60103TARAJUG-LS',
     berth: 'Q1',
     events: {
-      ETA: new Date('2025-07-07T11:00:00'),
-      ATA: new Date('2025-07-07T12:30:00'),
-      ETD: new Date('2025-07-07T22:30:00'),
+      ATA: new Date('2025-07-07T11:00:00'),
+      ATB: new Date('2025-07-07T12:30:00'),
+      ATU: new Date('2025-07-07T22:30:00'),
       ATD: new Date('2025-07-07T22:30:00'),
     },
   },
@@ -53,9 +53,9 @@ const shipMovements = [
     shipId: '63103NASIK-LAJ',
     berth: 'v2',
     events: {
-      ETA: new Date('2025-07-06T22:00:00'),
-      ATA: new Date('2025-07-07T02:30:00'),
-      ETD: new Date('2025-07-08T07:30:00'),
+      ATA: new Date('2025-07-06T22:00:00'),
+      ATB: new Date('2025-07-07T02:30:00'),
+      ATU: new Date('2025-07-08T07:30:00'),
       ATD: new Date('2025-07-08T08:00:00'),
     },
   },
@@ -63,9 +63,9 @@ const shipMovements = [
     shipId: '25103REENOIP-NA',
     berth: 'Q10',
     events: {
-      ETA: new Date('2025-07-04T22:00:00'),
-      ATA: new Date('2025-07-04T02:30:00'),
-      ETD: new Date('2025-07-05T07:30:00'),
+      ATA: new Date('2025-07-04T22:00:00'),
+      ATB: new Date('2025-07-04T02:30:00'),
+      ATU: new Date('2025-07-05T07:30:00'),
       ATD: new Date('2025-07-05T08:00:00'),
     },
   },
@@ -73,9 +73,9 @@ const shipMovements = [
     shipId: '65103II-REVLIS',
     berth: 'Q10',
     events: {
-      ETA: new Date('2025-07-06T22:00:00'),
-      ATA: new Date('2025-07-06T02:30:00'),
-      ETD: new Date('2025-07-07T07:30:00'),
+      ATA: new Date('2025-07-06T22:00:00'),
+      ATB: new Date('2025-07-06T02:30:00'),
+      ATU: new Date('2025-07-07T07:30:00'),
       ATD: new Date('2025-07-07T08:00:00'),
     },
   },
@@ -83,113 +83,253 @@ const shipMovements = [
     shipId: '65103II-REVLIS',
     berth: 'Q10',
     events: {
-      ETA: new Date('2025-07-06T22:00:00'),
-      ATA: new Date('2025-07-06T02:30:00'),
-      ETD: new Date('2025-07-07T07:30:00'),
+      ATA: new Date('2025-07-06T22:00:00'),
+      ATB: new Date('2025-07-06T02:30:00'),
+      ATU: new Date('2025-07-07T07:30:00'),
       ATD: new Date('2025-07-07T08:00:00'),
     },
-  },{
+  }, {
     shipId: '65103II-REVLIS',
     berth: 'Q9',
     events: {
-      ETA: new Date('2025-07-06T22:00:00'),
-      ATA: new Date('2025-07-06T02:30:00'),
-      ETD: new Date('2025-07-07T07:30:00'),
+      ATA: new Date('2025-07-06T22:00:00'),
+      ATB: new Date('2025-07-06T02:30:00'),
+      ATU: new Date('2025-07-07T07:30:00'),
       ATD: new Date('2025-07-07T08:00:00'),
+    },
+  },
+  {
+    shipId: '65103II-REVLIS1',
+    berth: 'Q9',
+    events: {
+      ATA: new Date('2025-07-06T22:00:00'),
+      ATB: new Date('2025-07-06T02:30:00'),
+      ATU: new Date('2025-07-07T07:30:00'),
+      ATD: new Date('2025-07-07T08:00:00'),
+    },
+  },
+  {
+    shipId: '65103II-REVLI2',
+    berth: 'Q9',
+    events: {
+      ATA: new Date('2025-07-06T22:00:00'),
+      ATB: new Date('2025-07-06T02:30:00'),
+      ATU: new Date('2025-07-07T07:30:00'),
+      ATD: new Date('2025-07-07T08:00:00'),
+    },
+  },
+  {
+    shipId: '00103IANNEHC-IC1',
+    berth: 'V3',
+    events: {
+      ATA: new Date('2025-07-08T01:00:00'),
+      ATB: new Date('2025-07-08T04:00:00'),
+      ATU: new Date('2025-07-09T06:00:00'),
+      ATD: new Date('2025-07-09T07:00:00'),
+    },
+  },
+  {
+    shipId: '60103TARAJUG-LS1',
+    berth: 'Q1',
+    events: {
+      ATA: new Date('2025-07-08T11:00:00'),
+      ATB: new Date('2025-07-08T12:30:00'),
+      ATU: new Date('2025-07-10T22:30:00'),
+      ATD: new Date('2025-07-11T01:30:00'),
+    },
+  },
+  {
+    shipId: '63103NASIK-LAJ1',
+    berth: 'v2',
+    events: {
+      ATA: new Date('2025-07-08T22:00:00'),
+      ATB: new Date('2025-07-08T02:30:00'),
+      ATU: new Date('2025-07-10T07:30:00'),
+      ATD: new Date('2025-07-10T08:00:00'),
+    },
+  },
+  {
+    shipId: '25103REENOIP-NA1',
+    berth: 'Q10',
+    events: {
+      ATA: new Date('2025-07-09T22:00:00'),
+      ATB: new Date('2025-07-09T02:30:00'),
+      ATU: new Date('2025-07-10T07:30:00'),
+      ATD: new Date('2025-07-10T07:30:00'),
+    },
+  },
+  {
+    shipId: '65103II-REVLIS',
+    berth: 'Q10',
+    events: {
+      ATA: new Date('2025-07-07T22:00:00'),
+      ATB: new Date('2025-07-07T02:30:00'),
+      ATU: new Date('2025-07-08T07:30:00'),
+      ATD: new Date('2025-07-08T08:00:00'),
+    },
+  },
+  {
+    shipId: '65103II-REVLIS1',
+    berth: 'Q10',
+    events: {
+      ATA: new Date('2025-07-07T22:00:00'),
+      ATB: new Date('2025-07-07T02:30:00'),
+      ATU: new Date('2025-07-09T07:30:00'),
+      ATD: new Date('2025-07-09T07:30:00'),
+    },
+  }, {
+    shipId: '65103II-REVLIS2',
+    berth: 'Q9',
+    events: {
+      ATA: new Date('2025-07-07T22:00:00'),
+      ATB: new Date('2025-07-07T02:30:00'),
+      ATU: new Date('2025-07-09T09:30:00'),
+      ATD: new Date('2025-07-09T09:30:00'),
+    },
+  },
+  {
+    shipId: '65103II-REVLIS5',
+    berth: 'Q9',
+    events: {
+      ATA: new Date('2025-07-07T22:00:00'),
+      ATB: new Date('2025-07-08T02:30:00'),
+      ATU: new Date('2025-07-09T08:00:00'),
+      ATD: new Date('2025-07-09T08:00:00'),
+    },
+  },
+  {
+    shipId: '65103II-HGD',
+    berth: 'Q9',
+    events: {
+      ATA: new Date('2025-07-09T22:00:00'),
+      ATB: new Date('2025-07-09T22:00:00'),
+      ATU: new Date('2025-07-15T07:30:00'),
+      ATD: new Date('2025-07-15T07:30:00'),
     },
   },
 ]
 
 const colorMap = {
-  ETA: '#8ecae6',
-  ATA: '#219ebc',
-  ETD: '#ffb703',
+  ATA: '#8ecae6',
+  ATB: '#219ebc',
+  ATU: '#ffb703',
   ATD: '#fb8500',
 }
 
 export default function SwimlaneChart() {
   const [selectedBerth, setSelectedBerth] = useState('All')
-  // Explicitly type the ref for a ChartJS "line" chart.
+  const [startDate, setStartDate] = useState(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return today
+  })
+  const [endDate, setEndDate] = useState(() => {
+    const tomorrow = new Date()
+    tomorrow.setHours(0, 0, 0, 0)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow
+  })
+
+  const handleDateChange = (type: 'start' | 'end', value: string) => {
+    if (!value) {
+      // Reset to default values
+      if (type === 'start') {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        setStartDate(today)
+      } else if (type === 'end') {
+        const tomorrow = new Date()
+        tomorrow.setHours(0, 0, 0, 0)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        setEndDate(tomorrow)
+      }
+      return
+    }
+
+    const parsedDate = new Date(value)
+    parsedDate.setHours(0, 0, 0, 0)
+
+    if (type === 'start') setStartDate(parsedDate)
+    if (type === 'end') setEndDate(parsedDate)
+  }
+
+
   const chartRef = useRef<ChartJS<'line', { x: number; y: string }[], unknown>>(null)
 
   const allBerths = [...new Set(shipMovements.map(ship => ship.berth))]
-  const isToday = (date: Date) => {
-  const now = new Date()
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth() &&
-    date.getDate() === now.getDate()
+  const isWithinSelectedRange = (date: Date) => {
+    return date >= startDate && date <= endDate
+  }
+
+  const filteredByDate = shipMovements.filter(ship =>
+    Object.values(ship.events).some(d => isWithinSelectedRange(d))
   )
-}
 
-const todayShips = shipMovements.filter(ship =>
-  Object.values(ship.events).some(d => isToday(d))
-)
-
-const filteredShips =
-  selectedBerth === 'All'
-    ? todayShips
-    : todayShips.filter(ship => ship.berth === selectedBerth)
-
+  const filteredShips =
+    selectedBerth === 'All'
+      ? filteredByDate
+      : filteredByDate.filter(ship => ship.berth === selectedBerth)
 
   const datasets: any[] = []
 
   for (const ship of filteredShips) {
-    const { ETA, ATA, ETD, ATD } = ship.events
-const y = `🛳️ ${ship.shipId} (${ship.berth})`
+    const { ATA, ATB, ATU, ATD } = ship.events
+    const y = `🛳️ ${ship.shipId} (${ship.berth})`
 
-    if (![ETA, ATA, ETD, ATD].every(d => d instanceof Date && !isNaN(d.getTime()))) continue
-
+    if (![ATA, ATB, ATU, ATD].every(d => d instanceof Date && !isNaN(d.getTime()))) continue
+    const shipLabel = `🛳️ ${ship.shipId} (${ship.berth})`
     datasets.push(
       {
-        label: 'ETA to ATA',
-        data: [
-          { x: ETA.getTime(), y },
-          { x: ATA.getTime(), y },
-        ],
-        borderColor: colorMap.ETA,
-        backgroundColor: colorMap.ETA,
-        borderWidth: 4,
-        pointRadius: 5,
-      },
-      {
-        label: 'ATA to ETD',
+        label: 'ARRIVAL to BERTHING',
         data: [
           { x: ATA.getTime(), y },
-          { x: ETD.getTime(), y },
+          { x: ATB.getTime(), y },
         ],
+        shipLabel,
         borderColor: colorMap.ATA,
         backgroundColor: colorMap.ATA,
         borderWidth: 4,
         pointRadius: 5,
       },
       {
-        label: 'ETD to ATD',
+        label: 'BERTHING TO UNBERTHING',
         data: [
-          { x: ETD.getTime(), y },
+          { x: ATB.getTime(), y },
+          { x: ATU.getTime(), y },
+        ],
+        shipLabel,
+        borderColor: colorMap.ATB,
+        backgroundColor: colorMap.ATB,
+        borderWidth: 4,
+        pointRadius: 5,
+      },
+      {
+        label: 'UNBERTHING to DEPAR',
+        data: [
+          { x: ATU.getTime(), y },
           { x: ATD.getTime(), y },
         ],
-        borderColor: colorMap.ETD,
-        backgroundColor: colorMap.ETD,
+        shipLabel,
+        borderColor: colorMap.ATU,
+        backgroundColor: colorMap.ATU,
         borderWidth: 4,
         pointRadius: 5,
       }
     )
   }
 
-  // Calculate time limits (with 12-hour padding)
   const allTimestamps = shipMovements.flatMap(ship =>
     Object.values(ship.events).map(d => new Date(d).getTime())
   )
-  const padding = 12 * 60 * 60 * 1000 // 12 hours
+  const padding = 12 * 60 * 60 * 1000
   const chartMinLimit = Math.min(...allTimestamps) - padding
   const chartMaxLimit = Math.max(...allTimestamps) + padding
 
-  const defaultCenterDate = new Date('2025-07-07T00:00:00')
+  const defaultCenterDate = new Date()
+  defaultCenterDate.setHours(0, 0, 0, 0)
   const defaultStart = defaultCenterDate.getTime()
-  const defaultEnd = new Date(defaultCenterDate.getTime() + 24 * 60 * 60 * 1000).getTime()
+  const defaultEnd = new Date(defaultStart + 24 * 60 * 60 * 1000).getTime()
 
-  // Explicitly type your options as ChartOptions for a "line" chart.
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -202,10 +342,8 @@ const y = `🛳️ ${ship.shipId} (${ship.berth})`
             hour: 'MMM d, HH:mm',
           },
         },
-        min: defaultStart,
-        max: defaultEnd,
-        suggestedMin: defaultStart,
-        suggestedMax: defaultEnd,
+        min: startDate.getTime(),
+        max: endDate.getTime(),
         title: {
           display: true,
           text: 'Time',
@@ -235,35 +373,65 @@ const y = `🛳️ ${ship.shipId} (${ship.berth})`
         display: false,
       },
       tooltip: {
-  callbacks: {
-    label: (context: any) => {
-      const label = context.dataset.label || ''
-      const index = context.dataIndex
+        backgroundColor: '#ffffff',
+        titleColor: '#111827',
+        bodyColor: '#374151',
+        borderColor: '#d1d5db',
+        borderWidth: 1,
+        titleFont: { weight: 'bold', size: 16 },
+        bodyFont: { size: 13 },
+        bodySpacing: 8,
+        padding: 10,
+        cornerRadius: 6,
+        displayColors: false,
+        callbacks: {
+          title: (tooltipItems) => {
+            const dataset = tooltipItems[0].dataset as any
+            const shipLabel = dataset.shipLabel || tooltipItems[0].label || 'Unknown Ship'
+            return shipLabel
+          },
 
-      const data = context.dataset.data as { x: number; y: string }[]
-      if (!data || data.length < 2 || index > 1) return `${label}`
+          label: (context) => {
+            const label = context.dataset.label || ''
+            const rawData = context.dataset.data as unknown
 
-      const startTime = new Date(data[0].x)
-      const endTime = new Date(data[1].x)
+            if (!Array.isArray(rawData)) return label
 
-      const durationMs = endTime.getTime() - startTime.getTime()
-      const hours = Math.floor(durationMs / (1000 * 60 * 60))
-      const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
+            const data = rawData as { x: number; y: string }[]
+            if (data.length < 2) return label
 
-      const durationStr =
-        hours > 0
-          ? `${hours}h ${minutes}m`
-          : `${minutes}m`
+            const startTime = new Date(data[0].x)
+            const endTime = new Date(data[1].x)
 
-return `${label} duration: ${durationStr}`
-    },
-  },
-},
+            const durationMs = endTime.getTime() - startTime.getTime()
+            const hours = Math.floor(durationMs / (1000 * 60 * 60))
+            const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
+            const durationStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+
+            return `${label} duration: ${durationStr}`
+          },
+
+          // ✅ Add Hovered Time once
+          afterBody: (tooltipItems) => {
+            const hoveredTime = new Date(tooltipItems[0].parsed.x)
+            const hoveredTimeStr = hoveredTime.toLocaleString('en-IN', {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+              hour12: false, // ✅ Use 24-hour format
+            })
+            return `Time: ${hoveredTimeStr}`
+          },
+
+        },
+
+      },
+
+
 
       zoom: {
         pan: {
           enabled: true,
-          mode: 'x' as const, // explicitly set mode
+          mode: 'x',
         },
         zoom: {
           wheel: {
@@ -272,7 +440,7 @@ return `${label} duration: ${durationStr}`
           pinch: {
             enabled: true,
           },
-          mode: 'x' as const, // explicitly set mode
+          mode: 'x',
         },
         limits: {
           x: {
@@ -289,54 +457,84 @@ return `${label} duration: ${durationStr}`
       chartRef.current.resetZoom()
     }
   }, [])
+
   useEffect(() => {
-  if (typeof window !== 'undefined') {
-    // Safe to use ChartJS plugins that rely on window
-    ChartJS.register(zoomPlugin)
-  }
-}, [])
+    if (typeof window !== 'undefined') {
+      ChartJS.register(zoomPlugin)
+    }
+  }, [])
 
-
-  // Build our data object with an explicit type.
   const data: ChartData<'line', { x: number; y: string }[]> = { datasets }
 
   return (
-    <div className="w-full bg-white space-y-6">
-            {/* Filter + Reset on same line */}
-<div className="flex items-center justify-between p-3 px-5">
-  {/* Label + Select */}
-  <div className="flex space-x-4 items-center">
-    <label htmlFor="berth" className="font-semibold text-gray-800">
-      Select Berth:
-    </label>
-    <select
-      id="berth"
-      value={selectedBerth}
-      onChange={e => setSelectedBerth(e.target.value)}
-      className="border px-2 py-1 rounded text-gray-900 font-medium bg-white"
-    >
-      <option value="All">All</option>
-      {allBerths.map(berth => (
-        <option key={berth} value={berth}>
-          {berth}
-        </option>
-      ))}
-    </select>
-  </div>
+    <div className="w-full h-auto rounded bg-white space-y-6">
+      <div className="flex items-center justify-between p-3 px-5 flex-wrap gap-4">
+        <div className='flex gap-5'>
+          <div className="flex items-center space-x-4">
+            <label htmlFor="berth" className="text-sm  text-gray-700">
+              Select Berth:
+            </label>
+            <select
+              id="berth"
+              value={selectedBerth}
+              onChange={e => setSelectedBerth(e.target.value)}
+              className="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-gray-900"
+            >
+              <option value="All">All</option>
+              {allBerths.map(berth => (
+                <option key={berth} value={berth}>
+                  {berth}
+                </option>
+              ))}
+            </select>
+          </div>
 
-  {/* Reset Zoom Button */}
-  <button
-    onClick={() => chartRef.current?.resetZoom()}
-    className="px-4 py-2 border border-gray-300 text-gray-800 rounded hover:bg-[#014F86] hover:text-white transition"
-  >
-    Reset Zoom
-  </button>
-</div>
+          <div className="flex items-center space-x-5">
+            <label className="text-sm text-gray-700">Start Date:</label>
+            <input
+              type="date"
+              value={startDate.toISOString().split('T')[0]}
+              onChange={e => handleDateChange('start', e.target.value)}
+              className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+            />
+            <label className="text-sm text-gray-700">End Date:</label>
+            <input
+              type="date"
+              value={endDate.toISOString().split('T')[0]}
+              onChange={e => handleDateChange('end', e.target.value)}
+              className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+            />
+            <button
+              onClick={() => {
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                const tomorrow = new Date(today)
+                tomorrow.setDate(today.getDate() + 1)
+                setStartDate(today)
+                setEndDate(tomorrow)
+              }}
+              className="px-4 py-1 border border-gray-300 text-black text-sm rounded hover:bg-[#014F86] hover:text-white transition"
+            >
+              Reset to Today
+            </button>
+
+          </div>
+        </div>
+
+        <button
+          onClick={() => chartRef.current?.resetZoom()}
+          className="px-4 py-2 border border-gray-300 text-black rounded hover:bg-[#014F86] hover:text-white transition"
+        >
+          Reset Zoom
+        </button>
+      </div>
 
 
-      {/* Chart */}
-      <div className="w-full h-[600px] overflow-x-auto">
-        <Chart ref={chartRef} type="line" data={data} options={options} />
+      {/* Chart with vertical scroll */}
+      <div className="w-full" style={{ height: 'calc(100vh - 300px)' }}>
+        <div className="w-full h-full overflow-y-auto overflow-x-hidden pr-2">
+          <Chart ref={chartRef} type="line" data={data} options={options} />
+        </div>
       </div>
 
     </div>

@@ -1,14 +1,7 @@
 'use client'
 
-/* import ShipTimelineChart from '@/components/ShipTimeLineChart'
- */
+import PaymentHistoryTable from "@/components/PaymentHistoryTable"
 
-import dynamic from 'next/dynamic'
-
-// 👇 Dynamically import SwimlaneChart, disable SSR
-const SwimlaneChart = dynamic(() => import('@/components/SwimlaneChart'), {
-  ssr: false,
-})
 
 export default function ShipMovementSummaryPage() {
   return (
@@ -18,16 +11,15 @@ export default function ShipMovementSummaryPage() {
           {/* Heading */}
           <div className="mb-6">
             <h5 className="text-2xl font-bold text-[#003049]">
-             Ship Movement Summary
+             Payment History
             </h5>
           </div>
           <div className="text-sm text-gray-500">
-              <span>Dashboard</span> <span className="mx-2">/</span> <span className="text-blue-600">Ship Movement Summary</span>
+              <span>Payment Mangement</span> <span className="mx-2">/</span> <span className="text-blue-600">Payment History</span>
             </div>
         </div>
         <div className="flex-1 overflow-y-auto">
-                          <SwimlaneChart />
-
+    <PaymentHistoryTable/>
                </div>
       </main>
     </div>
