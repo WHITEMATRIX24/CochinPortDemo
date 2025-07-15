@@ -43,14 +43,14 @@ export default function ShipDetailsModal({ ship, isOpen, onClose }: Props) {
                         <span className="font-medium text-gray-700">Country:</span>
                         <p className="text-gray-900">{ship.country}</p>
                     </div>
-                    <div className="col-span-2 flex items-center gap-2 mt-2">
+                    {/* <div className="col-span-2 flex items-center gap-2 mt-2">
                         <span className="font-medium text-gray-700">Flag:</span>
                         <img
                             src={ship.flag}
                             alt={`${ship.country} flag`}
                             className="w-14 h-10 object-cover rounded border"
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

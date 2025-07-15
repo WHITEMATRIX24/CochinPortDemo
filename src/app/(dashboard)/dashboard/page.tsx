@@ -12,6 +12,7 @@ const cargoTypes = [
   'Liquid Bulk',
   'Non Cargo',
   'Dry Bulk Mechanical',
+  'Break Bulk'
 ];
 
 export default function HomePage() {
@@ -117,7 +118,7 @@ export default function HomePage() {
               <Card
                 key={index}
                 imageSrc={berth.imageSrc}
-                berthId={berth.berthId}
+                 currentShipId={berth.shipDetails.find(s => s.isCurrent)?.id}
                 berthNumber={berth.berthNumber}
                 countryFlag={berth.countryFlag}
                 arrivalDate={berth.arrivalDate}
