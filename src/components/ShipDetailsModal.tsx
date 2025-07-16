@@ -22,7 +22,7 @@ export default function ShipDetailsModal({ ship, isOpen, onClose }: Props) {
 
                 {/* Title */}
                 <h2 className="text-2xl font-semibold mb-6 border-b pb-2 text-center">
-                    {ship.name} <span className="text-sm font-normal text-gray-500">Details</span>
+                    {ship.name}
                 </h2>
 
                 {/* Details List */}

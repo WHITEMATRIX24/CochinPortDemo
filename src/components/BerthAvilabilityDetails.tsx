@@ -38,10 +38,12 @@ export default function BerthAvailability({ data }: Props) {
 
   return (
     <div className="min-h-screen px-6 py-10 bg-gray-50">
-      <h1 className="text-2xl font-bold text-blue-900 mb-10">
+      <h1 className="text-2xl font-bold text-blue-900 mb-5">
         Berth Availability Chart
       </h1>
-
+      <div className="text-sm text-gray-500 mb-4">
+        <span>Berth Management</span> <span className="mx-2">/</span> <span className="text-blue-600">Berth availability chart</span>
+      </div>
       {/* Berth Grid Section */}
       <div className="bg-white p-6 rounded-2xl shadow-xl mb-10">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
@@ -69,13 +71,13 @@ export default function BerthAvailability({ data }: Props) {
 
             return (
               <div
-               key={`${berth.berthId}-${berth.berthNumber}`}
+                key={`${berth.berthId}-${berth.berthNumber}`}
                 onClick={() => isOccupied && handleOpenModal(berth)}
                 title={isOccupied ? `Ship: ${currentShip?.name}` : 'Available'}
                 className={`relative w-23 h-23 p-1.5 rounded-md flex flex-col items-center justify-center text-xs font-medium cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md
                   ${isOccupied ? 'text-white' : 'bg-gray-300 text-gray-700'}
                   ${selectedBerth?.berthNumber === berth.berthNumber ? 'ring-4 ring-blue-400' : ''}`}
-                style={isOccupied ? { backgroundColor: '#006494' } : {}}
+                style={isOccupied ? { backgroundColor: '#007b94ff' } : {}}
               >
                 {isOccupied && flag && (
                   <img

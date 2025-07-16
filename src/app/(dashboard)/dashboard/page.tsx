@@ -1,4 +1,5 @@
 'use client';
+
 import { Bell, Settings } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -8,7 +9,7 @@ import CargoStats from '@/components/CargoStats';
 import ShipListModal from '@/components/ShipListModal';
 import ShipDetailsModal from '@/components/ShipDetailsModal';
 import { ShipDetails, Berth, berthData } from '@/data/MockDashboardData';
-import DashboardNotificationModal from '@/components/DashboardNotificationModal';
+import DashboardNotificationSidebar from '@/components/DashboardNotificationSidebar';
 
 const cargoTypes = [
   'All',
@@ -16,32 +17,8 @@ const cargoTypes = [
   'Liquid Bulk',
   'Non Cargo',
   'Dry Bulk Mechanical',
-  'Break Bulk'
+  'Break Bulk',
 ];
-
-
-// Dummy notification data
-const notifications = [
-  {
-    id: '1',
-    title: 'Ship Arrival',
-    message: 'MV Kochi Express has arrived at Berth B3.',
-    time: '10 mins ago',
-  },
-  {
-    id: '2',
-    title: 'Departure Notice',
-    message: 'Sydney Tanker has left LNG Berth.',
-    time: '30 mins ago',
-  },
-  {
-    id: '3',
-    title: 'Delay Alert',
-    message: 'Unloading at Berth C1 delayed due to weather.',
-    time: '1 hour ago',
-  },
-];
-
 
 export default function HomePage() {
   const [filter, setFilter] = useState<string>('All');
@@ -52,24 +29,26 @@ export default function HomePage() {
   const [selectedShip, setSelectedShip] = useState<ShipDetails | null>(null);
   const [showShipListModal, setShowShipListModal] = useState(false);
   const [showShipDetailModal, setShowShipDetailModal] = useState(false);
-  const countries = ['All', ...new Set(berthData.map(item => item.country))];
+  const [showNotif, setShowNotif] = useState(false);
+
+  const countries = ['All', ...new Set(berthData.map((item) => item.country))];
+
   function normalizeDate(date: Date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
+
   const filteredData = berthData.filter((item) => {
-  const cargoMatch = filter === 'All' || item.cargoType === filter;
-  const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
-  const arrivalDate = normalizeDate(new Date(item.arrivalDate));
-  const departureDate = normalizeDate(new Date(item.departureDate));
-  const start = startDate ? normalizeDate(startDate) : null;
-  const end = endDate ? normalizeDate(endDate) : null;
-  const dateMatch =
+    const cargoMatch = filter === 'All' || item.cargoType === filter;
+    const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
+    const arrivalDate = normalizeDate(new Date(item.arrivalDate));
+    const departureDate = normalizeDate(new Date(item.departureDate));
+    const start = startDate ? normalizeDate(startDate) : null;
+    const end = endDate ? normalizeDate(endDate) : null;
+    const dateMatch =
       (!start || arrivalDate >= start) &&
       (!end || departureDate <= end);
-
     return cargoMatch && countryMatch && dateMatch;
   });
-const [showNotif, setShowNotif] = useState(false);
 
   const handleBerthClick = (berth: Berth) => {
     setSelectedBerth(berth);
@@ -86,38 +65,38 @@ const [showNotif, setShowNotif] = useState(false);
   return (
     <div className="relative h-screen bg-gray-100">
       <main className="flex flex-col h-full">
+        {/* Header Section */}
         <div className="flex-shrink-0 p-4">
-   <div className="mb-4 p-2 flex items-center justify-between">
-  <h5 className="text-2xl font-bold text-[#003049]">
-    Welcome, <span className="text-[#8B0000]">John Doe</span>
-  </h5>
-
-  <div className="flex items-center gap-4 mr-2"> {/* <-- moved slightly left */}
-    {/* Notification Bell */}
-
-    <button className="relative" onClick={() => setShowNotif(true)}>
-      <Bell className="w-6 h-6 text-gray-700 hover:text-blue-600 transition" />
-      <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-600 animate-ping"></span>
-      <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-600"></span>
-    
-    </button>
-   
-
-    {/* Settings (Theme Toggle Placeholder) */}
-    <button
-      className="text-gray-700 hover:text-blue-600 transition"
-      onClick={() => alert('Theme switch coming soon')}
-    >
-      <Settings className="w-6 h-6" />
-    </button>
-  </div>
-</div>
-
-
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-3">
-            <div className="text-sm text-gray-500">
-              <span>Dashboard</span> <span className="mx-2">/</span> <span className="text-blue-600">Berth Tracker</span>
+          <div className="mb-4 p-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h5 className="text-2xl font-bold text-[#003049]">
+                Welcome, <span className="text-[#8B0000]">John Doe</span>
+              </h5>
+              <div className="text-sm text-gray-500 mt-1">
+                <span>Dashboard</span> <span className="mx-2">/</span> <span className="text-blue-600">Berth Tracker</span>
+              </div>
             </div>
+
+            <div className="flex items-center gap-4 mr-2">
+              {/* Notification Bell */}
+              <button className="relative" onClick={() => setShowNotif(true)}>
+                <Bell className="w-6 h-6 text-gray-700 hover:text-blue-600 transition" />
+                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-600 animate-ping"></span>
+                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-600"></span>
+              </button>
+
+              {/* Settings Button */}
+              <button
+                className="text-gray-700 hover:text-blue-600 transition"
+                onClick={() => alert('Theme switch coming soon')}
+              >
+                <Settings className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Filter Section */}
+          <div className="px-3 mt-4 flex justify-end">
             <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
               <div className="flex flex-col">
                 <label className="text-sm font-semibold text-gray-700 mb-2">Cargo Type</label>
@@ -172,6 +151,7 @@ const [showNotif, setShowNotif] = useState(false);
           </div>
         </div>
 
+        {/* Main Grid */}
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredData.map((berth, index) => (
@@ -191,6 +171,7 @@ const [showNotif, setShowNotif] = useState(false);
           <div className="mt-8">
             <CargoStats berthData={berthData} />
           </div>
+
           <ShipListModal
             berth={selectedBerth}
             isOpen={showShipListModal}
@@ -200,17 +181,17 @@ const [showNotif, setShowNotif] = useState(false);
             }}
             onClose={closeModals}
           />
+
           <ShipDetailsModal
             ship={selectedShip}
             isOpen={showShipDetailModal}
             onClose={() => setShowShipDetailModal(false)}
           />
-        
-<DashboardNotificationModal
-  show={showNotif}
-  onClose={() => setShowNotif(false)}
-/>
 
+          <DashboardNotificationSidebar
+            show={showNotif}
+            onClose={() => setShowNotif(false)}
+          />
         </div>
       </main>
     </div>
