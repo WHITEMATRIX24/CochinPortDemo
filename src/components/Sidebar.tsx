@@ -42,20 +42,19 @@ const menuItems = [
   { label: 'User Management', icon: <FiUsers />, href: '#' },
   { label: 'Port Schedule', icon: <FiCalendar />, href: '#' },
 
-  // 🔽 New Menu Added Here
-  /* {
-    label: 'Payment History',
+   {
+    label: 'Payment Management',
     icon: <FiFileText />,
     children: [
-      { label: 'Berth Payment History', icon: <FiFileText />, href: '/berth-payment-history' },
+      { label: 'Payment History', icon: <FiFileText />, href: '/berth-payment-history' },
     ],
-  }, */
-{
+  }, 
+/* {
     label: 'Payment History',
     icon: <FiFileText />,
     href: '/berth-payment-history' 
     
-  },
+  }, */
   { label: 'Reports & Analytics', icon: <FiBarChart2 />, href: '#' },
   { label: 'Live Shipping Tracking', icon: <FiMapPin />, href: '|#' },
 ];
