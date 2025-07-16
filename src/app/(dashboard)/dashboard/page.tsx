@@ -4,7 +4,7 @@ import { Bell, Settings } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Card from '@/components/BerthTrackerCard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CargoStats from '@/components/CargoStats';
 import ShipListModal from '@/components/ShipListModal';
 import ShipDetailsModal from '@/components/ShipDetailsModal';
@@ -30,25 +30,46 @@ export default function HomePage() {
   const [showShipListModal, setShowShipListModal] = useState(false);
   const [showShipDetailModal, setShowShipDetailModal] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null; // Avoid hydration mismatch
   const countries = ['All', ...new Set(berthData.map((item) => item.country))];
 
   function normalizeDate(date: Date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
-  const filteredData = berthData.filter((item) => {
-    const cargoMatch = filter === 'All' || item.cargoType === filter;
-    const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
-    const arrivalDate = normalizeDate(new Date(item.arrivalDate));
-    const departureDate = normalizeDate(new Date(item.departureDate));
-    const start = startDate ? normalizeDate(startDate) : null;
-    const end = endDate ? normalizeDate(endDate) : null;
-    const dateMatch =
-      (!start || arrivalDate >= start) &&
-      (!end || departureDate <= end);
-    return cargoMatch && countryMatch && dateMatch;
-  });
+const isFilteringActive = 
+  filter !== 'All' || 
+  selectedCountry !== 'All' || 
+  startDate !== null || 
+  endDate !== null;
+
+const filteredData = berthData.filter((item) => {
+  const isCurrentlyDocked = item.shipDetails?.some((ship) => ship.isCurrent);
+
+  // 🟡 If filtering is active, show only currently docked berths
+  if (isFilteringActive && !isCurrentlyDocked) return false;
+
+  const cargoMatch = filter === 'All' || item.cargoType === filter;
+  const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
+
+  const arrivalDate = normalizeDate(new Date(item.arrivalDate));
+  const departureDate = normalizeDate(new Date(item.departureDate));
+  const start = startDate ? normalizeDate(startDate) : null;
+  const end = endDate ? normalizeDate(endDate) : null;
+  const dateMatch =
+    (!start || arrivalDate >= start) &&
+    (!end || departureDate <= end);
+
+  return cargoMatch && countryMatch && dateMatch;
+});
+
+
 
   const handleBerthClick = (berth: Berth) => {
     setSelectedBerth(berth);

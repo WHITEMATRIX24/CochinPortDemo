@@ -102,25 +102,37 @@ export default function BerthAvailability({ data }: Props) {
       </div>
 
       {/* Summary Section */}
-      <div className="bg-gradient-to-br from-green-50 to-green-100 border border-blue-200 rounded-2xl shadow-xl p-6 max-w-xl mx-auto">
-        <h2 className="text-2xl font-extrabold text-blue-900 mb-4">🧭 Port Summary</h2>
-        <div className="space-y-4 text-gray-700 text-base">
-          <div className="flex justify-between">
-            <span className="font-medium">Average TRT</span>
-            <span className="font-semibold text-blue-900">{avgTRT.toFixed(2)} hrs</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Total Vessels Arrived</span>
-            <span className="font-semibold text-blue-900">{totalVessels}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium">Total Tonnage (GRT)</span>
-            <span className="font-semibold text-blue-900">
-              {totalTonnage.toLocaleString()} T
-            </span>
-          </div>
-        </div>
-      </div>
+    
+<div className="relative bg-white pl-24 pr-6 py-6 rounded-2xl shadow-xl overflow-hidden">
+  {/* Rotated Heading */}
+  <div className="absolute top-4/4 left-4 transform -translate-y-1/2 -rotate-90 origin-left text-blue-900 text-sm font-bold tracking-widest whitespace-nowrap">
+    🧭 Port Summary
+  </div>
+
+  {/* Summary Grid */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8 text-[15px] text-gray-800">
+    <div className="flex justify-between items-center text-white px-4 py-2 rounded-lg shadow-sm" style={{backgroundColor:'#007b94ff'}}>
+      <span className="font-medium">Average TRT</span>
+      <span className="font-semibold ">{avgTRT.toFixed(2)} hrs</span>
+    </div>
+    <div className="flex justify-between items-center text-white bg-gray-50 px-4 py-2 rounded-lg shadow-sm" style={{backgroundColor:'#007b94ff'}}>
+      <span className="font-medium">Total Vessels Arrived</span>
+      <span className="font-semibold ">{totalVessels}</span>
+    </div>
+    <div className="flex justify-between items-center text-white bg-gray-50 px-4 py-2 rounded-lg shadow-sm" style={{backgroundColor:'#007b94ff'}}>
+      <span className="font-medium">Total Tonnage (GRT)</span>
+      <span className="font-semibold ">{totalTonnage.toLocaleString()} T</span>
+    </div>
+    <div className="flex justify-between items-center text-white bg-gray-50 px-4 py-2 rounded-lg shadow-sm"style={{backgroundColor:'#007b94ff'}}>
+      <span className="font-medium">Occupied Berths</span>
+      <span className="font-semibold ">
+        {allBerths.filter((b) => b.occupied).length}
+      </span>
+    </div>
+  </div>
+</div>
+
+
 
       {/* Ship Details Modal */}
       {showModal && selectedBerth && (

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
+import { useRouter } from 'next/navigation';
 import {
   FiLogOut,
   FiMenu,
@@ -19,53 +19,67 @@ import {
   FiCalendar,
   FiArchive,
   FiMapPin,
+  FiActivity 
+
 } from 'react-icons/fi';
 export default function Sidebar() {
   const pathname = usePathname();
-const [isMounted, setIsMounted] = useState(false);
-useEffect(() => {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
     setIsMounted(true);
   }, []);
-const menuItems = [
-  {
-    label: 'Dashboard',
-    icon: <FiGrid />,
-    children: [
-      { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
-      { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
-      { label: 'Notification', icon: <FiFolder />, href: '#' },
-    ],
-  },
-  { label: 'Ship Management', icon: <FiBox />, href: '#' },
-  { label: 'Berth Management', icon: <FiMap />, href: '/berth-management' },
-  { label: 'Cargo Management', icon: <FiArchive />, href: '#' },
-  { label: 'User Management', icon: <FiUsers />, href: '#' },
-  { label: 'Port Schedule', icon: <FiCalendar />, href: '#' },
+  const menuItems = [
+    {
+      label: 'Dashboard',
+      icon: <FiGrid />,
+      children: [
+        { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
+        { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
+        { label: 'Notification', icon: <FiFolder />, href: '#' },
+      ],
+    },
+    { label: 'Ship Management', icon: <FiBox />, 
+      children: [
+        { label: 'Ship Visit Tracker', icon: <FiActivity/>, href: '/ship-visit-history' },
+      ], },
+    { label: 'Berth Management', icon: <FiMap />, href: '/berth-management' },
+    { label: 'Cargo Management', icon: <FiArchive />, href: '#' },
+    { label: 'User Management', icon: <FiUsers />, href: '#' },
+    { label: 'Port Schedule', icon: <FiCalendar />, href: '#' },
 
-   {
-    label: 'Payment Management',
-    icon: <FiFileText />,
-    children: [
-      { label: 'Payment History', icon: <FiFileText />, href: '/berth-payment-history' },
-    ],
-  }, 
-/* {
-    label: 'Payment History',
-    icon: <FiFileText />,
-    href: '/berth-payment-history' 
-    
-  }, */
-  { label: 'Reports & Analytics', icon: <FiBarChart2 />, href: '#' },
-  { label: 'Live Shipping Tracking', icon: <FiMapPin />, href: '|#' },
-];
+    {
+      label: 'Payment Management',
+      icon: <FiFileText />,
+      children: [
+        { label: 'Payment History', icon: <FiFileText />, href: '/berth-payment-history' },
+      ],
+    },
+    /* {
+        label: 'Payment History',
+        icon: <FiFileText />,
+        href: '/berth-payment-history' 
+        
+      }, */
+    { label: 'Reports & Analytics', icon: <FiBarChart2 />, href: '#' },
+    { label: 'Live Shipping Tracking', icon: <FiMapPin />, href: '|#' },
+  ];
 
   const [expandedMenu, setExpandedMenu] = useState<string | null>('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
+const handleLogout = () => {
+    console.log('Logging out...');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userEmail');
+    if (window.innerWidth < 768) setSidebarOpen(false);
+    window.location.href = '/login'; // or useRouter().push('/login')
+  };
+
 
   const toggleMenu = (label: string) => {
     setExpandedMenu(expandedMenu === label ? null : label);
   };
-if (!isMounted) return null;
+  if (!isMounted) return null;
   return (
     <div className="flex">
       {/* Hamburger for small screens */}
@@ -76,9 +90,8 @@ if (!isMounted) return null;
       </div>
 
       <aside
-        className={`${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        } transform transition-transform duration-300 ease-in-out 
+        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          } transform transition-transform duration-300 ease-in-out 
         fixed md:static z-40 top-0 left-0 h-full w-68 
         bg-gradient-to-b from-[#014F86] via-[#006494] to-[#003049] 
         text-white shadow-xl md:flex flex-col justify-between py-6 px-4`}
@@ -115,9 +128,8 @@ if (!isMounted) return null;
                     <Link
                       href={item.href}
                       onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-white/20 transition-all ${
-                        pathname === item.href ? 'bg-white/20 font-bold shadow' : ''
-                      }`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-white/20 transition-all ${pathname === item.href ? 'bg-white/20 font-bold shadow' : ''
+                        }`}
                     >
                       {item.icon}
                       {item.label}
@@ -140,11 +152,10 @@ if (!isMounted) return null;
                           key={sub.label}
                           href={sub.href || '#'}
                           onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
-                          className={`flex items-center gap-2 w-full text-left px-2 py-1 rounded transition-all ${
-                            pathname === sub.href
+                          className={`flex items-center gap-2 w-full text-left px-2 py-1 rounded transition-all ${pathname === sub.href
                               ? 'bg-white/20 text-white font-semibold shadow'
                               : 'hover:bg-white/10 text-white'
-                          }`}
+                            }`}
                         >
                           {sub.icon}
                           {sub.label}
@@ -172,10 +183,7 @@ if (!isMounted) return null;
           <hr className="border-white/30 mb-8" />
           <div className="flex justify-center">
             <button
-              onClick={() => {
-                console.log('Logging out...');
-                if (window.innerWidth < 768) setSidebarOpen(false);
-              }}
+              onClick={handleLogout}
               className="flex items-center gap-5 hover:text-yellow-300 transition-colors text-lg"
             >
               <FiLogOut />

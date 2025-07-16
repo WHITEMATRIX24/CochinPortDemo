@@ -1,10 +1,11 @@
 'use client';
 
-import { Ship, Droplet, Mountain, Ban } from 'lucide-react';
+import { Ship, Droplet, Mountain, Ban, Boxes } from 'lucide-react';
 
 type Props = {
   berthData: {
     cargoType: string;
+    shipDetails?: { cargoType: string; isCurrent?: boolean }[];
   }[];
 };
 
@@ -12,6 +13,7 @@ const statsMeta = [
   { label: 'Containerised', Icon: Ship },
   { label: 'Liquid Bulk', Icon: Droplet },
   { label: 'Dry Bulk Mechanical', Icon: Mountain },
+  { label: 'Break Bulk', Icon: Boxes },
   { label: 'Non Cargo', Icon: Ban },
 ];
 
@@ -19,7 +21,13 @@ export default function CargoStats({ berthData }: Props) {
   return (
     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-50 bg-white border-x border-t border-gray-300 shadow-md rounded-t-xl px-10 py-3 flex gap-12 items-center">
       {statsMeta.map(({ label, Icon }) => {
-        const count = berthData.filter(b => b.cargoType === label).length;
+        const count = berthData.reduce((acc, b) => {
+          const isDocked = b.shipDetails?.some(
+            ship => ship.isCurrent && ship.cargoType === label
+          );
+          return acc + (isDocked ? 1 : 0);
+        }, 0);
+
         return (
           <div
             key={label}
