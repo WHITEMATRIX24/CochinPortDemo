@@ -49,7 +49,7 @@ const currentShip = berth.shipDetails.find((ship) => {
             onClick={() => onSelectShip(currentShip)}
             className="cursor-pointer border border-green-400 bg-green-50 p-4 rounded-md shadow hover:shadow-md"
           >
-            <div className="text-lg font-bold text-green-800">{currentShip.name}</div>
+            <div className="text-lg font-bold text-green-800">{currentShip.id}</div>
             <div className="text-sm text-gray-600 mb-2">
               {currentShip.arrivalDate} → {currentShip.departureDate}
             </div>
