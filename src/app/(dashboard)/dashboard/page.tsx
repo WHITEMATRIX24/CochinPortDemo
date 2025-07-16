@@ -1,11 +1,15 @@
 'use client';
-
+import { Bell, Settings } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import Card from '@/components/BerthTrackerCard';
 import { useState } from 'react';
 import CargoStats from '@/components/CargoStats';
 import ShipListModal from '@/components/ShipListModal';
 import ShipDetailsModal from '@/components/ShipDetailsModal';
-import { ShipDetails, Berth,berthData } from '@/data/MockDashboardData';
+import { ShipDetails, Berth, berthData } from '@/data/MockDashboardData';
+import DashboardNotificationModal from '@/components/DashboardNotificationModal';
+
 const cargoTypes = [
   'All',
   'Containerised',
@@ -15,26 +19,57 @@ const cargoTypes = [
   'Break Bulk'
 ];
 
+
+// Dummy notification data
+const notifications = [
+  {
+    id: '1',
+    title: 'Ship Arrival',
+    message: 'MV Kochi Express has arrived at Berth B3.',
+    time: '10 mins ago',
+  },
+  {
+    id: '2',
+    title: 'Departure Notice',
+    message: 'Sydney Tanker has left LNG Berth.',
+    time: '30 mins ago',
+  },
+  {
+    id: '3',
+    title: 'Delay Alert',
+    message: 'Unloading at Berth C1 delayed due to weather.',
+    time: '1 hour ago',
+  },
+];
+
+
 export default function HomePage() {
   const [filter, setFilter] = useState<string>('All');
   const [selectedCountry, setSelectedCountry] = useState<string>('All');
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectedBerth, setSelectedBerth] = useState<Berth | null>(null);
   const [selectedShip, setSelectedShip] = useState<ShipDetails | null>(null);
   const [showShipListModal, setShowShipListModal] = useState(false);
   const [showShipDetailModal, setShowShipDetailModal] = useState(false);
-
   const countries = ['All', ...new Set(berthData.map(item => item.country))];
+  function normalizeDate(date: Date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+  const filteredData = berthData.filter((item) => {
+  const cargoMatch = filter === 'All' || item.cargoType === filter;
+  const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
+  const arrivalDate = normalizeDate(new Date(item.arrivalDate));
+  const departureDate = normalizeDate(new Date(item.departureDate));
+  const start = startDate ? normalizeDate(startDate) : null;
+  const end = endDate ? normalizeDate(endDate) : null;
+  const dateMatch =
+      (!start || arrivalDate >= start) &&
+      (!end || departureDate <= end);
 
-  const filteredData = berthData.filter(item => {
-    const cargoMatch = filter === 'All' || item.cargoType === filter;
-    const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
-    const arrival = item.arrivalDate;
-    const departure = item.departureDate;
-    const dateMatch = (!startDate || arrival >= startDate) && (!endDate || departure <= endDate);
     return cargoMatch && countryMatch && dateMatch;
   });
+const [showNotif, setShowNotif] = useState(false);
 
   const handleBerthClick = (berth: Berth) => {
     setSelectedBerth(berth);
@@ -52,11 +87,32 @@ export default function HomePage() {
     <div className="relative h-screen bg-gray-100">
       <main className="flex flex-col h-full">
         <div className="flex-shrink-0 p-4">
-          <div className="mb-4 p-2">
-            <h5 className="text-2xl font-bold text-[#003049]">
-              Welcome, <span className="text-[#8B0000]">John Doe</span>
-            </h5>
-          </div>
+   <div className="mb-4 p-2 flex items-center justify-between">
+  <h5 className="text-2xl font-bold text-[#003049]">
+    Welcome, <span className="text-[#8B0000]">John Doe</span>
+  </h5>
+
+  <div className="flex items-center gap-4 mr-2"> {/* <-- moved slightly left */}
+    {/* Notification Bell */}
+
+    <button className="relative" onClick={() => setShowNotif(true)}>
+      <Bell className="w-6 h-6 text-gray-700 hover:text-blue-600 transition" />
+      <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-600 animate-ping"></span>
+      <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-600"></span>
+    
+    </button>
+   
+
+    {/* Settings (Theme Toggle Placeholder) */}
+    <button
+      className="text-gray-700 hover:text-blue-600 transition"
+      onClick={() => alert('Theme switch coming soon')}
+    >
+      <Settings className="w-6 h-6" />
+    </button>
+  </div>
+</div>
+
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-3">
             <div className="text-sm text-gray-500">
@@ -89,23 +145,27 @@ export default function HomePage() {
                 </select>
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full max-w-xs">
                 <label className="text-sm font-semibold text-gray-700 mb-2">Start Date</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-gray-900"
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date: Date | null) => setStartDate(date)}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  isClearable
+                  className="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-gray-900 w-full"
                 />
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full max-w-xs">
                 <label className="text-sm font-semibold text-gray-700 mb-2">End Date</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-gray-900"
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date: Date | null) => setEndDate(date)}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  isClearable
+                  className="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-gray-900 w-full"
                 />
               </div>
             </div>
@@ -118,7 +178,7 @@ export default function HomePage() {
               <Card
                 key={index}
                 imageSrc={berth.imageSrc}
-                 currentShipId={berth.shipDetails.find(s => s.isCurrent)?.id}
+                currentShipId={berth.shipDetails.find(s => s.isCurrent)?.id}
                 berthNumber={berth.berthNumber}
                 countryFlag={berth.countryFlag}
                 arrivalDate={berth.arrivalDate}
@@ -131,7 +191,6 @@ export default function HomePage() {
           <div className="mt-8">
             <CargoStats berthData={berthData} />
           </div>
-
           <ShipListModal
             berth={selectedBerth}
             isOpen={showShipListModal}
@@ -141,12 +200,17 @@ export default function HomePage() {
             }}
             onClose={closeModals}
           />
-
           <ShipDetailsModal
             ship={selectedShip}
             isOpen={showShipDetailModal}
             onClose={() => setShowShipDetailModal(false)}
           />
+        
+<DashboardNotificationModal
+  show={showNotif}
+  onClose={() => setShowNotif(false)}
+/>
+
         </div>
       </main>
     </div>

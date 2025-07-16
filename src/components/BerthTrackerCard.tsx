@@ -67,7 +67,7 @@ export default function BerthTrackerCard({
         className={`font-medium truncate mb-2 text-sm ${currentShipId ? "text-gray-800" : "text-red-600"
           }`}
       >
-        {currentShipId ? currentShipId : "No Ship found"}
+        {currentShipId ? currentShipId : "Berth is available"}
       </p>
 
 

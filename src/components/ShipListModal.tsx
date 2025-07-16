@@ -17,13 +17,17 @@ export default function ShipListModal({ berth, isOpen, onSelectShip, onClose }: 
 
   if (!isOpen || !berth || !Array.isArray(berth.shipDetails)) return null;
 
-  const today = new Date();
+ const today = new Date();
+today.setHours(0, 0, 0, 0); // normalize
 
-  const currentShip = berth.shipDetails.find((ship) => {
-    const arrival = new Date(ship.arrivalDate);
-    const departure = new Date(ship.departureDate);
-    return arrival <= today && today <= departure;
-  });
+const currentShip = berth.shipDetails.find((ship) => {
+  const arrival = new Date(ship.arrivalDate);
+  const departure = new Date(ship.departureDate);
+  arrival.setHours(0, 0, 0, 0);
+  departure.setHours(0, 0, 0, 0);
+  return arrival <= today && today <= departure;
+});
+
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
@@ -39,7 +43,7 @@ export default function ShipListModal({ berth, isOpen, onSelectShip, onClose }: 
         <h2 className="text-xl font-bold mb-4">Current Ship at {berth.berthNumber}</h2>
 
         {!currentShip ? (
-          <p className="text-gray-500 text-sm">No ship is currently docked at this berth.</p>
+          <p className="text-red-500 text-sm">No ship is currently docked at this berth.</p>
         ) : (
           <div
             onClick={() => onSelectShip(currentShip)}
@@ -63,9 +67,7 @@ export default function ShipListModal({ berth, isOpen, onSelectShip, onClose }: 
         {/* Navigation Button to Full History */}
 
 
-        <div className="mt-6 text-right">
-
-          <div className="mt-8 flex justify-end">
+        <div className="mt-8 flex justify-end">
             <Link
               href={`/ship-history?berthNumber=${berth.berthNumber}`}
               className="inline-flex items-center gap-2 text-white font-medium text-sm px-4 py-2 rounded-md transition duration-300 shadow-sm hover:opacity-90"
@@ -75,7 +77,6 @@ export default function ShipListModal({ berth, isOpen, onSelectShip, onClose }: 
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-        </div>
 
 
 

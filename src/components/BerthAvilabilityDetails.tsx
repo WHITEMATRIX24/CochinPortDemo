@@ -100,7 +100,7 @@ export default function BerthAvailability({ data }: Props) {
       </div>
 
       {/* Summary Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl shadow-xl p-6 max-w-xl mx-auto">
+      <div className="bg-gradient-to-br from-green-50 to-green-100 border border-blue-200 rounded-2xl shadow-xl p-6 max-w-xl mx-auto">
         <h2 className="text-2xl font-extrabold text-blue-900 mb-4">🧭 Port Summary</h2>
         <div className="space-y-4 text-gray-700 text-base">
           <div className="flex justify-between">
@@ -153,7 +153,7 @@ export default function BerthAvailability({ data }: Props) {
               <div className="pt-4 flex justify-end">
                 <button
                   onClick={handleCloseModal}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                  className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                 >
                   Close
                 </button>
