@@ -15,7 +15,7 @@ import {
 import { Chart } from 'react-chartjs-2'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import 'chartjs-adapter-date-fns'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 
 ChartJS.register(
   TimeScale,
@@ -151,127 +151,158 @@ export default function SwimlaneChart() {
   const defaultStart = defaultCenterDate.getTime()
   const defaultEnd = new Date(defaultStart + 24 * 60 * 60 * 1000).getTime()
 
-  const options: ChartOptions<'line'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'hour',
-          displayFormats: {
-            hour: 'MMM d, HH:mm',
-          },
-        },
-        min: startDate.getTime(),
-        max: endDate.getTime(),
-        title: {
-          display: true,
-          text: 'Time',
-        },
-        ticks: {
-          source: 'auto',
-        },
-        grid: {
-          display: true,
-          color: '#e0e0e0',
+  const options = useMemo((): ChartOptions<'line'> => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      type: 'time',
+      time: {
+        unit: 'hour',
+        displayFormats: {
+          hour: 'MMM d, HH:mm',
         },
       },
-      y: {
-        type: 'category',
-        offset: true,
-        title: {
-          display: true,
-          text: 'Ship (Berth)',
+      min: startDate.getTime(),
+      max: endDate.getTime(),
+      title: {
+        display: true,
+        text: 'Time',
+      },
+      ticks: {
+        source: 'auto',
+        autoSkip: false,
+        maxRotation: 0,
+        minRotation: 0,
+        callback: function (value, index, ticks) {
+          const current = new Date(value as number);
+          const prev = index > 0 ? new Date(ticks[index - 1].value) : null;
+
+          const currentDateKey = `${current.getFullYear()}-${current.getMonth()}-${current.getDate()}`;
+          const prevDateKey = prev ? `${prev.getFullYear()}-${prev.getMonth()}-${prev.getDate()}` : null;
+
+          const isNewDay = !prev || currentDateKey !== prevDateKey;
+
+          if (isNewDay) {
+            return current.toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            });
+          }
+
+          return current.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          });
         },
-        ticks: {
-          padding: 10,
-        },
+      },
+      grid: {
+        display: true,
+        color: '#e0e0e0',
       },
     },
-    plugins: {
-      legend: {
-        display: false,
+    y: {
+      type: 'category',
+      offset: true,
+      title: {
+        display: true,
+        text: 'Ship (Berth)',
       },
-      tooltip: {
-        backgroundColor: '#ffffff',
-        titleColor: '#111827',
-        bodyColor: '#374151',
-        borderColor: '#d1d5db',
-        borderWidth: 1,
-        titleFont: { weight: 'bold', size: 16 },
-        bodyFont: { size: 13 },
-        bodySpacing: 8,
+      ticks: {
         padding: 10,
-        cornerRadius: 6,
-        displayColors: false,
-        callbacks: {
-          title: (tooltipItems) => {
-            const dataset = tooltipItems[0].dataset as any
-            const shipLabel = dataset.shipLabel || tooltipItems[0].label || 'Unknown Ship'
-            return shipLabel
-          },
-
-          label: (context) => {
-            const label = context.dataset.label || ''
-            const rawData = context.dataset.data as unknown
-
-            if (!Array.isArray(rawData)) return label
-
-            const data = rawData as { x: number; y: string }[]
-            if (data.length < 2) return label
-
-            const startTime = new Date(data[0].x)
-            const endTime = new Date(data[1].x)
-
-            const durationMs = endTime.getTime() - startTime.getTime()
-            const hours = Math.floor(durationMs / (1000 * 60 * 60))
-            const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
-            const durationStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
-
-            return `${label} duration: ${durationStr}`
-          },
-
-          // ✅ Add Hovered Time once
-          afterBody: (tooltipItems) => {
-            const hoveredTime = new Date(tooltipItems[0].parsed.x)
-            const hoveredTimeStr = hoveredTime.toLocaleString('en-IN', {
-              dateStyle: 'medium',
-              timeStyle: 'short',
-              hour12: false, // ✅ Use 24-hour format
-            })
-            return `Time: ${hoveredTimeStr}`
-          },
-
-        },
-
       },
-
-
-
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: 'x',
+    },
+  },
+  plugins: {
+    legend: {
+      display: true,
+      position: 'top',
+      labels: {
+        usePointStyle: true,
+        boxWidth: 10,
+        boxHeight: 10,
+        font: {
+          size: 12,
         },
-        zoom: {
-          wheel: {
-            enabled: true,
-          },
-          pinch: {
-            enabled: true,
-          },
-          mode: 'x',
-        },
-        limits: {
-          x: {
-            min: chartMinLimit,
-            max: chartMaxLimit,
-          },
+        padding: 15,
+        filter: (legendItem, data) => {
+          return data.datasets.findIndex(
+            (d) => d.label === legendItem.text
+          ) === legendItem.datasetIndex;
         },
       },
     },
-  }
+    tooltip: {
+      backgroundColor: '#ffffff',
+      titleColor: '#111827',
+      bodyColor: '#374151',
+      borderColor: '#d1d5db',
+      borderWidth: 1,
+      titleFont: { weight: 'bold', size: 16 },
+      bodyFont: { size: 13 },
+      bodySpacing: 8,
+      padding: 10,
+      cornerRadius: 6,
+      displayColors: false,
+      callbacks: {
+        title: (tooltipItems) => {
+          const dataset = tooltipItems[0].dataset as any;
+          const shipLabel = dataset.shipLabel || tooltipItems[0].label || 'Unknown Ship';
+          return shipLabel;
+        },
+        label: (context) => {
+          const label = context.dataset.label || '';
+          const rawData = context.dataset.data as unknown;
+          if (!Array.isArray(rawData)) return label;
+          const data = rawData as { x: number; y: string }[];
+          if (data.length < 2) return label;
+          const startTime = new Date(data[0].x);
+          const endTime = new Date(data[1].x);
+          const durationMs = endTime.getTime() - startTime.getTime();
+          const hours = Math.floor(durationMs / (1000 * 60 * 60));
+          const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+          const durationStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+          return `${label} duration: ${durationStr}`;
+        },
+        afterBody: (tooltipItems) => {
+          const hoveredTime = new Date(tooltipItems[0].parsed.x);
+          const hoveredTimeStr = hoveredTime.toLocaleString('en-IN', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+            hour12: false,
+          });
+          return `Time: ${hoveredTimeStr}`;
+        },
+      },
+    },
+    zoom: {
+      pan: {
+        enabled: true,
+        mode: 'x',
+      },
+      zoom: {
+        wheel: {
+          enabled: true,
+        },
+        pinch: {
+          enabled: true,
+        },
+        mode: 'x',
+      },
+      limits: {
+        x: {
+          min: chartMinLimit,
+          max: chartMaxLimit,
+        },
+      },
+    },
+  },
+}), [startDate, endDate, chartMinLimit, chartMaxLimit]);
+
 
   useEffect(() => {
     if (chartRef.current) {
@@ -352,8 +383,8 @@ export default function SwimlaneChart() {
 
 
       {/* Chart with vertical scroll */}
-      <div className="w-full" style={{ height: 'calc(100vh - 300px)' }}>
-        <div className="w-full h-full overflow-y-auto overflow-x-hidden pr-2">
+      <div className="w-full shadow " style={{ height: 'calc(100vh - 300px)' }}>
+        <div className="w-full p-3 h-full overflow-y-auto overflow-x-hidden pr-2">
           <Chart ref={chartRef} type="line" data={data} options={options} />
         </div>
       </div>
