@@ -19,7 +19,7 @@ import {
   FiCalendar,
   FiArchive,
   FiMapPin,
-  FiActivity 
+  FiActivity
 
 } from 'react-icons/fi';
 export default function Sidebar() {
@@ -35,13 +35,16 @@ export default function Sidebar() {
       children: [
         { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
         { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
+        { label: 'TRT Dashboard', icon: <FiFileText />, href: '/TRT-dashboard' },
         { label: 'Notification', icon: <FiFolder />, href: '#' },
       ],
     },
-    { label: 'Ship Management', icon: <FiBox />, 
+    {
+      label: 'Ship Management', icon: <FiBox />,
       children: [
-        { label: 'Ship Visit Tracker', icon: <FiActivity/>, href: '/ship-visit-history' },
-      ], },
+        { label: 'Ship Visit Tracker', icon: <FiActivity />, href: '/ship-visit-history' },
+      ],
+    },
     { label: 'Berth Management', icon: <FiMap />, href: '/berth-management' },
     { label: 'Cargo Management', icon: <FiArchive />, href: '#' },
     { label: 'User Management', icon: <FiUsers />, href: '#' },
@@ -67,12 +70,14 @@ export default function Sidebar() {
   const [expandedMenu, setExpandedMenu] = useState<string | null>('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
-const handleLogout = () => {
+  const handleLogout = () => {
     console.log('Logging out...');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userEmail');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('existingUser');
+    sessionStorage.removeItem('isLoggedIn');
+    // localStorage.removeItem('userEmail');
     if (window.innerWidth < 768) setSidebarOpen(false);
-    window.location.href = '/login'; // or useRouter().push('/login')
+    window.location.href = '/login'; 
   };
 
 
@@ -153,8 +158,8 @@ const handleLogout = () => {
                           href={sub.href || '#'}
                           onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
                           className={`flex items-center gap-2 w-full text-left px-2 py-1 rounded transition-all ${pathname === sub.href
-                              ? 'bg-white/20 text-white font-semibold shadow'
-                              : 'hover:bg-white/10 text-white'
+                            ? 'bg-white/20 text-white font-semibold shadow'
+                            : 'hover:bg-white/10 text-white'
                             }`}
                         >
                           {sub.icon}

@@ -7,10 +7,10 @@ import Card from '@/components/BerthTrackerCard';
 import { useEffect, useState } from 'react';
 import CargoStats from '@/components/CargoStats';
 import ShipListModal from '@/components/ShipListModal';
-import ShipDetailsModal from '@/components/ShipDetailsModal';
+
 import { ShipDetails, Berth, berthData } from '@/data/MockDashboardData';
 import DashboardNotificationSidebar from '@/components/DashboardNotificationSidebar';
-
+import { useRouter } from 'next/navigation';
 const cargoTypes = [
   'All',
   'Containerised',
@@ -21,6 +21,9 @@ const cargoTypes = [
 ];
 
 export default function HomePage() {
+  console.log('hai');
+
+  const router = useRouter();
   const [filter, setFilter] = useState<string>('All');
   const [selectedCountry, setSelectedCountry] = useState<string>('All');
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -30,46 +33,46 @@ export default function HomePage() {
   const [showShipListModal, setShowShipListModal] = useState(false);
   const [showShipDetailModal, setShowShipDetailModal] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    const token = sessionStorage.getItem('token');
+    console.log('Dashboard token check:', token);
+
+    if (!token) {
+      router.push('/login');
+    }
   }, []);
 
-  if (!isClient) return null; // Avoid hydration mismatch
   const countries = ['All', ...new Set(berthData.map((item) => item.country))];
 
   function normalizeDate(date: Date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
-const isFilteringActive = 
-  filter !== 'All' || 
-  selectedCountry !== 'All' || 
-  startDate !== null || 
-  endDate !== null;
+  const isFilteringActive =
+    filter !== 'All' ||
+    selectedCountry !== 'All' ||
+    startDate !== null ||
+    endDate !== null;
 
-const filteredData = berthData.filter((item) => {
-  const isCurrentlyDocked = item.shipDetails?.some((ship) => ship.isCurrent);
+  const filteredData = berthData.filter((item) => {
+    const isCurrentlyDocked = item.shipDetails?.some((ship) => ship.isCurrent);
 
-  // 🟡 If filtering is active, show only currently docked berths
-  if (isFilteringActive && !isCurrentlyDocked) return false;
+    // 🟡 If filtering is active, show only currently docked berths
+    if (isFilteringActive && !isCurrentlyDocked) return false;
+    const cargoMatch = filter === 'All' || item.cargoType === filter;
+    const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
 
-  const cargoMatch = filter === 'All' || item.cargoType === filter;
-  const countryMatch = selectedCountry === 'All' || item.country === selectedCountry;
+    const arrivalDate = normalizeDate(new Date(item.arrivalDate));
+    const departureDate = normalizeDate(new Date(item.departureDate));
+    const start = startDate ? normalizeDate(startDate) : null;
+    const end = endDate ? normalizeDate(endDate) : null;
+    const dateMatch =
+      (!start || arrivalDate >= start) &&
+      (!end || departureDate <= end);
 
-  const arrivalDate = normalizeDate(new Date(item.arrivalDate));
-  const departureDate = normalizeDate(new Date(item.departureDate));
-  const start = startDate ? normalizeDate(startDate) : null;
-  const end = endDate ? normalizeDate(endDate) : null;
-  const dateMatch =
-    (!start || arrivalDate >= start) &&
-    (!end || departureDate <= end);
-
-  return cargoMatch && countryMatch && dateMatch;
-});
-
-
+    return cargoMatch && countryMatch && dateMatch;
+  });
 
   const handleBerthClick = (berth: Berth) => {
     setSelectedBerth(berth);
@@ -78,13 +81,12 @@ const filteredData = berthData.filter((item) => {
 
   const closeModals = () => {
     setShowShipListModal(false);
-    setShowShipDetailModal(false);
     setSelectedShip(null);
     setSelectedBerth(null);
   };
 
   return (
-    <div className="relative h-screen bg-gray-100">
+    <div className="relative h-screen bg-gray-100 ">
       <main className="flex flex-col h-full">
         {/* Header Section */}
         <div className="flex-shrink-0 p-4">
@@ -113,6 +115,7 @@ const filteredData = berthData.filter((item) => {
               >
                 <Settings className="w-6 h-6" />
               </button>
+              {/* <ThemeToggle/> */}
             </div>
           </div>
 
@@ -201,12 +204,6 @@ const filteredData = berthData.filter((item) => {
               setShowShipDetailModal(true);
             }}
             onClose={closeModals}
-          />
-
-          <ShipDetailsModal
-            ship={selectedShip}
-            isOpen={showShipDetailModal}
-            onClose={() => setShowShipDetailModal(false)}
           />
 
           <DashboardNotificationSidebar

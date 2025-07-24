@@ -97,8 +97,8 @@ export default function ShipVisitTracker() {
 
       <div className="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-lg  h-[80vh] ">
         <div className="flex items-center gap-3 mb-6">
-          <FaShip className="text-blue-700 text-3xl" />
-          <h2 className="text-2xl font-bold text-blue-900">Ship Visit History</h2>
+          <FaShip className="text-[#003049] text-3xl" />
+          <h2 className="text-2xl font-bold text-[#003049]">Ship Visit History</h2>
         </div>
 
         {/* Input Fields */}

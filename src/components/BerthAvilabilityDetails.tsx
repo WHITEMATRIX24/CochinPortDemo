@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Berth } from '@/data/MockDashboardData'; // Update path as needed
-import { Ship, Droplet, Mountain, Ban } from 'lucide-react';
+import { Ship, Droplet, Mountain, Ban,Boxes } from 'lucide-react';
 
 type Props = {
   data: Berth[];
@@ -38,7 +38,7 @@ export default function BerthAvailability({ data }: Props) {
 
   return (
     <div className="min-h-screen px-6 py-10 bg-gray-50">
-      <h1 className="text-2xl font-bold text-blue-900 mb-5">
+      <h1 className="text-2xl font-bold text-[#003049] mb-5">
         Berth Availability Chart
       </h1>
       <div className="text-sm text-gray-500 mb-4">
@@ -60,10 +60,12 @@ export default function BerthAvailability({ data }: Props) {
                   return Ship;
                 case 'Liquid Bulk':
                   return Droplet;
-                case 'Dry Bulk / Mechanical':
+                case 'Dry Bulk Mechanical':
                   return Mountain;
                 case 'Non Cargo':
                   return Ban;
+                case 'Break Bulk':
+                  return Boxes;
                 default:
                   return null;
               }
