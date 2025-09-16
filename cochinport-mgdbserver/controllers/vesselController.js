@@ -321,3 +321,61 @@ export const getAvgOutputPerShipBerthDay = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+export const getVesselsFormatted = async (req, res) => {
+  try {
+    let { startDate, endDate, VslID, page = 1, limit = 10 } = req.query;
+
+    const start = startDate ? new Date(startDate) : new Date("2020-01-01");
+    const end = endDate ? new Date(endDate) : new Date();
+
+    // Convert page/limit to numbers
+    page = parseInt(page, 10);
+    limit = limit === "all" ? 0 : parseInt(limit, 10); // support "all" rows
+
+    // Step 1: Filter vessels
+    const filter = {
+      ATA: { $gte: start, $lte: end },
+    };
+    if (VslID) filter.VslID = VslID;
+
+    // Step 2: Count total docs for pagination
+    const totalDocs = await vessels.countDocuments(filter);
+
+    // Step 3: Fetch vessels with pagination
+    let query = vessels.find(filter).sort({ ATA: -1 });
+    if (limit > 0) {
+      query = query.skip((page - 1) * limit).limit(limit);
+    }
+    const vesselDocs = await query;
+
+    // Step 4: Map to frontend format
+    const formatted = vesselDocs.map((v) => ({
+      vesselId: v.VslID,
+      name: v.VslID, // replace if you have vessel name
+      berthNumber: v.Berth,
+      arrivalDate: v.ATA ? v.ATA.toISOString().split("T")[0] : null,
+      departureDate: v.ATD ? v.ATD.toISOString().split("T")[0] : null,
+      cargoType: v.CargoType,
+      country: v.FlagCountry,
+      grossTonnage: v.GRT,
+      commodity: v.Commodity,
+      foreignCoastal: v.ForeignCoastal,
+    }));
+
+    res.json({
+      data: formatted,
+      pagination: {
+        totalDocs,
+        page,
+        limit: limit === 0 ? "all" : limit,
+        totalPages: limit === 0 ? 1 : Math.ceil(totalDocs / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching vessels:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+

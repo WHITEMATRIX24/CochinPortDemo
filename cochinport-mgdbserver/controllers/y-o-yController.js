@@ -23,8 +23,8 @@ export const getVesselYoYKPIs = async (req, res) => {
     const start2 = new Date(`${year2}-04-01T00:00:00Z`);
     const end2 = new Date(`${year2}-04-30T23:59:59Z`);
 
-    const vesselsYear1 = await vessels.find({ ATABerth: { $gte: start1, $lte: end1 } });
-    const vesselsYear2 = await vessels.find({ ATABerth: { $gte: start2, $lte: end2 } });
+    const vesselsYear1 = await vessels.find({ ATDUnberth: { $gte: start1, $lte: end1 } });
+    const vesselsYear2 = await vessels.find({ ATDUnberth: { $gte: start2, $lte: end2 } });
 
     // Core calculation function
     const calculateKPIs = (vessels) => {
@@ -261,6 +261,7 @@ export const getThroughputVariance = async (req, res) => {
 };
 
 
+//dashboard/yoy/turnaround trend
 
 export const getVesselTurnaroundTrendYoy = async (req, res) => {
   try {
@@ -490,6 +491,21 @@ export const getAvgOutputPerShipBerthDayYoy = async (req, res) => {
     const start = startDate ? new Date(startDate) : new Date("2020-01-01");
     const end = endDate ? new Date(endDate) : new Date();
 
+    // 🔹 Adjust $match differently for month vs year
+    let matchStage = {
+      ATABerth: { $gte: start, $lte: end },
+      ATDUnberth: { $ne: null },
+    };
+
+    if (mode === "year") {
+      const endYear = end.getFullYear();
+      const startYear = endYear - 4; // last 5 years
+      matchStage.ATABerth = {
+        $gte: new Date(startYear, 0, 1),
+        $lte: new Date(endYear, 11, 31, 23, 59, 59),
+      };
+    }
+
     const groupStage =
       mode === "year"
         ? {
@@ -509,12 +525,7 @@ export const getAvgOutputPerShipBerthDayYoy = async (req, res) => {
           };
 
     const pipeline = [
-      {
-        $match: {
-          ATABerth: { $gte: start, $lte: end },
-          ATDUnberth: { $ne: null },
-        },
-      },
+      { $match: matchStage },
       {
         $project: {
           MT: 1,
@@ -545,7 +556,6 @@ export const getAvgOutputPerShipBerthDayYoy = async (req, res) => {
       },
     ];
 
-    // ✅ Conditionally push sort stage
     if (mode === "month") {
       pipeline.push({ $sort: { year: 1, month: 1 } });
     } else {
@@ -563,12 +573,14 @@ export const getAvgOutputPerShipBerthDayYoy = async (req, res) => {
         allMonths.push(format(cur, "MMM-yy"));
         cur.setMonth(cur.getMonth() + 1);
       }
+
       const dataMap = new Map(
         stats.map((d) => [
           format(new Date(d.year, d.month - 1), "MMM-yy"),
           d,
         ])
       );
+
       const filled = allMonths.map((m) => {
         const entry = dataMap.get(m);
         return {
@@ -577,6 +589,7 @@ export const getAvgOutputPerShipBerthDayYoy = async (req, res) => {
           vesselCount: entry ? entry.vesselCount : 0,
         };
       });
+
       return res.json(filled);
     } else {
       // 🔹 Yearwise → always last 5 years from endDate
@@ -595,8 +608,6 @@ export const getAvgOutputPerShipBerthDayYoy = async (req, res) => {
           vesselCount: entry ? entry.vesselCount : 0,
         };
       });
-      console.log(filled);
-      
 
       return res.json(filled);
     }
@@ -623,21 +634,24 @@ export const getPBDData = async (req, res) => {
     ];
 
     if (mode === "year") {
-      const currentYear = new Date().getFullYear();
-      const years = [
-        currentYear - 4,
-        currentYear - 3,
-        currentYear - 2,
-        currentYear - 1,
-        currentYear,
-      ];
+      // ✅ Always take last 5 full years based on `endDate`
+      const endYear = end.getFullYear();
+      const years = [endYear - 4, endYear - 3, endYear - 2, endYear - 1, endYear];
 
       const pipeline = [
-        { $match: { ATABerth: { $gte: start, $lte: end }, PBD_Total: { $ne: null } } },
+        {
+          $match: {
+            ATABerth: {
+              $gte: new Date(endYear - 4, 0, 1),
+              $lte: new Date(endYear, 11, 31, 23, 59, 59),
+            },
+            PBD_Total: { $ne: null },
+          },
+        },
         {
           $project: {
             year: { $year: "$ATABerth" },
-            PBD_Hours: { $divide: ["$PBD_Total", 3600] }, // convert seconds to hours
+            PBD_Hours: { $divide: ["$PBD_Total", 3600] }, // convert seconds → hours
           },
         },
         {
@@ -652,9 +666,9 @@ export const getPBDData = async (req, res) => {
 
       const result = await vessels.aggregate(pipeline);
 
-      // Fill missing years with zero
+      // 🔹 Fill missing years with 0
       const data = years.map((y) => {
-        const found = result.find(r => r._id === y);
+        const found = result.find((r) => r._id === y);
         return {
           year: y,
           avgPBD: found ? found.avgPBD : 0,
@@ -665,14 +679,19 @@ export const getPBDData = async (req, res) => {
       return res.json(data);
     }
 
-    // Default: monthwise
+    // 🔹 Monthwise → respect frontend startDate/endDate
     const pipeline = [
-      { $match: { ATABerth: { $gte: start, $lte: end }, PBD_Total: { $ne: null } } },
+      {
+        $match: {
+          ATABerth: { $gte: start, $lte: end },
+          PBD_Total: { $ne: null },
+        },
+      },
       {
         $project: {
           year: { $year: "$ATABerth" },
           month: { $month: "$ATABerth" },
-          PBD_Hours: { $divide: ["$PBD_Total", 3600] }, // convert seconds to hours
+          PBD_Hours: { $divide: ["$PBD_Total", 3600] },
         },
       },
       {
@@ -687,7 +706,7 @@ export const getPBDData = async (req, res) => {
 
     const result = await vessels.aggregate(pipeline);
 
-    // Fill missing months
+    // 🔹 Fill missing months
     const allMonths = [];
     let current = new Date(start.getFullYear(), start.getMonth(), 1);
 
@@ -695,7 +714,9 @@ export const getPBDData = async (req, res) => {
       const year = current.getFullYear();
       const month = current.getMonth() + 1;
 
-      const found = result.find(r => r._id.year === year && r._id.month === month);
+      const found = result.find(
+        (r) => r._id.year === year && r._id.month === month
+      );
 
       allMonths.push({
         month: monthNames[month - 1],
@@ -713,5 +734,128 @@ export const getPBDData = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+// pages/api/y-o-y/berth-occupancy.js
+export const getBerthOccupancyData = async (req, res) => {
+  try {
+    const { startDate, endDate, mode } = req.query;
+
+    if (!startDate || !endDate)
+      return res.status(400).json({ error: "Provide startDate and endDate" });
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Assuming total berths in port, used to calculate max possible hours
+    const TOTAL_BERTHS = 21; // adjust as per your port
+
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+
+    if (mode === "year") {
+      const endYear = end.getFullYear();
+      const startYear = endYear - 4;
+      const startOfPeriod = new Date(startYear, 0, 1);
+      const endOfPeriod = new Date(endYear, 11, 31, 23, 59, 59);
+
+      const pipeline = [
+        {
+          $match: {
+            ATABerth: { $gte: startOfPeriod, $lte: endOfPeriod },
+            ATDUnberth: { $ne: null },
+          },
+        },
+        {
+          $project: {
+            year: { $year: "$ATABerth" },
+            berthHours: { $divide: [{ $subtract: ["$ATDUnberth", "$ATABerth"] }, 1000 * 60 * 60] },
+          },
+        },
+        {
+          $group: {
+            _id: "$year",
+            totalBerthHoursUsed: { $sum: "$berthHours" },
+            vesselsCount: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ];
+
+      const result = await vessels.aggregate(pipeline);
+
+      const data = [];
+      for (let y = startYear; y <= endYear; y++) {
+        const found = result.find(r => r._id === y);
+        const totalHours = TOTAL_BERTHS * 24 * (y % 4 === 0 ? 366 : 365); // adjust for leap year
+        data.push({
+          year: y,
+          occupancyHours: found ? found.totalBerthHoursUsed : 0,
+          occupancyPercent: found ? (found.totalBerthHoursUsed / totalHours) * 100 : 0,
+          vesselsCount: found ? found.vesselsCount : 0,
+        });
+      }
+      console.log(data);
+      
+
+      return res.json(data);
+    }
+
+    // Monthwise
+    const pipeline = [
+      {
+        $match: {
+          ATABerth: { $gte: start, $lte: end },
+          ATDUnberth: { $ne: null },
+        },
+      },
+      {
+        $project: {
+          year: { $year: "$ATABerth" },
+          month: { $month: "$ATABerth" },
+          berthHours: { $divide: [{ $subtract: ["$ATDUnberth", "$ATABerth"] }, 1000 * 60 * 60] },
+        },
+      },
+      {
+        $group: {
+          _id: { year: "$year", month: "$month" },
+          totalBerthHoursUsed: { $sum: "$berthHours" },
+          vesselsCount: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ];
+
+    const result = await vessels.aggregate(pipeline);
+
+    // Fill missing months
+    const allMonths= [];
+    let current = new Date(start.getFullYear(), start.getMonth(), 1);
+    while (current <= end) {
+      const year = current.getFullYear();
+      const month = current.getMonth() + 1;
+      const found = result.find(r => r._id.year === year && r._id.month === month);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const totalHours = TOTAL_BERTHS * 24 * daysInMonth;
+
+      allMonths.push({
+        month: monthNames[month - 1],
+        year,
+        occupancyHours: found ? found.totalBerthHoursUsed : 0,
+        occupancyPercent: found ? (found.totalBerthHoursUsed / totalHours) * 100 : 0,
+        vesselsCount: found ? found.vesselsCount : 0,
+      });
+
+      current.setMonth(current.getMonth() + 1);
+    }
+
+    res.json(allMonths);
+  } catch (err) {
+    console.error("Error fetching berth occupancy data:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
 
 
