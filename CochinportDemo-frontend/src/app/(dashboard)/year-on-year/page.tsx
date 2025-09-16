@@ -1,0 +1,292 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import Header from "@/components/header"
+import { KPICards } from "@/components/KPIcards"
+import BerthOccupancyChart from "@/components/statisticalDashboard/BerthOccupancyChart"
+import CargoMixPieChart from "@/components/statisticalDashboard/CargoMixPieChart"
+import CommodityCargoBarChart from "@/components/statisticalDashboard/CommodityCodeWiseBarChart"
+import ThroughputTrendChart from "@/components/statisticalDashboard/ThroughputTrendChart"
+import { FiTrendingUp, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical } from "react-icons/fi"
+
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+  BreadcrumbEllipsis,
+} from "@/components/ui/breadcrumb";
+import { serverUrl } from "@/services/serverUrl"
+import { KPICardsYoY } from "@/components/KPICardsYoY"
+import ThroughputChart from "@/components/yoycomparison/throughputChart"
+import VesselTurnaroundChartYoy from "@/components/yoycomparison/VesselTurnaroundChartYoy"
+import AvgOutputPerShipBerthDayChart from "@/components/vesselPerfromance/AvgOutputPerShipBerthDayChart"
+import IdleTimeAtBerthChartYoy from "@/components/yoycomparison/IdleTimeAtBerthYoy"
+import AvgOutputPerShipBerthDayChartYoY from "@/components/yoycomparison/AvgOutputPerShipDayYoy"
+import PBDChart from "@/components/yoycomparison/PBDChart"
+import { KPICardsRowYoY } from "@/components/KPICardsTwoRow"
+import BerthOccupancyChartYoy from "@/components/yoycomparison/BerhOccupancyChartYoy"
+import Loading from "../../../components/Loadind"
+
+const getSameDayFromPastSixMonth = () => {
+  const today = new Date();
+  const lastMonth = new Date(today);
+
+  lastMonth.setMonth(today.getMonth() - 6);
+
+  if (
+    lastMonth.getMonth() === today.getMonth() - 6 + (12 % 12) &&
+    lastMonth.getDate() !== today.getDate()
+  ) {
+    lastMonth.setDate(0);
+  }
+  const year = lastMonth.getFullYear();
+  const month = String(lastMonth.getMonth() + 1).padStart(2, "0");
+  const day = String(lastMonth.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+export default function YearOnYear() {
+  const [kpiData, setKpiData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [startDate, setStartDate] = useState<string>(getSameDayFromPastSixMonth());
+  const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+
+      const fetchData = async () => {
+      try {
+        setLoading(true)
+        const res = await fetch(
+          `${serverUrl}/api/y-o-y/kpi?startDate=${startDate}&endDate=${endDate}`
+        )
+        const data = await res.json()
+        setKpiData(data)
+      } catch (error) {
+        console.error("Error fetching KPI data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+  const handleSeacrh = ()=>{
+    fetchData() 
+  }
+  const handleClearFilter=()=>{
+    setStartDate(getSameDayFromPastSixMonth())
+    setEndDate(new Date().toISOString().split("T")[0])
+  }
+  // Fetch KPI data whenever date changes
+  useEffect(() => {
+
+    fetchData()
+  }, []) 
+
+  if (loading) return <div className="h-screen flex items-center justify-center"><Loading/></div>
+  if (!kpiData) return <p className="p-4 text-red-500">No data available</p>
+const cards = [
+  {
+    title: "Total Throughput (MMT)",
+    current: kpiData.year2.totalThroughputMMT.toFixed(2),
+    variance: (kpiData.variation.totalThroughputMMT ?? 0).toFixed(2) + "%",
+    icon: <FiTrendingUp size={30} className="text-[#4e5166]" />,
+    borderColor: "#4e5166",
+  },
+  {
+    title: "Dry Cargo (MMT)",
+    current: kpiData.year2.dryCargoMMT.toFixed(2),
+    variance: (kpiData.variation.dryCargoMMT ?? 0).toFixed(2) + "%",
+    icon: <FiBox size={30} className="text-green-700" />,
+    borderColor: "green",
+  },
+  {
+    title: "Liquid Cargo (MMT)",
+    current: kpiData.year2.liquidCargoMMT.toFixed(2),
+    variance: (kpiData.variation.liquidCargoMMT ?? 0).toFixed(2) + "%",
+    icon: <FiDroplet size={30} className="text-[#610345]" />,
+    borderColor: "#C1292E",
+  },
+  {
+    title: "Containers (TEUs)",
+    current: kpiData.year2.containerTEUs,
+    variance: (kpiData.variation.containerTEUs ?? 0).toFixed(2) + "%",
+    icon: <FiTruck size={30} className="text-[#C1292E]" />,
+    borderColor: "#610345",
+  },
+  {
+    title: "Mean TRT (Hrs.)",
+    current: kpiData.year2.meanTRT.toFixed(2),
+    variance: (kpiData.variation.meanTRT ?? 0).toFixed(2) + "%",
+    icon: <FiClock size={30} className="text-blue-600" />,
+    borderColor: "#0077b6",
+  },
+  {
+    title: "Median TRT (Hrs.)",
+    current: kpiData.year2.medianTRT.toFixed(2),
+    variance: (kpiData.variation.medianTRT ?? 0).toFixed(2) + "%",
+    icon: <FiClock size={30} className="text-indigo-600" />,
+    borderColor: "#5A189A",
+  },
+  {
+    title: "Avg. Container TRT (Hrs.)",
+    current: kpiData.year2.avgContainerTRT.toFixed(2),
+    variance: (kpiData.variation.avgContainerTRT ?? 0).toFixed(2) + "%",
+    icon: <FiClock size={30} className="text-purple-600" />,
+    borderColor: "purple",
+  },
+  {
+    title: "Output per Berth Day (MT)",
+    current: kpiData.year2.outputPerBerthDay.toFixed(0),
+    variance: (kpiData.variation.outputPerBerthDay ?? 0).toFixed(2) + "%",
+    icon: <FiActivity size={30} className="text-orange-600" />,
+    borderColor: "#ff8800",
+  },
+  {
+    title: "Avg. Pre-Berthing Detention (Hrs.)",
+    current: kpiData.year2.avgPBD.toFixed(2),
+    variance: (kpiData.variation.avgPBD ?? 0).toFixed(2) + "%",
+    icon: <FiClock size={30} className="text-teal-600" />,
+    borderColor: "teal",
+  },
+  {
+    title: "Idle Time at Berth (%)",
+    current: kpiData.year2.idlePercent.toFixed(2) + "%",
+    variance: (kpiData.variation.idlePercent ?? 0).toFixed(2) + "%",
+    icon: <FiActivity size={30} className="text-rose-600" />,
+    borderColor: "crimson",
+  },
+];
+
+
+  return (
+    <div className="@container/main h-screen flex flex-col overflow-hidden font-sans">
+      {/* header and kpi cards */}
+      <div className="flex flex-col gap-4 py-4 md:gap-2 md:py-4 stickey">
+        <div className="flex">
+            <div className="p-4">
+              <h1 className="text-2xl font-bold text-gray-800 mb-1">
+                Year-on-Year Comparison
+              </h1>
+              <Breadcrumb className="h-[18px] ml-[1px] mt-[5px]">
+                <BreadcrumbList className="text-[12px] leading-[1.2]">
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/" className="text-grey-500">
+                      Dashboard
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="text-[#C1292E]" />
+                  <BreadcrumbItem>
+                    <BreadcrumbEllipsis className="text-grey-500" />
+                  </BreadcrumbItem>
+                  <>
+                    <BreadcrumbSeparator className="text-[#C1292E]" />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage className="text-grey-500">
+                        Year-on-Year Comparison
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+               {/* Three-dot button */}
+                        <div className="relative ms-auto">
+                          <button
+                            className="p-2 rounded hover:bg-gray-200"
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                          >
+                            <FiMoreVertical size={24} />
+                          </button>
+              
+                          {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 me-3 rounded shadow-lg z-50">
+                              <button
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              /*                   onClick={() => handleExport("image")}
+               */                >
+                                Export as Image
+                              </button>
+                              <button
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              /*                   onClick={() => handleExport("pdf")}
+               */                >
+                                Export as PDF
+                              </button>
+                            </div>
+                          )}
+                        </div>
+        </div>
+
+        {/* Date filters */}
+        <div className="flex gap-5 ms-auto">
+          <div className="flex gap-2 items-center">
+            <label  className="text-blue-900 font-bold me-2">From</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-white border rounded border-gray-300 h-8 w-fit px-2"
+            />
+          </div>
+          <div className="flex gap-2 items-center me-5">
+            <label  className="text-blue-900 font-bold me-2">To</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-white border border-gray-300 rounded h-8 w-fit px-2"
+            />
+          </div>
+          <div className="flex gap-3 ms-auto me-3">
+             <button 
+               onClick={handleSeacrh}
+                 className="border  border-gray-300 hover:bg-green-900 hover:text-white hover:cursor-pointer rounded px-3">
+                Search
+              </button>
+              <button
+                 onClick={handleClearFilter}
+                 className="border border-gray-300 rounded px-3 hover:bg-blue-300 hover:text-white hover:cursor-pointer text-black"
+              >
+                clear
+              </button>
+             
+            </div>
+        </div>
+
+        <KPICardsRowYoY data={cards} />
+      </div>
+
+      {/* charts */}
+      <div className="flex-1 overflow-y-auto px-5 ">
+        <div className="grid grid-cols-10 gap-4 mx-3">
+          <div className="pl-4 col-span-5 ">
+                        <ThroughputChart startDate={startDate} endDate={endDate}  />
+          </div>
+          <div className="col-span-5">
+            <AvgOutputPerShipBerthDayChartYoY startDate={startDate} endDate={endDate} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 m-3 py-5">
+          <div className="pl-4">
+                        <VesselTurnaroundChartYoy  startDate={startDate} endDate={endDate}  />
+
+          </div>
+          <div className="">
+            <IdleTimeAtBerthChartYoy  startDate={startDate} endDate={endDate} />
+          </div>
+        </div>
+         <div className="grid grid-cols-10 gap-4 m-3">
+          <div className="pl-4 col-span-5 ">
+                        <PBDChart startDate={startDate} endDate={endDate}  />
+          </div>
+          <div className="col-span-5">
+             <BerthOccupancyChartYoy startDate={startDate} endDate={endDate} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
