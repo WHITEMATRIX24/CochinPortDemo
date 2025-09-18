@@ -29,7 +29,7 @@ interface ChartData {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border p-2 rounded shadow-md text-sm">
+      <div className="bg-white border p-2 rounded shadow-md text-sm text-gray-400">
         <p><strong>{label}</strong></p>
         {payload.map((entry: any, index: number) => (
           <p key={index} style={{ color: entry.color }}>
@@ -66,22 +66,22 @@ export default function AvgOutputPerShipBerthDayChartYoY({ startDate, endDate }:
   }, [startDate, endDate, mode]);
 
   return (
-    <div className="p-4 h-[450px] bg-white rounded-2xl shadow-md">
+    <div className="p-4 h-[350px] bg-white rounded-2xl shadow-md">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-md text-black font-semibold">
           Avg Output per Ship Berth Day ({mode === "month" ? "Monthwise" : "Yearwise"})
         </h2>
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as "month" | "year")}
-          className="border border-gray-300 rounded px-2 py-1 text-sm"
+          className="border border-gray-300 rounded px-2 py-1 text-sm  text-black"
         >
           <option value="month">Monthwise</option>
           <option value="year">Yearwise</option>
         </select>
       </div>
 
-      <ResponsiveContainer width="100%" height="95%">
+      <ResponsiveContainer width="100%" height="85%">
         <BarChart data={data} margin={{ top: 20, right: 10, bottom: 20, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
@@ -105,7 +105,7 @@ export default function AvgOutputPerShipBerthDayChartYoY({ startDate, endDate }:
             orientation="right"
             label={{ value: "Vessels", angle: -90, position: "insideRight" }}
           />
-          <Tooltip content={CustomTooltip} />
+          <Tooltip content={CustomTooltip}   />
           <Legend />
           <Bar
             yAxisId="left"

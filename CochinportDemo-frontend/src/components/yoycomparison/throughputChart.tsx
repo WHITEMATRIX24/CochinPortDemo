@@ -57,9 +57,9 @@ export default function ThroughputChart({ startDate, endDate }: Props) {
   };
 
   return (
-    <div className="w-full h-[450px] p-4 bg-white shadow rounded-2xl">
+    <div className="w-full h-[350px] p-4 bg-white shadow rounded-2xl">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-md text-black font-semibold">
           {cargoOptions.find((c) => c.key === cargoType)?.label} Trend (
           {mode === "month" ? "Monthwise" : "Yearwise"})
         </h2>
@@ -69,7 +69,7 @@ export default function ThroughputChart({ startDate, endDate }: Props) {
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value as "month" | "year")}
-            className="border border-gray-300 rounded px-2 py-1 text-sm"
+            className="border border-gray-300 rounded px-2 py-1 text-sm  text-black"
           >
             <option value="month">Monthwise</option>
             <option value="year">Yearwise</option>
@@ -79,7 +79,7 @@ export default function ThroughputChart({ startDate, endDate }: Props) {
           <select
             value={cargoType}
             onChange={(e) => setCargoType(e.target.value)}
-            className="border border-gray-300 rounded px-2 py-1 text-sm"
+            className="border border-gray-300 rounded px-2 py-1 text-sm  text-black"
           >
             {cargoOptions.map((c) => (
               <option key={c.key} value={c.key}>
@@ -95,7 +95,7 @@ export default function ThroughputChart({ startDate, endDate }: Props) {
           No Data from {startDate} to {endDate}
         </p>
       ) : (
-        <ResponsiveContainer width="100%" height="85%">
+        <ResponsiveContainer width="100%" height="75%">
           <ComposedChart
             data={data}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
@@ -122,6 +122,7 @@ export default function ThroughputChart({ startDate, endDate }: Props) {
                   return [val.toFixed(2) + "%", name];
                 return [val.toLocaleString(), name];
               }}
+               contentStyle={{ color: "gray" }}
             />
             <Legend />
 

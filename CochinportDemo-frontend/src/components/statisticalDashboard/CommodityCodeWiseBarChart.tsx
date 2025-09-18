@@ -16,48 +16,49 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 ];
  */
 interface Props {
-  startDate:string;
-  endDate:string;
+  startDate: string;
+  endDate: string;
 }
-export default function CommodityCargoBarChart({startDate, endDate}:Props) {
+export default function CommodityCargoBarChart({ startDate, endDate }: Props) {
   const [data, setData] = useState([]);
   useEffect(() => {
     fetch(`${serverUrl}/api/cargo/commodity-volumes?startDate=${startDate}&endDate=${endDate}`)
       .then((res) => res.json())
       .then((resData) => {
         console.log(resData);
-        
-        setData(resData)})
+
+        setData(resData)
+      })
   }, []);
 
   return (
-    <div className="w-full h-100 p-4 bg-white shadow rounded-2xl">
-      <h2 className="text-xl font-semibold mb-4">Commodity Code-wise Cargo Handled</h2>
-      {!data.length?<p className='text-black text-center mt-20'>No Data from {startDate} to {endDate}</p>
-      :<ResponsiveContainer width="100%" height="90%" style={{border:'none'}}>
-        <BarChart data={data} margin={{ bottom: 20, left:10 }} >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="cargoType" 
-            interval={0} 
-            angle={-30} 
-            textAnchor="end" 
-            height={0} 
+    <div className="w-full h-85 p-4 bg-white shadow rounded-2xl">
+      <h2 className="text-md text-black font-semibold mb-4">Commodity Code-wise Cargo Handled</h2>
+      {!data.length ? <p className='text-black text-center mt-20'>No Data from {startDate} to {endDate}</p>
+        : <ResponsiveContainer width="100%" height="90%" style={{ border: 'none' }}>
+          <BarChart data={data} margin={{ bottom: 20, left: 10 }} >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="cargoType"
+              interval={0}
+              angle={-30}
+              textAnchor="end"
+              height={0}
             /* height={40}  */
 
-          />
-          <YAxis
-  tickFormatter={(value) => {
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
-    if (value >= 1_000) return (value / 1_000).toFixed(1) + "K";
-    return value;
-  }}
-/>
-          <Tooltip />
-          <Bar dataKey="totalVolume" fill="#3B82F6" name="Cargo (MT/TEUs)" />
-          
-        </BarChart>
-      </ResponsiveContainer>}
+            />
+            <YAxis
+              tickFormatter={(value) => {
+                if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
+                if (value >= 1_000) return (value / 1_000).toFixed(1) + "K";
+                return value;
+              }}
+            />
+            <Tooltip contentStyle={{ color: "gray" }} />
+            <Bar dataKey="totalVolume" fill="#3B82F6" name="Cargo (MT/TEUs)" />
+
+          </BarChart>
+        </ResponsiveContainer>}
     </div>
   );
 }

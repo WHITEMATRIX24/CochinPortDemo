@@ -7,7 +7,7 @@ import BerthOccupancyChart from "@/components/statisticalDashboard/BerthOccupanc
 import CargoMixPieChart from "@/components/statisticalDashboard/CargoMixPieChart"
 import CommodityCargoBarChart from "@/components/statisticalDashboard/CommodityCodeWiseBarChart"
 import ThroughputTrendChart from "@/components/statisticalDashboard/ThroughputTrendChart"
-import { FiTrendingUp, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical } from "react-icons/fi"
+import { FiTrendingUp, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical, FiImage, FiFileText } from "react-icons/fi"
 
 import {
   Breadcrumb,
@@ -48,24 +48,24 @@ export default function StatisticalDashboard() {
   const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-      const fetchData = async () => {
-      try {
-        setLoading(true)
-        const res = await fetch(
-          `${serverUrl}/api/y-o-y/kpi?startDate=${startDate}&endDate=${endDate}`
-        )
-        const data = await res.json()
-        setKpiData(data)
-      } catch (error) {
-        console.error("Error fetching KPI data:", error)
-      } finally {
-        setLoading(false)
-      }
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const res = await fetch(
+        `${serverUrl}/api/y-o-y/kpi?startDate=${startDate}&endDate=${endDate}`
+      )
+      const data = await res.json()
+      setKpiData(data)
+    } catch (error) {
+      console.error("Error fetching KPI data:", error)
+    } finally {
+      setLoading(false)
     }
-  const handleSeacrh = ()=>{
-    fetchData() 
   }
-  const handleClearFilter=()=>{
+  const handleSeacrh = () => {
+    fetchData()
+  }
+  const handleClearFilter = () => {
     setStartDate(getSameDayFromPastSixMonth())
     setEndDate(new Date().toISOString().split("T")[0])
   }
@@ -73,19 +73,19 @@ export default function StatisticalDashboard() {
   useEffect(() => {
 
     fetchData()
-  }, []) 
+  }, [])
 
-  if (loading) return <div className="h-screen flex items-center justify-center"><Loading/></div>
+  if (loading) return <div className="h-screen flex items-center justify-center"><Loading /></div>
   if (!kpiData) return <p className="p-4 text-red-500">No data available</p>
 
-const cards = [
-  {
-    title: "Total Throughput (MMT)",
-    current: kpiData.year2.totalThroughputMMT.toFixed(2),
-    variance: (kpiData.variation.totalThroughputMMT ?? 0).toFixed(2) + "%",
-    icon: <FiTrendingUp size={30} className="text-[#4e5166]" />,
-    borderColor: "#4e5166",
-  },/* 
+  const cards = [
+    {
+      title: "Total Throughput (MMT)",
+      current: kpiData.year2.totalThroughputMMT.toFixed(2),
+      variance: (kpiData.variation.totalThroughputMMT ?? 0).toFixed(2) + "%",
+      icon: <FiTrendingUp size={30} className="text-[#4e5166]" />,
+      borderColor: "#4e5166",
+    },/* 
   {
     title: "Dry Cargo (MMT)",
     current: kpiData.year2.dryCargoMMT.toFixed(2),
@@ -107,49 +107,49 @@ const cards = [
     icon: <FiTruck size={30} className="text-[#C1292E]" />,
     borderColor: "#610345",
   }, */
-  {
-    title: "Mean TRT (Hrs.)",
-    current: kpiData.year2.meanTRT.toFixed(2),
-    variance: (kpiData.variation.meanTRT ?? 0).toFixed(2) + "%",
-    icon: <FiClock size={30} className="text-blue-600" />,
-    borderColor: "#0077b6",
-  },
-/*   {
-    title: "Median TRT (Hrs.)",
-    current: kpiData.year2.medianTRT.toFixed(2),
-    variance: (kpiData.variation.medianTRT ?? 0).toFixed(2) + "%",
-    icon: <FiClock size={30} className="text-indigo-600" />,
-    borderColor: "#5A189A",
-  },
-  {
-    title: "Avg. Container TRT (Hrs.)",
-    current: kpiData.year2.avgContainerTRT.toFixed(2),
-    variance: (kpiData.variation.avgContainerTRT ?? 0).toFixed(2) + "%",
-    icon: <FiClock size={30} className="text-purple-600" />,
-    borderColor: "purple",
-  },  */
-  {
-    title: "Output per Berth Day (MT)",
-    current: kpiData.year2.outputPerBerthDay.toFixed(0),
-    variance: (kpiData.variation.outputPerBerthDay ?? 0).toFixed(2) + "%",
-    icon: <FiActivity size={30} className="text-orange-600" />,
-    borderColor: "#ff8800",
-  },
-  {
-    title: "Avg. Pre-Berthing Detention (Hrs.)",
-    current: kpiData.year2.avgPBD.toFixed(2),
-    variance: (kpiData.variation.avgPBD ?? 0).toFixed(2) + "%",
-    icon: <FiClock size={30} className="text-teal-600" />,
-    borderColor: "teal",
-  }, 
-  {
-    title: "Idle Time at Berth (%)",
-    current: kpiData.year2.idlePercent.toFixed(2) + "%",
-    variance: (kpiData.variation.idlePercent ?? 0).toFixed(2) + "%",
-    icon: <FiActivity size={30} className="text-rose-600" />,
-    borderColor: "crimson",
-  },
-];
+    {
+      title: "Mean TRT (Hrs.)",
+      current: kpiData.year2.meanTRT.toFixed(2),
+      variance: (kpiData.variation.meanTRT ?? 0).toFixed(2) + "%",
+      icon: <FiClock size={30} className="text-blue-600" />,
+      borderColor: "#0077b6",
+    },
+    /*   {
+        title: "Median TRT (Hrs.)",
+        current: kpiData.year2.medianTRT.toFixed(2),
+        variance: (kpiData.variation.medianTRT ?? 0).toFixed(2) + "%",
+        icon: <FiClock size={30} className="text-indigo-600" />,
+        borderColor: "#5A189A",
+      },
+      {
+        title: "Avg. Container TRT (Hrs.)",
+        current: kpiData.year2.avgContainerTRT.toFixed(2),
+        variance: (kpiData.variation.avgContainerTRT ?? 0).toFixed(2) + "%",
+        icon: <FiClock size={30} className="text-purple-600" />,
+        borderColor: "purple",
+      },  */
+    {
+      title: "Output per Berth Day (MT)",
+      current: kpiData.year2.outputPerBerthDay.toFixed(0),
+      variance: (kpiData.variation.outputPerBerthDay ?? 0).toFixed(2) + "%",
+      icon: <FiActivity size={30} className="text-orange-600" />,
+      borderColor: "#ff8800",
+    },
+    {
+      title: "Avg. Pre-Berthing Detention (Hrs.)",
+      current: kpiData.year2.avgPBD.toFixed(2),
+      variance: (kpiData.variation.avgPBD ?? 0).toFixed(2) + "%",
+      icon: <FiClock size={30} className="text-teal-600" />,
+      borderColor: "teal",
+    },
+    {
+      title: "Idle Time at Berth (%)",
+      current: kpiData.year2.idlePercent.toFixed(2) + "%",
+      variance: (kpiData.variation.idlePercent ?? 0).toFixed(2) + "%",
+      icon: <FiActivity size={30} className="text-rose-600" />,
+      borderColor: "crimson",
+    },
+  ];
 
   return (
     <div className="@container/main h-screen flex flex-col overflow-hidden font-sans">
@@ -163,18 +163,22 @@ const cards = [
             <Breadcrumb className="h-[18px] ml-[1px] mt-[5px]">
               <BreadcrumbList className="text-[12px] leading-[1.2]">
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/" className="text-grey-500">
+                  <BreadcrumbLink
+                    href="/dashboard"
+                    className="text-blue-600 hover:text-blue-800 focus:text-blue-800 active:text-blue-800 visited:text-blue-600"
+                  >
                     Dashboard
                   </BreadcrumbLink>
                 </BreadcrumbItem>
+
                 <BreadcrumbSeparator className="text-[#C1292E]" />
                 <BreadcrumbItem>
-                  <BreadcrumbEllipsis className="text-grey-500" />
+                  <BreadcrumbEllipsis className="text-blue-600" />
                 </BreadcrumbItem>
                 <>
                   <BreadcrumbSeparator className="text-[#C1292E]" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="text-grey-500">
+                    <BreadcrumbPage className="text-blue-600">
                       Statistical Dashboard
                     </BreadcrumbPage>
                   </BreadcrumbItem>
@@ -182,73 +186,83 @@ const cards = [
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-  
-   {/* Three-dot button */}
-            <div className="relative ms-auto">
-              <button
-                className="p-2 rounded hover:bg-gray-200"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <FiMoreVertical size={24} />
-              </button>
-  
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 me-3 rounded shadow-lg z-50">
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
-  /*                   onClick={() => handleExport("image")}
-   */                >
-                    Export as Image
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
-  /*                   onClick={() => handleExport("pdf")}
-   */                >
-                    Export as PDF
-                  </button>
-                </div>
-              )}
-            </div>
-        </div>
-       
 
-        
+          {/* Three-dot button */}
+          <div className="relative ms-auto">
+            {/* Toggle Button */}
+            <button
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <FiMoreVertical size={22} className="text-gray-600" />
+            </button>
+
+            {/* Dropdown */}
+            {dropdownOpen && (
+              <div
+                className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 me-3 z-50 animate-fadeIn"
+              >
+                <button
+                  className="flex items-center gap-2 w-full px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200 rounded-t-xl"
+                /* onClick={() => handleExport("image")} */
+                >
+                  <FiImage size={18} />
+                  Export as Image
+                </button>
+                <button
+                  className="flex items-center gap-2 w-full px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200 rounded-b-xl"
+                /* onClick={() => handleExport("pdf")} */
+                >
+                  <FiFileText size={18} />
+                  Export as PDF
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+
+
         {/* Date filters */}
-        <div className="flex gap-4 ms-auto">
+        <div className="flex flex-wrap gap-4 items-center ms-auto bg-white p-4 rounded-xl ">
+          {/* From Date */}
           <div className="flex gap-2 items-center">
-            <label  className="text-blue-900 font-bold me-2">From</label>
+            <label className="text-[#003049] font-semibold">From</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-white border rounded border-gray-300 h-8 w-fit px-3"
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#003049] transition"
             />
           </div>
-          <div className="flex gap-2 items-center me-5">
-            <label className="text-blue-900 font-bold me-2">To</label>
+
+          {/* To Date */}
+          <div className="flex gap-2 items-center">
+            <label className="text-[#003049] font-semibold">To</label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-white border border-gray-300 rounded h-8 w-fit px-3"
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#003049] transition"
             />
           </div>
-          <div className="flex gap-2 ms-auto me-3">
-             <button 
-               onClick={handleSeacrh}
-                 className="border  border-gray-300 hover:bg-green-900 hover:text-white hover:cursor-pointer rounded px-3">
-                Search
-              </button>
-              <button
-                 onClick={handleClearFilter}
-                 className="border border-gray-300 rounded px-3 hover:bg-blue-300 hover:text-white hover:cursor-pointer text-black"
-              >
-                clear
-              </button>
-             
-            </div>
-        </div>
 
+          {/* Actions */}
+          <div className="flex gap-3 ms-auto">
+            <button
+              onClick={handleSeacrh}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#003049] text-white hover:bg-[#01497c] active:scale-95 transition"
+            >
+              Search
+            </button>
+            <button
+              onClick={handleClearFilter}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-[#003049] hover:bg-[#669bbc] hover:text-white active:scale-95 transition"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
         <KPICardsYoY data={cards} />
       </div>
 
@@ -256,7 +270,7 @@ const cards = [
       <div className="flex-1 overflow-y-auto px-5 py-4">
         <div className="grid grid-cols-2 gap-4 m-3">
           <div className="pl-4 ">
-            <CargoMixPieChart  startDate={startDate} endDate={endDate}  />
+            <CargoMixPieChart startDate={startDate} endDate={endDate} />
           </div>
           <div>
             <CommodityCargoBarChart startDate={startDate} endDate={endDate} />
@@ -264,10 +278,10 @@ const cards = [
         </div>
         <div className="grid grid-cols-2 gap-4 m-3 py-5">
           <div className="pl-4">
-            <ThroughputTrendChart startDate={startDate} endDate={endDate}  />
+            <ThroughputTrendChart startDate={startDate} endDate={endDate} />
           </div>
           <div className="">
-            <BerthOccupancyChart  startDate={startDate} endDate={endDate} />
+            <BerthOccupancyChart startDate={startDate} endDate={endDate} />
           </div>
         </div>
       </div>
