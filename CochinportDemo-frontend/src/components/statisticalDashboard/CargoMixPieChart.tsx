@@ -57,14 +57,14 @@ export default function CargoMixPieChart({ startDate, endDate }: Props) {
       : validData;
 
   return (
-    <div className="w-full h-100 p-4 bg-white shadow rounded-2xl">
-      <h2 className="text-xl font-semibold mb-4">Cargo Mix</h2>
+    <div className="w-full h-85 p-4 bg-white shadow rounded-2xl">
+      <h2 className="text-md text-black font-semibold mb-4">Cargo Mix</h2>
 
       {/* Filter checkboxes */}
       {validData.length > 0 && (
         <div className="flex gap-4 mb-4 flex-wrap">
           {validData.map((item) => (
-            <label key={item.name} className="flex items-center gap-2">
+            <label key={item.name} className="flex items-center gap-2 text-black">
               <input
                 type="checkbox"
                 checked={
@@ -92,7 +92,7 @@ export default function CargoMixPieChart({ startDate, endDate }: Props) {
           No Data from {startDate} to {endDate}
         </p>
       ) : (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={240}>
           <PieChart>
             <Pie
               data={filteredData}

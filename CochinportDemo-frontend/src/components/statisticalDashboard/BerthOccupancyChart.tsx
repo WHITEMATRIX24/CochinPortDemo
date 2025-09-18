@@ -64,15 +64,15 @@ export default function BerthOccupancyChart({startDate, endDate}:Props) {
   ];
 
   return (
-    <div className="w-full h-96 p-4 bg-white shadow rounded-2xl flex flex-col items-center ">
-      <h2 className="text-xl font-semibold mb-4">Berth Occupancy</h2>
+    <div className="w-full h-80 p-4 bg-white shadow rounded-2xl flex flex-col  ">
+      <h2 className="text-md text-black font-semibold mb-4">Berth Occupancy</h2>
 
       <div className="ms-auto">
         {/* Dynamic Berth Dropdown */}
         <select
           value={selectedBerth}
           onChange={(e) => setSelectedBerth(e.target.value)}
-          className="mb-4 border border-gray-300 rounded px-3 py-2"
+          className="mb-4 border border-gray-300 rounded px-3 py-2 text-black"
         >
           <option value="All">All Berths</option>
           {berths.map((b) => (
@@ -102,7 +102,7 @@ export default function BerthOccupancyChart({startDate, endDate}:Props) {
           </RadialBarChart>
         </ResponsiveContainer>
   
-        <p className="text-lg font-bold mt-2">{occupancy.toFixed(1)}%</p>
+        <p className="text-lg font-bold mt-2 text-black">{occupancy.toFixed(1)}%</p>
       </>}
     </div>
   );

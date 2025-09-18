@@ -30,13 +30,13 @@ export default function PBDChart({ startDate, endDate }: Props) {
   const colors = ["#5d82e6", "#0284c7", "#236683", "#6366f1", "#1fafec", "#38bdf8", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
   return (
-    <div className="w-full h-[450px] bg-white rounded-2xl p-4 shadow">
+    <div className="w-full h-[350px] bg-white rounded-2xl p-4 shadow">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg font-semibold">Avg. Pre-Berthing Detention</h2>
+        <h2 className=" font-semibold text-md text-black ">Avg. Pre-Berthing Detention</h2>
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as "month" | "year")}
-          className="border border-gray-300 rounded px-2 py-1"
+          className="border border-gray-300 rounded px-2 py-1 text-sm text-black"
         >
           <option value="month">Month-wise</option>
           <option value="year">Year-wise</option>
@@ -46,7 +46,7 @@ export default function PBDChart({ startDate, endDate }: Props) {
       {data.length === 0 ? (
         <p className="text-center mt-20">No data available</p>
       ) : (
-        <ResponsiveContainer width="100%" height="90%">
+        <ResponsiveContainer width="100%" height="80%">
           <BarChart data={data} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
@@ -54,7 +54,7 @@ export default function PBDChart({ startDate, endDate }: Props) {
               tick={{ fontSize: 12 }}
             />
             <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip formatter={(value: number) => `${value.toFixed(2)} hrs`} />
+            <Tooltip formatter={(value: number) => `${value.toFixed(2)} hrs`}  contentStyle={{ color: "gray" }}/>
             <Bar dataKey="avgPBD" radius={[4, 4, 0, 0]} barSize={30} >
               {data.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

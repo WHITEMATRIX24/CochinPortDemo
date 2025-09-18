@@ -107,15 +107,15 @@ export default function VesselTurnaroundChartYoy({ startDate, endDate }: Props) 
   };
 
   return (
-    <div className="w-full h-[450px] p-4 bg-white shadow rounded-2xl">
+    <div className="w-full h-[350px] p-4 bg-white shadow rounded-2xl">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-md text-black font-semibold">
           Vessel Turn Round Time Trend ({mode === "month" ? "Monthwise" : "Yearwise"})
         </h2>
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as "month" | "year")}
-          className="border border-gray-300  rounded px-2 py-1 text-sm"
+          className="border border-gray-300  rounded px-2 py-1 text-sm text-black"
         >
           <option value="month">Monthwise</option>
           <option value="year">Yearwise</option>
@@ -127,7 +127,7 @@ export default function VesselTurnaroundChartYoy({ startDate, endDate }: Props) 
           No Data from {startDate} to {endDate}
         </p>
       ) : (
-        <ResponsiveContainer width="100%" height="85%">
+        <ResponsiveContainer width="100%" height="75%">
           <LineChart
             data={data}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
@@ -145,7 +145,7 @@ export default function VesselTurnaroundChartYoy({ startDate, endDate }: Props) 
               }
             />
             <YAxis />
-            <Tooltip formatter={(val: number) => val.toFixed(1) + " hrs"} />
+            <Tooltip formatter={(val: number) => val.toFixed(1) + " hrs"}   contentStyle={{ color: "gray" }}/>
             <Legend onClick={handleLegendClick} />
 
             <Line

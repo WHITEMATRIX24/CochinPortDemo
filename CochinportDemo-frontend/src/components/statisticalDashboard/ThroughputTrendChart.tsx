@@ -77,8 +77,8 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
   ];
 
   return (
-    <div className="w-full h-96 p-4 bg-white shadow rounded-2xl">
-      <h2 className="text-xl font-semibold mb-4">
+    <div className="w-full h-80 p-4 bg-white shadow rounded-2xl">
+      <h2 className="text-md text-black font-semibold mb-4">
         Throughput Trend by Cargo Type
       </h2>
 
@@ -138,7 +138,7 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
     return value;
   }}
 />
-          <Tooltip formatter={(value: number) => value.toLocaleString()} />
+          <Tooltip formatter={(value: number) => value.toLocaleString()}  contentStyle={{ color: "gray" }}/>
           <Legend />
           {cargoTypes.map((cargo, index) => (
             <Line

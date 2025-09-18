@@ -7,7 +7,7 @@ import BerthOccupancyChart from "@/components/statisticalDashboard/BerthOccupanc
 import CargoMixPieChart from "@/components/statisticalDashboard/CargoMixPieChart"
 import CommodityCargoBarChart from "@/components/statisticalDashboard/CommodityCodeWiseBarChart"
 import ThroughputTrendChart from "@/components/statisticalDashboard/ThroughputTrendChart"
-import { FiTrendingUp, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical } from "react-icons/fi"
+import { FiTrendingUp, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical,FiImage,FiFileText} from "react-icons/fi"
 
 import {
   Breadcrumb,
@@ -173,18 +173,21 @@ const cards = [
               <Breadcrumb className="h-[18px] ml-[1px] mt-[5px]">
                 <BreadcrumbList className="text-[12px] leading-[1.2]">
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/" className="text-grey-500">
-                      Dashboard
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
+                  <BreadcrumbLink
+                    href="/dashboard"
+                    className="text-blue-600 hover:text-blue-800 focus:text-blue-800 active:text-blue-800 visited:text-blue-600"
+                  >
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
                   <BreadcrumbSeparator className="text-[#C1292E]" />
                   <BreadcrumbItem>
-                    <BreadcrumbEllipsis className="text-grey-500" />
+                    <BreadcrumbEllipsis className="text-blue-600" />
                   </BreadcrumbItem>
                   <>
                     <BreadcrumbSeparator className="text-[#C1292E]" />
                     <BreadcrumbItem>
-                      <BreadcrumbPage className="text-grey-500">
+                      <BreadcrumbPage className="text-blue-600">
                         Year-on-Year Comparison
                       </BreadcrumbPage>
                     </BreadcrumbItem>
@@ -194,66 +197,77 @@ const cards = [
             </div>
                {/* Three-dot button */}
                         <div className="relative ms-auto">
-                          <button
-                            className="p-2 rounded hover:bg-gray-200"
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                          >
-                            <FiMoreVertical size={24} />
-                          </button>
-              
-                          {dropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 me-3 rounded shadow-lg z-50">
-                              <button
-                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              /*                   onClick={() => handleExport("image")}
-               */                >
-                                Export as Image
-                              </button>
-                              <button
-                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              /*                   onClick={() => handleExport("pdf")}
-               */                >
-                                Export as PDF
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                                    {/* Toggle Button */}
+                                    <button
+                                      className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                                    >
+                                      <FiMoreVertical size={22} className="text-gray-600" />
+                                    </button>
+                        
+                                    {/* Dropdown */}
+                                    {dropdownOpen && (
+                                      <div
+                                        className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 me-3 z-50 animate-fadeIn"
+                                      >
+                                        <button
+                                          className="flex items-center gap-2 w-full px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200 rounded-t-xl"
+                                        /* onClick={() => handleExport("image")} */
+                                        >
+                                          <FiImage size={18} />
+                                          Export as Image
+                                        </button>
+                                        <button
+                                          className="flex items-center gap-2 w-full px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200 rounded-b-xl"
+                                        /* onClick={() => handleExport("pdf")} */
+                                        >
+                                          <FiFileText size={18} />
+                                          Export as PDF
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
         </div>
 
         {/* Date filters */}
-        <div className="flex gap-5 ms-auto">
+         <div className="flex flex-wrap gap-4 items-center ms-auto bg-white p-3 rounded-xl ">
+          {/* From Date */}
           <div className="flex gap-2 items-center">
-            <label  className="text-blue-900 font-bold me-2">From</label>
+            <label className="text-[#003049] font-semibold">From</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-white border rounded border-gray-300 h-8 w-fit px-2"
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#003049] transition"
             />
           </div>
-          <div className="flex gap-2 items-center me-5">
-            <label  className="text-blue-900 font-bold me-2">To</label>
+
+          {/* To Date */}
+          <div className="flex gap-2 items-center">
+            <label className="text-[#003049] font-semibold">To</label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-white border border-gray-300 rounded h-8 w-fit px-2"
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#003049] transition"
             />
           </div>
-          <div className="flex gap-3 ms-auto me-3">
-             <button 
-               onClick={handleSeacrh}
-                 className="border  border-gray-300 hover:bg-green-900 hover:text-white hover:cursor-pointer rounded px-3">
-                Search
-              </button>
-              <button
-                 onClick={handleClearFilter}
-                 className="border border-gray-300 rounded px-3 hover:bg-blue-300 hover:text-white hover:cursor-pointer text-black"
-              >
-                clear
-              </button>
-             
-            </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 ms-auto">
+            <button
+              onClick={handleSeacrh}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#003049] text-white hover:bg-[#01497c] active:scale-95 transition"
+            >
+              Search
+            </button>
+            <button
+              onClick={handleClearFilter}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-[#003049] hover:bg-[#669bbc] hover:text-white active:scale-95 transition"
+            >
+              Clear
+            </button>
+          </div>
         </div>
 
         <KPICardsRowYoY data={cards} />
