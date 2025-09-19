@@ -93,7 +93,8 @@ export const getCommodityVolumes = async (req, res) => {
 
 
 
-// Get throughput trend by cargo type (with current + previous year, chronological)
+// controller for dashboard/statisticalDashboard -> Throughput Trend by Cargo Type
+
 export const getThroughputTrendByCargoAndYear = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
@@ -105,25 +106,15 @@ export const getThroughputTrendByCargoAndYear = async (req, res) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Also include previous year’s range
-    const prevYearStart = new Date(start);
-    prevYearStart.setFullYear(prevYearStart.getFullYear() - 1);
-
-    const prevYearEnd = new Date(end);
-    prevYearEnd.setFullYear(prevYearEnd.getFullYear() - 1);
-
-    // Match ATABerth in either current year range OR previous year range
+    // Match only current range
     const matchFilter = {
-      $or: [
-        { ATABerth: { $gte: start, $lte: end } },
-        { ATABerth: { $gte: prevYearStart, $lte: prevYearEnd } }
-      ]
+      ATABerth: { $gte: start, $lte: end }
     };
 
     const result = await vessels.aggregate([
       { $match: matchFilter },
 
-      // Add computed month-year and dateKey (1st day of month) for proper sorting
+      // Compute month-year and dateKey
       {
         $addFields: {
           monthYear: {
@@ -151,7 +142,7 @@ export const getThroughputTrendByCargoAndYear = async (req, res) => {
         }
       },
 
-      // Group by month-year + cargo
+      // Group by month + cargo
       {
         $group: {
           _id: {
@@ -163,20 +154,42 @@ export const getThroughputTrendByCargoAndYear = async (req, res) => {
         }
       },
 
-      // Sort by actual date, not string
       { $sort: { "_id.dateKey": 1 } }
     ]);
 
-    // Reshape for chart
+    // Generate complete month range between start and end
+    const months = [];
+    const cursor = new Date(start);
+    while (cursor <= end) {
+      months.push({
+        month: cursor.toLocaleString("default", { month: "short" }) +
+               "-" +
+               cursor.getFullYear(),
+        dateKey: new Date(cursor),
+      });
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+
+    // Reshape to chart data
     const chartDataMap = {};
     result.forEach(item => {
-      const month = item._id.month || "Unknown";
+      const month = item._id.month;
       const cargo = item._id.cargo;
       if (!chartDataMap[month]) chartDataMap[month] = { month };
       chartDataMap[month][cargo] = item.totalThroughput;
     });
 
-    const chartData = Object.values(chartDataMap);
+    // Fill missing months with zero
+    const cargos = new Set();
+    result.forEach(item => cargos.add(item._id.cargo));
+
+    const chartData = months.map(m => {
+      const row = chartDataMap[m.month] || { month: m.month };
+      cargos.forEach(c => {
+        if (!row[c]) row[c] = 0;
+      });
+      return row;
+    });
 
     if (chartData.length === 0) chartData.push({ month: "No Data" });
 

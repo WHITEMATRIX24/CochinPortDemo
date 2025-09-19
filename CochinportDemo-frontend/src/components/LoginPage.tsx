@@ -58,7 +58,7 @@ export default function LoginPage({ register = false }: LoginPageProps) {
                 // Delay and navigate
                 setTimeout(() => {
                     console.log('Navigating to dashboard...');
-                    router.replace('/dashboard'); // ✅ works in Next.js app router
+                    router.replace('/statistical-dashboard'); // ✅ works in Next.js app router
                 }, 200);
             } else {
                 toast.error(result?.data?.message || 'Login failed');

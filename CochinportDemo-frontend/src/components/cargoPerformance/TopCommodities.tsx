@@ -50,18 +50,18 @@ export default function TopCommoditiesChart({ startDate, endDate }: Props) {
   }
 
   return (
-    <div className="w-full h-[500px] bg-white rounded-2xl p-4 shadow">
-      <h2 className="text-lg font-semibold mb-2">Top Commodities Handled</h2>
+    <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow">
+      <h2 className="text-md font-semibold mb-2">Top Commodities Handled</h2>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+          margin={{ top: 20, right: 30, left: 10, bottom: 10 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             type="number"
-            tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}M`}
+            tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}MMT`}
           />
 <YAxis
   type="category"

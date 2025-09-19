@@ -50,10 +50,10 @@ export default function CargoTrendChart({ startDate, endDate }: Props) {
   ];
 
   return (
-    <div className="w-full h-[500px] bg-white rounded-2xl p-4 shadow flex flex-col">
+    <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow flex flex-col">
       {/* Title + Dropdown */}
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg font-semibold">Trend of Cargo Volumes</h2>
+        <h2 className="text-md font-semibold">Trend of Cargo Volumes</h2>
 
         {/* ✅ Dropdown filter */}
         <select
@@ -78,7 +78,7 @@ export default function CargoTrendChart({ startDate, endDate }: Props) {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 20, right: 0, left: 0, bottom: 40 }}
+            margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
 

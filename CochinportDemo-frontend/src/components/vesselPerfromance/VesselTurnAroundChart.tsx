@@ -94,12 +94,12 @@ export default function VesselTurnaroundChart({ startDate, endDate }: Props) {
   }
 
   return (
-    <div className="w-full h-[500px] p-4 bg-white rounded-2xl shadow flex flex-col">
-      <h2 className="text-lg font-semibold mb-4">
+    <div className="w-full h-[320px] p-4 bg-white rounded-2xl shadow flex flex-col">
+      <h2 className="text-md font-semibold mb-4">
         Trend of Vessel Turnaround Time
       </h2>
       <ResponsiveContainer width="100%" height="90%">
-        <LineChart data={data} margin={{ top: 20, right: 0, bottom: 30, left: 20 }}>
+        <LineChart data={data} margin={{ top: 20, right: 0, bottom: 0, left: 20 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis />

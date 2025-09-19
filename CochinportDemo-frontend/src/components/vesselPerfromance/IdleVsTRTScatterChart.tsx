@@ -71,8 +71,8 @@ export default function IdleVsTRTScatterChart({ startDate, endDate }: Props) {
   }
 
   return (
-    <div className="p-4 h-[500px] bg-white rounded-2xl shadow-md">
-      <h2 className="text-lg font-semibold mb-4">
+    <div className="p-4 h-[320px] bg-white rounded-2xl shadow-md">
+      <h2 className="text-md font-semibold mb-4">
         Idle Time vs. Turnaround Time
       </h2>
       <ResponsiveContainer width="100%" height="95%">

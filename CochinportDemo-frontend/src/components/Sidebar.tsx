@@ -38,13 +38,13 @@ export default function Sidebar() {
       label: 'Dashboard',
       icon: <FiGrid />,
       children: [
-        { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
-        { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
-        { label: 'TRT Dashboard', icon: <FiFileText />, href: '/TRT-dashboard' },
-        { label: 'Statistical Dashboard', icon: <FaCalculator/>, href: '/statistical-dashboard' },
+        { label: 'Statistical Dashboard', icon: <FiActivity/>, href: '/statistical-dashboard' },
         { label: 'Cargo Performance', icon: <FiArchive/>, href: '/cargo-performance' },
         { label: 'Vessel Performance', icon: <FiBox/>, href: '/vessel-performance' },
-        { label: 'Year-on-Year Comparsion', icon: <FiBox/>, href: '/year-on-year' },
+        { label: 'Year-on-Year Comparsion', icon: <FiCalendar/>, href: '/year-on-year' },
+        { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
+        { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
+        { label: 'TRT Dashboard', icon: <FaCalculator />, href: '/TRT-dashboard' },
         { label: 'Notification', icon: <FiFolder />, href: '#' }
       ],
     },

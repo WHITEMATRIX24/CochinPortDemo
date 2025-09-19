@@ -105,7 +105,7 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
           className="border border-gray-300  rounded px-2 py-1 text-sm  text-black"
         >
           <option value="month">Monthwise</option>
-          <option value="year">Yearwise</option>
+          <option value="year">Year-wise</option>
         </select>
       </div>
 

@@ -145,7 +145,7 @@ const cards = [
     borderColor: "#ff8800",
   },
   {
-    title: "Avg. Pre-Berthing Detention (Hrs.)",
+    title: "Avg. PBD (Hrs.)",
     current: kpiData.year2.avgPBD.toFixed(2),
     variance: (kpiData.variation.avgPBD ?? 0).toFixed(2) + "%",
     icon: <FiClock size={30} className="text-teal-600" />,
@@ -174,7 +174,7 @@ const cards = [
                 <BreadcrumbList className="text-[12px] leading-[1.2]">
                   <BreadcrumbItem>
                   <BreadcrumbLink
-                    href="/dashboard"
+                    href="/statistical-dashboard"
                     className="text-blue-600 hover:text-blue-800 focus:text-blue-800 active:text-blue-800 visited:text-blue-600"
                   >
                     Dashboard

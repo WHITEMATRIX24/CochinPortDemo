@@ -244,7 +244,7 @@ const cards = [
     borderColor: "#ff8800",
   },
   {
-    title: "Avg. Pre-Berthing Detention (Hrs.)",
+    title: "Avg. PBD (Hrs.)",
     current: kpiData.year2.avgPBD.toFixed(2),
     variance: (kpiData.variation.avgPBD ?? 0).toFixed(2) + "%",
     icon: <FiClock size={30} className="text-teal-600" />,
@@ -269,28 +269,29 @@ const cards = [
                           Cargo Performance
                       </h1>
                       <Breadcrumb className="h-[18px] ml-[1px] mt-[5px]">
-                          <BreadcrumbList className="text-[12px] leading-[1.2]">
-                              <BreadcrumbItem>
-                                  <BreadcrumbLink href="/" className="text-grey-500">
-                                      Dashboard
-                                  </BreadcrumbLink>
-                              </BreadcrumbItem>
-                              <BreadcrumbSeparator className="text-[#C1292E]" />
-                              <BreadcrumbItem>
-                                  <BreadcrumbEllipsis className="text-grey-500" />
-                              </BreadcrumbItem>
-  
-                              <>
-                                  <BreadcrumbSeparator className="text-[#C1292E]" />
-                                  <BreadcrumbItem>
-                                      <BreadcrumbPage className="text-grey-500">
-                                          Cargo Performance
-                                      </BreadcrumbPage>
-                                  </BreadcrumbItem>
-                              </>
-  
-                          </BreadcrumbList>
-                      </Breadcrumb>
+                <BreadcrumbList className="text-[12px] leading-[1.2]">
+                  <BreadcrumbItem>
+                  <BreadcrumbLink
+                    href="/statistical-dashboard"
+                    className="text-blue-600 hover:text-blue-800 focus:text-blue-800 active:text-blue-800 visited:text-blue-600"
+                  >
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                  <BreadcrumbSeparator className="text-[#C1292E]" />
+                  <BreadcrumbItem>
+                    <BreadcrumbEllipsis className="text-blue-600" />
+                  </BreadcrumbItem>
+                  <>
+                    <BreadcrumbSeparator className="text-[#C1292E]" />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage className="text-blue-600">
+                       Cargo Performanace
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </>
+                </BreadcrumbList>
+              </Breadcrumb>
                   </div>
                    {/* Three-dot button */}
                               <div className="relative ms-auto">
@@ -321,39 +322,44 @@ const cards = [
                </div>
                 
         {/* Date filters */}
-        <div className="flex gap-5 ms-auto">
+        <div className="flex flex-wrap gap-4 items-center ms-auto bg-white p-3 rounded-xl ">
+          {/* From Date */}
           <div className="flex gap-2 items-center">
-            <label  className="text-blue-900 font-bold me-2">From</label>
+            <label className="text-[#003049] font-semibold">From</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-white border rounded border-gray-300 h-8 w-fit px-2"
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#003049] transition"
             />
           </div>
-          <div className="flex gap-2 items-center me-5">
-            <label  className="text-blue-900 font-bold me-2">To</label>
+
+          {/* To Date */}
+          <div className="flex gap-2 items-center">
+            <label className="text-[#003049] font-semibold">To</label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-white border border-gray-300 rounded h-8 w-fit px-2"
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#003049] transition"
             />
           </div>
-          <div className="flex gap-3 ms-auto me-3">
-             <button 
-               onClick={handleSeacrh}
-                 className="border  border-gray-300 hover:bg-green-900 hover:text-white hover:cursor-pointer rounded px-3">
-                Search
-              </button>
-              <button
-                 onClick={handleClearFilter}
-                 className="border border-gray-300 rounded px-3 hover:bg-blue-300 hover:text-white hover:cursor-pointer text-black"
-              >
-                clear
-              </button>
-             
-            </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 ms-auto">
+            <button
+              onClick={handleSeacrh}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#003049] text-white hover:bg-[#01497c] active:scale-95 transition"
+            >
+              Search
+            </button>
+            <button
+              onClick={handleClearFilter}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-[#003049] hover:bg-[#669bbc] hover:text-white active:scale-95 transition"
+            >
+              Clear
+            </button>
+          </div>
         </div>
         
 

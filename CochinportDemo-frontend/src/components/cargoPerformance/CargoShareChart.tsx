@@ -44,8 +44,8 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
   };
 
   return (
-    <div className="p-4 w-full h-[500px] bg-white rounded-2xl shadow-md flex flex-col">
-      <h2 className="text-lg font-semibold mb-2">Cargo Share by Type</h2>
+    <div className="p-4 w-full  bg-white rounded-2xl shadow-md flex flex-col" style={{height:"100%"}}>
+      <h2 className="text-md font-semibold mb-2">Cargo Share by Type</h2>
 
       {data.length === 0 ? (
         <p className="text-black text-center flex items-center justify-center mt-25">
@@ -54,14 +54,14 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
       ) : (
         <>
           {/* ✅ Pie Chart */}
-          <ResponsiveContainer width="100%" height={340}>
+          <ResponsiveContainer width="100%" height="90%">
             <PieChart>
               <Pie
                 data={filteredData}
                 cx="50%"
                 cy="50%"
-                innerRadius={80}
-                outerRadius={120}
+                innerRadius={40}
+                outerRadius={70}
                 dataKey="value"
                 nameKey="name"
                 paddingAngle={5}
@@ -80,7 +80,7 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
           </ResponsiveContainer>
 
           {/* ✅ Clickable Legend */}
-          <div className="flex justify-center gap-6 mt-3 flex-wrap">
+          <div className="flex justify-center gap-6 mt-2 flex-wrap">
             {data.map((d, idx) => {
               const isActive = selectedTypes.includes(d.name);
               return (
@@ -92,7 +92,7 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
                   }`}
                 >
                   <span
-                    className="inline-block w-3 h-3 rounded-sm"
+                    className="inline-block w-1 h-3 rounded-sm"
                     style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                   ></span>
                   {d.name}

@@ -136,7 +136,7 @@ export default function StatisticalDashboard() {
       borderColor: "#ff8800",
     },
     {
-      title: "Avg. Pre-Berthing Detention (Hrs.)",
+      title: "Avg. PBD (Hrs.)",
       current: kpiData.year2.avgPBD.toFixed(2),
       variance: (kpiData.variation.avgPBD ?? 0).toFixed(2) + "%",
       icon: <FiClock size={30} className="text-teal-600" />,

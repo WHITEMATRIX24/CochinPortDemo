@@ -63,6 +63,12 @@ export default function ContainerTrafficTrendChart({ startDate, endDate }: Props
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // 👈 allow custom height
+    layout: {
+    padding: {
+      bottom: 20, // 👈 extra space for x-axis labels
+    },
+  },
     plugins: {
       legend: { display: false }, // hide legend
     },
@@ -89,9 +95,9 @@ export default function ContainerTrafficTrendChart({ startDate, endDate }: Props
   }
 
   return (
-    <div className="w-full h-[500px] bg-white rounded-2xl p-4 shadow">
+    <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow">
       <h2 className="text-lg font-semibold mb-3">Container Traffic Trend By Month</h2>
-      <Line data={chartData} options={options} />
+      <Line data={chartData} options={options}  />
     </div>
   );
 }

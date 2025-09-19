@@ -102,7 +102,7 @@ export default function CargoMixPieChart({ startDate, endDate }: Props) {
               label={({ name, percent = 0 }) =>
                 percent >= 0.01 ? `${name} ${(percent * 100).toFixed(0)}%` : ""
               }
-              outerRadius={120}
+              outerRadius={90}
               fill="#8884d8"
               dataKey="value"
             >

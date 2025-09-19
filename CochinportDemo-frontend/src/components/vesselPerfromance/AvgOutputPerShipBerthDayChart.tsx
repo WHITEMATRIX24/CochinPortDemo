@@ -64,8 +64,8 @@ export default function AvgOutputPerShipBerthDayChart({ startDate, endDate }: Pr
     }, [startDate, endDate]);
 
     return (
-        <div className="p-4 h-[550px] bg-white rounded-2xl shadow-md">
-            <h2 className="text-lg font-semibold mb-4">
+        <div className="p-4 h-[320px] bg-white rounded-2xl shadow-md">
+            <h2 className="text-md font-semibold mb-4">
                 Avg Output per Ship Berth Day
             </h2>
             <ResponsiveContainer width="100%" height="95%">
@@ -75,7 +75,7 @@ export default function AvgOutputPerShipBerthDayChart({ startDate, endDate }: Pr
                     <YAxis
                         yAxisId="left"
                         orientation="left"
-                        label={{ value: "Avg Output (MT/Day)", angle: -90, position: "insideLeft", offset:"-5" }}
+                        label={{ value: "Avg Output (MT/Day)", angle: -90, position: "insideLeft", offset:"-5"}}
                         tickFormatter={(val) => {
                             if (val >= 1000000) return (val / 1000000).toFixed(1) + "M";
                             if (val >= 1000) return (val / 1000).toFixed(1) + "K";

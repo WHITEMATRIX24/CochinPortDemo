@@ -49,8 +49,8 @@ export function KPICardsRowYoY({ data }: Props) {
                 className="relative min-w-[200px] max-w-[240px] py-3 h-[110px] bg-white shadow-lg rounded-xl border-l-8 border-transparent overflow-hidden"
               >
                 {/* Gradient stripe */}
-                <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[#014F86] via-[#006494] to-[#003049]" />
-
+{/*                 <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[#014F86] via-[#006494] to-[#003049]" />
+ */}
                 {/* KPI Content */}
                 <div className="px-4 pb-2">
                   <h3 className="text-sm font-medium text-gray-600 mb-2">{kpi.title}</h3>
