@@ -80,4 +80,75 @@ export const getBerths =  async (req, res) => {
   }
 };
 
+// ✅ Get all vessels (unique per berth, latest by ATA/ATD)
+
+export const getVessels = async (req, res) => {
+  try {
+    const { cargoType, country, date } = req.query;
+    const query = {};
+
+    if (cargoType && cargoType !== "All") query.CargoType = cargoType;
+    if (country && country !== "All") query.FlagCountry = country;
+
+    // If date is provided, normalize to start/end of that day
+    let targetDate = null;
+    if (date) {
+      const d = new Date(date);
+      targetDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    } else {
+      // Default: today
+      const today = new Date();
+      targetDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    }
+
+    const data = await vessels.find(query).lean();
+
+    const berthMap = new Map();
+
+    data.forEach((item) => {
+      // Normalize arrival/departure dates
+      const ata = item.ATA ? new Date(item.ATA) : null;
+      const atd = item.ATD ? new Date(item.ATD) : null;
+
+      // A berth is occupied if targetDate lies between ATA and ATD
+      const isOccupied =
+        ata && atd
+          ? targetDate >= new Date(ata.setHours(0, 0, 0, 0)) &&
+            targetDate <= new Date(atd.setHours(23, 59, 59, 999))
+          : false;
+
+      const existing = berthMap.get(item.Berth);
+
+      // Pick latest vessel if multiple, otherwise keep first
+      if (!existing) {
+        berthMap.set(item.Berth, {
+          berthId: item.Berth,
+          isOccupied,
+          currentVessel: isOccupied ? item : null,
+        });
+      } else {
+        // If berth already exists but this vessel is later and occupied
+        const existingVessel = existing.currentVessel;
+        const existingDate = existingVessel?.ATA ? new Date(existingVessel.ATA) : new Date(0);
+        const currentDate = ata || atd || new Date(0);
+
+        if (isOccupied && currentDate > existingDate) {
+          berthMap.set(item.Berth, {
+            berthId: item.Berth,
+            isOccupied,
+            currentVessel: item,
+          });
+        }
+      }
+    });
+
+    // Any berth not having currentVessel will be marked available
+    const uniqueBerths = Array.from(berthMap.values());
+
+    res.json(uniqueBerths);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching vessels", error });
+  }
+};
+
 

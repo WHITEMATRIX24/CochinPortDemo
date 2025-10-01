@@ -41,14 +41,14 @@ export default function BerthTrackerCard({
   {/* Top Row: Flag + Berth Number */}
   <div className="flex items-center justify-between mb-4">
     <div className="relative w-10 aspect-[3/2]">
-      {currentShipId && (
+      {/* {currentShipId && (
         <Image
           src={countryFlag}
           alt={`Flag for ${berthNumber}`}
           fill
           className="rounded object-cover"
         />
-      )}
+      )} */}
     </div>
     <p className="font-bold text-black text-sm">BN: {berthNumber}</p>
   </div>
