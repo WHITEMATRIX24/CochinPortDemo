@@ -348,7 +348,7 @@ const cards = [
         </div>
       </div>
        {/* Modal for commodity codes */}
-      {/* <Modal
+       <Modal
   isOpen={!!selectedKPI}
   onClose={() => {
     setSelectedKPI(null);
@@ -396,10 +396,10 @@ const cards = [
       </table>
     </div>
   )}
-</Modal> */}
+</Modal> 
 
 
-<CommodityModal
+{/* <CommodityModal
   isOpen={!!selectedKPI}
   onClose={() => {
     setSelectedKPI(null);
@@ -408,7 +408,7 @@ const cards = [
   title={`Commodity Codes - ${selectedKPI?.title}`}
   data={commodityCodes}
   unit={selectedKPI?.title.includes("Liquid") ? "MMT" : "TEU"}
-/>
+/> */}
 
 
 
