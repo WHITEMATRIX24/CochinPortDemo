@@ -54,14 +54,24 @@ export default function AvgOutputPerShipBerthDayChart({ startDate, endDate }: Pr
                 const res = await fetch(
                     `${serverUrl}/api/vessel/avg-output?startDate=${startDate}&endDate=${endDate}`
                 );
-                const json = await res.json();
+                const json = await res.json();                
                 setData(json);
             } catch (err) {
                 console.error("Error fetching Avg Output chart:", err);
             }
         };
         fetchData();
-    }, [startDate, endDate]);
+    }, []);
+    if (data.length === 0) {
+    return (
+      <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow  items-center  ">
+        <h2 className="text-lg font-semibold mb-2">Avg Output per Ship Berth Day</h2>
+        <p className="text-gray-600 text-center flex items-center justify-center mt-25 ">
+          No Data from {startDate} to {endDate}
+        </p>
+      </div>
+    );
+  }
 
     return (
         <div className="p-4 h-[320px] bg-white rounded-2xl shadow-md">

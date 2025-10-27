@@ -37,7 +37,7 @@ export default function CargoTrendChart({ startDate, endDate }: Props) {
     };
 
     fetchData();
-  }, [startDate, endDate]);
+  }, []);
 
   const COLORS = [
     "#1e3a8a",

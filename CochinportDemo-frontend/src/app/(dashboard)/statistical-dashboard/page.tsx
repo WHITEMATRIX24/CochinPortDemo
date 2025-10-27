@@ -44,7 +44,8 @@ const getSameDayFromPastSixMonth = () => {
 export default function StatisticalDashboard() {
   const [kpiData, setKpiData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [startDate, setStartDate] = useState<string>(getSameDayFromPastSixMonth());
+  //const [startDate, setStartDate] = useState<string>(getSameDayFromPastSixMonth());
+  const [startDate, setStartDate] = useState<string>("2025-04-01");
   const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 

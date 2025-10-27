@@ -30,7 +30,7 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
     };
 
     fetchData();
-  }, [startDate, endDate]);
+  }, []);
 
   // ✅ Filter data for selected types only
   const filteredData = data.filter((d) => selectedTypes.includes(d.name));

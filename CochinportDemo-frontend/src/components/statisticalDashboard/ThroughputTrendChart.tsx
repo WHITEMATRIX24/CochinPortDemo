@@ -20,6 +20,7 @@ interface Props {
 
 export default function ThroughputTrendChart({ startDate, endDate }: Props) {
   const [data, setData] = useState<any[]>([]);
+  const [isData, setIsData] = useState(false)
   const [cargoTypes, setCargoTypes] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
@@ -39,11 +40,19 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
           `${serverUrl}/api/cargo/throughput-trend-cargo?startDate=${startDate}&endDate=${endDate}`
         );
         const result = await res.json();
-        setData(result);
+       setData(result.data)
+       if(result.message === "Success"){
+        setIsData(true)
+       }
+       else{
+        setIsData(false)
+       }
+        console.log(result);
+        
 
         // Extract cargos
         const cargos = new Set<string>();
-        result.forEach((item: any) => {
+        result.data.forEach((item: any) => {
           Object.keys(item).forEach((key) => {
             if (key !== "month") cargos.add(key);
           });
@@ -56,7 +65,7 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
       }
     };
     fetchData();
-  }, [startDate, endDate]);
+  }, []);
 
   // ✅ toggle legend click
   const toggleCargoType = (cargo: string) => {
@@ -67,12 +76,18 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
     );
   };
 
-  if (data[0]?.month === "No Data") {
+  if (!isData) {
     return (
-      <div className="w-full h-80 p-4 bg-white shadow rounded-2xl flex items-center justify-center">
-        <p className="text-black text-center">
-          No Data from {startDate} to {endDate}
-        </p>
+      <div className="w-full h-80 p-4 bg-white shadow rounded-2xl " >
+        <h2 className="text-md text-black font-semibold mb-4">
+        Throughput Trend by Cargo Type
+      </h2>
+        <div className="w-full h-full p-4  flex items-center justify-center">
+          
+          <p className="text-black text-center">
+            No Data from {startDate} to {endDate}
+          </p>
+        </div>
       </div>
     );
   }

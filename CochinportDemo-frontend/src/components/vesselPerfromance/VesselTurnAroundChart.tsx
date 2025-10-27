@@ -83,10 +83,13 @@ export default function VesselTurnaroundChart({ startDate, endDate }: Props) {
 
   if (noData) {
     return (
-      <div className="w-full h-[450px] bg-white rounded-2xl shadow flex items-center justify-center">
-        <p className="text-gray-600">
-          No vessel turnaround data available between{" "}
-          <span className="font-medium">{startDate}</span> and{" "}
+      <div className="w-full h-[320px] bg-white rounded-2xl shadow ">
+        <h2 className="text-md font-semibold mb-4">
+        Trend of Vessel Turnaround Time
+      </h2>
+        <p className="text-gray-600 flex items-center justify-center mt-25 ">
+          No data available from{" "}
+          <span className="font-medium">{startDate}</span> to{" "}
           <span className="font-medium">{endDate}</span>.
         </p>
       </div>

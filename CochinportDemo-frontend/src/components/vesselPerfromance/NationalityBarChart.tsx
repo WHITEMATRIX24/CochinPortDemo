@@ -43,7 +43,7 @@ export default function NationalityChart({ startDate, endDate }: Props) {
     };
 
     fetchData();
-  }, [startDate, endDate]);
+  }, []);
 
   if (loading) {
     return (
@@ -75,6 +75,17 @@ export default function NationalityChart({ startDate, endDate }: Props) {
       </text>
     );
   };
+  if (data.length === 0) {
+    return (
+      <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow  items-center  ">
+        <h2 className="text-lg font-semibold mb-2">Nationality of Vessels</h2>
+        <p className="text-gray-600 text-center flex items-center justify-center mt-25 ">
+          No Data from {startDate} to {endDate}
+        </p>
+      </div>
+    );
+  }
+
 
   return (
     <div className="p-4 h-[320px] bg-white rounded-2xl shadow-md">

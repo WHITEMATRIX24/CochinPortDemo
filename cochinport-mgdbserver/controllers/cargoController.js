@@ -178,6 +178,13 @@ export const getThroughputTrendByCargoAndYear = async (req, res) => {
       if (!chartDataMap[month]) chartDataMap[month] = { month };
       chartDataMap[month][cargo] = item.totalThroughput;
     });
+    // 🚩 Check if aggregation returned any real data
+if (result.length === 0) {
+  return res.json({
+    message: "No data",
+    data: [],
+  });
+}
 
     // Fill missing months with zero
     const cargos = new Set();
@@ -193,7 +200,10 @@ export const getThroughputTrendByCargoAndYear = async (req, res) => {
 
     if (chartData.length === 0) chartData.push({ month: "No Data" });
 
-    res.json(chartData);
+    res.json({
+  message: "Success",
+  data: chartData,
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({

@@ -40,7 +40,7 @@ export default function CargoMixPieChart({ startDate, endDate }: Props) {
         setData(chartData);
         setSelectedCargo([]); // reset filters when new data loads
       });
-  }, [startDate, endDate]);
+  }, []);
 
   // ✅ Step 1: calculate total
   const total = data.reduce((sum, d) => sum + d.value, 0);
