@@ -35,7 +35,8 @@ export default function ShipVisitTracker() {
 
   const [visits, setVisits] = useState<ShipVisit[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [cargoType, setCargoType] = useState<string>(""); // ✅ Selected cargo type
+  const [cargoTypes, setCargoTypes] = useState<string[]>(["Containerised","Liquid Bulk", "Break Bulk", "Dry Bulk Mechanical"]); // ✅ Available cargo types
   const [selectedVesselId, setSelectedVesselId] = useState<string>("");
   const [year, setYear] = useState<number | "">("");
   const [startDate, setStartDate] = useState<string>(
@@ -63,6 +64,7 @@ export default function ShipVisitTracker() {
       if (year) params.append("year", String(year));
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
+      if(cargoType) params.append("cargoType", cargoType);
 
       // Add pagination params
       params.append("page", String(page));
@@ -75,6 +77,13 @@ export default function ShipVisitTracker() {
 
       setVisits(Array.isArray(json.data) ? json.data : []);
       setPagination(json.pagination);
+       // ✅ Collect unique cargo types dynamically from API response
+      /* if (Array.isArray(json.data)) {
+      const uniqueCargoTypes = Array.from(
+      new Set((json.data as ShipVisit[]).map((v) => v.cargoType))
+  );
+  setCargoTypes(uniqueCargoTypes);
+} */
     } catch (err) {
       console.error("Failed to fetch ship visits:", err);
       setVisits([]);
@@ -87,8 +96,9 @@ export default function ShipVisitTracker() {
   // Refetch when filters or rowsPerPage change
   useEffect(() => {
     fetchVisits(1, rowsPerPage); // reset to first page
-  }, [selectedVesselId, year, startDate, endDate, rowsPerPage]);
+  }, [selectedVesselId, year, startDate, endDate, rowsPerPage, cargoType]);
 
+  
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="px-4 pb-4">
@@ -125,7 +135,7 @@ export default function ShipVisitTracker() {
         </div>
 
         {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-7">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-7">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Vessel ID
@@ -151,6 +161,24 @@ export default function ShipVisitTracker() {
               className="w-full border border-gray-300 text-black rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="e.g. 2025"
             />
+          </div>
+           {/* ✅ Cargo Type Filter (Dropdown) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Cargo Type
+            </label>
+            <select
+              value={cargoType}
+              onChange={(e) => setCargoType(e.target.value)}
+              className="w-full border border-gray-300 text-gray-600 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 h-[40px]"
+            >
+              <option value="">All</option>
+              {cargoTypes.map((type, idx) => (
+                <option key={idx} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -181,7 +209,7 @@ export default function ShipVisitTracker() {
           <div className="flex items-center gap-2 text-blue-800 mb-4">
             <MdHistory className="text-xl" />
             {loading ? (<Loading/>
-            ) : pagination.totalDocs > 0 ? (
+            ) : pagination?.totalDocs > 0 ? (
               <h3 className="text-lg font-semibold">
                 Showing {pagination.totalDocs} visit(s){" "}
                 {year

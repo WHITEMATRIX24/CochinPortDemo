@@ -10,21 +10,30 @@ const diffHours = (start, end) =>
 export const getVesselYoYKPIs = async (req, res) => {
   try {
     let { startDate, endDate } = req.query;
-    if (!startDate || !endDate) {
-      return res.status(400).json({ error: "Provide year1 and year2" });
+    // Default: use current financial year (April–March) and previous year
+    const now = new Date();
+    let currentFY, previousFY;
+
+    // If today is before April → we are still in last FY
+    if (now.getMonth() + 1 < 4) {
+      // Example: March 2025 → FY 2024–25 is still running
+      currentFY = now.getFullYear() - 1; // FY start year
+    } else {
+      // Example: Aug 2025 → FY 2025–26 is running
+      currentFY = now.getFullYear();
     }
 
-    let year1 = 2025;
-    let year2 = 2024;
+    previousFY = currentFY - 1;
 
-    // Filter: April month of both years
-    const start1 = new Date(`${year1}-04-01T00:00:00Z`);
-    const end1 = new Date(`${year1}-04-30T23:59:59Z`);
-    const start2 = new Date(`${year2}-04-01T00:00:00Z`);
-    const end2 = new Date(`${year2}-04-30T23:59:59Z`);
+    // Financial year ranges
+    const start1 = new Date(`${currentFY}-04-01T00:00:00Z`);
+    const end1 = new Date(`${currentFY + 1}-03-31T23:59:59Z`);
+    const start2 = new Date(`${previousFY}-04-01T00:00:00Z`);
+    const end2 = new Date(`${previousFY + 1}-03-31T23:59:59Z`);
 
-    const vesselsYear1 = await vessels.find({ ATDUnberth: { $gte: start1, $lte: end1 } });
-    const vesselsYear2 = await vessels.find({ ATDUnberth: { $gte: start2, $lte: end2 } });
+
+    const vesselsYear1 = await vessels.find({ ATABerth: { $gte: start1, $lte: end1 } });
+    const vesselsYear2 = await vessels.find({ ATABerth: { $gte: start2, $lte: end2 } });
 
     // Core calculation function
     const calculateKPIs = (vessels) => {
@@ -855,6 +864,76 @@ export const getBerthOccupancyData = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
+export const getCommodityCodes = async (req, res) => {
+  try {
+    const { kpi, startDate, endDate } = req.query;
+
+    if (!kpi || typeof kpi !== "string") {
+      return res.status(400).json({ error: "KPI parameter is required" });
+    }
+    if (!startDate || !endDate || typeof startDate !== "string" || typeof endDate !== "string") {
+      return res.status(400).json({ error: "startDate and endDate are required" });
+    }
+
+    console.log(kpi);
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // include full end day
+
+    let cargoType;
+    let valueField;
+
+    if (kpi === "Liquid Cargo (MMT)") {
+      cargoType = "Liquid Bulk";
+      valueField = "$MT";
+    } else if (kpi === "Containers (TEUs)") {
+      cargoType = "Containerised";
+      valueField = "$Teus";
+    } else {
+      return res.status(400).json({ error: "Invalid KPI" });
+    }
+
+    // Aggregate commodity totals
+    const pipeline = [
+      {
+        $match: {
+          CargoType: cargoType,
+          ATABerth: { $gte: start, $lte: end },
+        },
+      },
+      {
+        $group: {
+          _id: "$Commodity",
+          total: { $sum: valueField },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          code: "$_id",
+          value: "$total",
+        },
+      },
+      { $sort: { value: -1 } },
+    ];
+
+    const result = await vessels.aggregate(pipeline);
+
+    console.log(result);
+    
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("Error fetching commodity codes:", err);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+  }
+};
+
+export default getCommodityCodes;
 
 
 

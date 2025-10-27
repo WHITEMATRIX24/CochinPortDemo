@@ -321,24 +321,38 @@ export const getAvgOutputPerShipBerthDay = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
 export const getVesselsFormatted = async (req, res) => {
   try {
-    let { startDate, endDate, VslID, page = 1, limit = 10 } = req.query;
+    let { startDate, endDate, VslID, cargoType, year, page = 1, limit = 10 } =
+      req.query;
 
-    const start = startDate ? new Date(startDate) : new Date("2020-01-01");
-    const end = endDate ? new Date(endDate) : new Date();
+    // ✅ If year is given, override start/end range
+    let start;
+    let end;
+
+    if (year) {
+      const y = parseInt(year, 10);
+      start = new Date(`${y}-01-01T00:00:00Z`);
+      end = new Date(`${y}-12-31T23:59:59Z`);
+    } else {
+      start = startDate ? new Date(startDate) : new Date("2020-01-01");
+      end = endDate ? new Date(endDate) : new Date();
+    }
 
     // Convert page/limit to numbers
     page = parseInt(page, 10);
-    limit = limit === "all" ? 0 : parseInt(limit, 10); // support "all" rows
+    limit = limit === "all" ? 0 : parseInt(limit, 10);
 
-    // Step 1: Filter vessels
+    // Step 1: Build filter
     const filter = {
       ATA: { $gte: start, $lte: end },
     };
-    if (VslID) filter.VslID = VslID;
 
-    // Step 2: Count total docs for pagination
+    if (VslID) filter.VslID = VslID;
+    if (cargoType) filter.CargoType = cargoType;
+
+    // Step 2: Count total docs
     const totalDocs = await vessels.countDocuments(filter);
 
     // Step 3: Fetch vessels with pagination

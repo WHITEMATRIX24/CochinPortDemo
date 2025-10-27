@@ -29,6 +29,8 @@ import PBDChart from "@/components/yoycomparison/PBDChart"
 import { KPICardsRowYoY } from "@/components/KPICardsTwoRow"
 import BerthOccupancyChartYoy from "@/components/yoycomparison/BerhOccupancyChartYoy"
 import Loading from "../../../components/Loadind"
+import { Modal } from "@/components/yoycomparison/CommdityTypeModal"
+import CommodityModal from "@/components/yoycomparison/CommodityTypeModal"
 
 const getSameDayFromPastSixMonth = () => {
   const today = new Date();
@@ -46,14 +48,21 @@ const getSameDayFromPastSixMonth = () => {
   const month = String(lastMonth.getMonth() + 1).padStart(2, "0");
   const day = String(lastMonth.getDate()).padStart(2, "0");
 
+  console.log(year, month, day);
+  
   return `${year}-${month}-${day}`;
 };
 
 export default function YearOnYear() {
   const [kpiData, setKpiData] = useState<any>(null)
+   const [selectedKPI, setSelectedKPI] = useState<any>(null);
+   const [commodityCodes, setCommodityCodes] = useState<any[]>([]);
+  const [loadingCommodity, setLoadingCommodity] = useState(false);
   const [loading, setLoading] = useState(true)
-  const [startDate, setStartDate] = useState<string>(getSameDayFromPastSixMonth());
-  const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
+/*   const [startDate, setStartDate] = useState<string>(getSameDayFromPastSixMonth());
+ */ 
+    const [startDate, setStartDate] = useState<string>("2025-04-01");
+    const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
 
@@ -79,6 +88,29 @@ export default function YearOnYear() {
     setStartDate(getSameDayFromPastSixMonth())
     setEndDate(new Date().toISOString().split("T")[0])
   }
+  const handleCardClick = async (kpi: any) => {
+  if (kpi.title === "Liquid Cargo (MMT)" || kpi.title === "Containers (TEUs)") {
+    setSelectedKPI(kpi);
+    setLoadingCommodity(true);
+
+    try {
+      // Fetch commodity codes dynamically using start and end date
+      const res = await fetch(
+        `${serverUrl}/api/y-o-y/commodity-codes?kpi=${encodeURIComponent(
+          kpi.title
+        )}&startDate=${startDate}&endDate=${endDate}`
+      );
+      const data = await res.json();
+      setCommodityCodes(data);
+    } catch (err) {
+      console.error("Error fetching commodity codes:", err);
+      setCommodityCodes([]);
+    } finally {
+      setLoadingCommodity(false);
+    }
+  }
+};
+
   // Fetch KPI data whenever date changes
   useEffect(() => {
 
@@ -90,75 +122,89 @@ export default function YearOnYear() {
 const cards = [
   {
     title: "Total Throughput (MMT)",
-    current: kpiData.year2.totalThroughputMMT.toFixed(2),
+    current: kpiData.year1.totalThroughputMMT.toFixed(2),
     variance: (kpiData.variation.totalThroughputMMT ?? 0).toFixed(2) + "%",
     icon: <FiTrendingUp size={30} className="text-[#4e5166]" />,
     borderColor: "#4e5166",
   },
   {
     title: "Dry Cargo (MMT)",
-    current: kpiData.year2.dryCargoMMT.toFixed(2),
+    current: kpiData.year1.dryCargoMMT.toFixed(2),
     variance: (kpiData.variation.dryCargoMMT ?? 0).toFixed(2) + "%",
     icon: <FiBox size={30} className="text-green-700" />,
     borderColor: "green",
   },
   {
     title: "Liquid Cargo (MMT)",
-    current: kpiData.year2.liquidCargoMMT.toFixed(2),
+    current: kpiData.year1.liquidCargoMMT.toFixed(2),
     variance: (kpiData.variation.liquidCargoMMT ?? 0).toFixed(2) + "%",
     icon: <FiDroplet size={30} className="text-[#610345]" />,
     borderColor: "#C1292E",
   },
   {
     title: "Containers (TEUs)",
-    current: kpiData.year2.containerTEUs,
+    current: kpiData.year1.containerTEUs,
     variance: (kpiData.variation.containerTEUs ?? 0).toFixed(2) + "%",
     icon: <FiTruck size={30} className="text-[#C1292E]" />,
     borderColor: "#610345",
   },
   {
     title: "Mean TRT (Hrs.)",
-    current: kpiData.year2.meanTRT.toFixed(2),
+    current: kpiData.year1.meanTRT.toFixed(2),
     variance: (kpiData.variation.meanTRT ?? 0).toFixed(2) + "%",
     icon: <FiClock size={30} className="text-blue-600" />,
     borderColor: "#0077b6",
   },
   {
     title: "Median TRT (Hrs.)",
-    current: kpiData.year2.medianTRT.toFixed(2),
+    current: kpiData.year1.medianTRT.toFixed(2),
     variance: (kpiData.variation.medianTRT ?? 0).toFixed(2) + "%",
     icon: <FiClock size={30} className="text-indigo-600" />,
     borderColor: "#5A189A",
   },
   {
-    title: "Avg. Container TRT (Hrs.)",
-    current: kpiData.year2.avgContainerTRT.toFixed(2),
+    title: "Avg. Vessel TRT (Container) (Hrs.)",
+    current: kpiData.year1.avgContainerTRT.toFixed(2),
     variance: (kpiData.variation.avgContainerTRT ?? 0).toFixed(2) + "%",
-    icon: <FiClock size={30} className="text-purple-600" />,
+    icon: <FiTruck size={30} className="text-purple-600" />,
     borderColor: "purple",
   },
   {
     title: "Output per Berth Day (MT)",
-    current: kpiData.year2.outputPerBerthDay.toFixed(0),
+    current: kpiData.year1.outputPerBerthDay.toFixed(0),
     variance: (kpiData.variation.outputPerBerthDay ?? 0).toFixed(2) + "%",
     icon: <FiActivity size={30} className="text-orange-600" />,
     borderColor: "#ff8800",
   },
   {
     title: "Avg. PBD (Hrs.)",
-    current: kpiData.year2.avgPBD.toFixed(2),
+    current: kpiData.year1.avgPBD.toFixed(2),
     variance: (kpiData.variation.avgPBD ?? 0).toFixed(2) + "%",
     icon: <FiClock size={30} className="text-teal-600" />,
     borderColor: "teal",
   },
   {
     title: "Idle Time at Berth (%)",
-    current: kpiData.year2.idlePercent.toFixed(2) + "%",
+    current: kpiData.year1.idlePercent.toFixed(2) + "%",
     variance: (kpiData.variation.idlePercent ?? 0).toFixed(2) + "%",
     icon: <FiActivity size={30} className="text-rose-600" />,
     borderColor: "crimson",
   },
 ];
+
+ // Example commodity data
+  /* const commodityCodes = {
+    "Liquid Cargo (MMT)": [
+      { code: "1001", name: "Crude Oil" },
+      { code: "1002", name: "Petroleum Products" },
+      { code: "1003", name: "Chemicals" },
+    ],
+    "Containers (TEUs)": [
+      { code: "2001", name: "Electronics" },
+      { code: "2002", name: "Textiles" },
+      { code: "2003", name: "Machinery" },
+    ],
+  }; */
 
 
   return (
@@ -270,7 +316,7 @@ const cards = [
           </div>
         </div>
 
-        <KPICardsRowYoY data={cards} />
+<KPICardsRowYoY data={cards} onCardClick={handleCardClick} />
       </div>
 
       {/* charts */}
@@ -301,6 +347,72 @@ const cards = [
           </div>
         </div>
       </div>
+       {/* Modal for commodity codes */}
+      {/* <Modal
+  isOpen={!!selectedKPI}
+  onClose={() => {
+    setSelectedKPI(null);
+    setCommodityCodes([]);
+  }}
+  title={`Commodity Codes - ${selectedKPI?.title}`}
+>
+  {loadingCommodity ? (
+    <p className="text-center py-6">Loading...</p>
+  ) : commodityCodes.length === 0 ? (
+    <p className="text-center py-6 text-gray-500">No data available</p>
+  ) : (
+    <div className="overflow-x-auto max-h-[400px] px-5 ">
+      <table className="w-full table-auto border-collapse">
+        <thead>
+          <tr className="bg-blue-300 text-md sticky top-0">
+            <th className="text-left px-4 py-2 border-b border-gray-300">Commodity</th>
+            <th className="text-left px-4 py-2 border-b border-gray-300">
+              {selectedKPI?.title.includes("Liquid") ? "MMT" : "TEU"}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {commodityCodes.map((c: any) => (
+            <tr key={c.code} className="hover:bg-gray-50">
+              <td className="px-4  text-sm py-2 border-b border-gray-300">{c.code}</td>
+              {selectedKPI?.title.includes("Liquid")?
+              <td className="px-4 py-2 border-b border-gray-300">{(c.value/1000000).toFixed(2)}</td>:
+              <td className="px-4 py-2 border-b border-gray-300">{(c.value)}</td>
+              }
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr className="bg-gray-200 font-semibold">
+            <td className="px-4 py-2 border-t">Total</td>
+            {selectedKPI?.title.includes("Liquid")?<td className="px-4 py-2 border-t">
+              {((commodityCodes.reduce((sum, c) => sum + c.value, 0))/1000000).toFixed(2)}
+            </td>:
+            <td className="px-4 py-2 border-t">
+              {((commodityCodes.reduce((sum, c) => sum + c.value, 0)))}
+            </td>}
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  )}
+</Modal> */}
+
+
+<CommodityModal
+  isOpen={!!selectedKPI}
+  onClose={() => {
+    setSelectedKPI(null);
+    setCommodityCodes([]);
+  }}
+  title={`Commodity Codes - ${selectedKPI?.title}`}
+  data={commodityCodes}
+  unit={selectedKPI?.title.includes("Liquid") ? "MMT" : "TEU"}
+/>
+
+
+
+
     </div>
   )
 }

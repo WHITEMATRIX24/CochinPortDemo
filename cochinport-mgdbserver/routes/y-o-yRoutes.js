@@ -1,5 +1,5 @@
 import express from "express";
-import { getAvgOutputPerShipBerthDayYoy, getBerthOccupancyData, getIdleTimeAtBerthYoy, getPBDData, getThroughputVariance, getVesselTurnaroundTrendYoy, getVesselYoYKPIs } from "../controllers/y-o-yController.js";
+import getCommodityCodes, { getAvgOutputPerShipBerthDayYoy, getBerthOccupancyData, getIdleTimeAtBerthYoy, getPBDData, getThroughputVariance, getVesselTurnaroundTrendYoy, getVesselYoYKPIs } from "../controllers/y-o-yController.js";
 
 const router = express.Router();
 
@@ -18,5 +18,6 @@ router.get("/pbd-data-yoy", getPBDData)
 
 router.get("/berth-occupancy-yoy", getBerthOccupancyData)
 
+router.get("/commodity-codes", getCommodityCodes)
 
 export default router;
