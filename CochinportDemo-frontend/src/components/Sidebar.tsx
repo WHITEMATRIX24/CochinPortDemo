@@ -19,6 +19,7 @@ import {
   FiArchive,
   FiMapPin,
   FiActivity,
+  FiClock,
 } from 'react-icons/fi';
 import { FaCalculator } from 'react-icons/fa';
 
@@ -48,7 +49,8 @@ export default function Sidebar() {
         { label: 'Statistical Dashboard', icon: <FiActivity />, href: '/statistical-dashboard' },
         { label: 'Cargo Performance', icon: <FiArchive />, href: '/cargo-performance' },
         { label: 'Vessel Performance', icon: <FiBox />, href: '/vessel-performance' },
-        { label: 'Year-on-Year Comparsion', icon: <FiCalendar />, href: '/year-on-year' },
+        { label: 'Vessel Time Utilization ', icon: <FiClock />, href: '/vessel-time-utilization' },
+        { label: 'Year-on-Year Comparison', icon: <FiCalendar />, href: '/year-on-year' },
         { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
         { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
         { label: 'TRT Dashboard', icon: <FaCalculator />, href: '/TRT-dashboard' },

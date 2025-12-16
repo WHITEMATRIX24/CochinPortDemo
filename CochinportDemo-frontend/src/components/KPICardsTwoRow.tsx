@@ -29,7 +29,7 @@ export function KPICardsRowYoY({ data, onCardClick }: Props) {
   return (
     <div className="px-4 lg:px-6 space-y-1">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-5 py-3 @xl/main:grid-cols-2 @5xl/main:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 py-3 @xl/main:grid-cols-2 @5xl/main:grid-cols-5">
         <AnimatePresence>
           {visibleData.map((kpi, index) => (
             <motion.div
@@ -46,7 +46,7 @@ export function KPICardsRowYoY({ data, onCardClick }: Props) {
               onClick={() => onCardClick?.(kpi)} // 👈 handle click
               className="cursor-pointer"
             >
-              <Card className="relative min-w-[200px] max-w-[240px] py-3 h-[110px] bg-white shadow-lg rounded-xl border-l-8 border-transparent overflow-hidden">
+              <Card className="relative min-w-[200px] max-w-[260px] py-3 h-[110px] bg-white shadow-lg rounded-xl border-l-8 border-transparent overflow-hidden">
                 <div className="px-4 pb-2">
                   <h3 className="text-sm font-medium text-gray-600 mb-2">{kpi.title}</h3>
                   <p className="text-2xl font-bold text-gray-900">{kpi.current}</p>

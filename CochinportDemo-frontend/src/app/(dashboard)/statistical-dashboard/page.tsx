@@ -277,11 +277,11 @@ export default function StatisticalDashboard() {
             <CommodityCargoBarChart startDate={startDate} endDate={endDate} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 m-3 py-5">
-          <div className="pl-4">
+        <div className="grid grid-cols-10 gap-4 m-3 py-5">
+          <div className="pl-4 col-span-6">
             <ThroughputTrendChart startDate={startDate} endDate={endDate} />
           </div>
-          <div className="">
+          <div className="col-span-4">
             <BerthOccupancyChart startDate={startDate} endDate={endDate} />
           </div>
         </div>

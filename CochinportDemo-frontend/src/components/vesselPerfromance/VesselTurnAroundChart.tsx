@@ -84,7 +84,7 @@ export default function VesselTurnaroundChart({ startDate, endDate }: Props) {
   if (noData) {
     return (
       <div className="w-full h-[320px] bg-white rounded-2xl shadow ">
-        <h2 className="text-md font-semibold mb-4">
+        <h2 className="flex text-md font-semibold mb-4 text-center">
         Trend of Vessel Turnaround Time
       </h2>
         <p className="text-gray-600 flex items-center justify-center mt-25 ">
@@ -98,7 +98,7 @@ export default function VesselTurnaroundChart({ startDate, endDate }: Props) {
 
   return (
     <div className="w-full h-[320px] p-4 bg-white rounded-2xl shadow flex flex-col">
-      <h2 className="text-md font-semibold mb-4">
+      <h2 className="text-md font-semibold mb-4 text-center">
         Trend of Vessel Turnaround Time
       </h2>
       <ResponsiveContainer width="100%" height="90%">

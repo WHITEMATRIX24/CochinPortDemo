@@ -265,17 +265,7 @@ export default function VesselPerformance() {
                 <KPICardsYoY data={cards} />
             </div>
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2">
-                <div className="grid grid-cols-10 gap-4">
-                    {/* Cargo trend takes 70% width */}
-                    <div className="col-span-6 pl-4">
-                        <VesselTurnaroundChart startDate={startDate} endDate={endDate} />
-                    </div>
-
-                    {/* Top commodities takes 30% width */}
-                    <div className="col-span-4">
-                        <NationalityChart startDate={startDate} endDate={endDate} />
-                    </div>
-                </div>
+                
 
                  <div className="grid grid-cols-10 gap-4 m-5 ">
 
@@ -283,10 +273,23 @@ export default function VesselPerformance() {
                           <AvgOutputPerShipBerthDayChart startDate={startDate} endDate={endDate} />
                  </div>
                     <div className=" col-span-4" >
-                     <IdleVsTRTScatterChart startDate={startDate} endDate={endDate} />
-                    </div>
+                        <NationalityChart startDate={startDate} endDate={endDate} />
+{/*                      <IdleVsTRTScatterChart startDate={startDate} endDate={endDate} />
+ */}                    </div>
                     
                 </div>  
+                <div className="grid grid-cols-10 gap-4">
+                    {/* Cargo trend takes 70% width */}
+                    <div className="col-span-10 pl-4">
+                        <VesselTurnaroundChart startDate={startDate} endDate={endDate} />
+                    </div>
+
+                    {/* Top commodities takes 30% width */}
+                    {/* <div className="col-span-4">
+                        <NationalityChart startDate={startDate} endDate={endDate} />
+                    </div> */}
+
+                </div>
             </div>
         </div>
 

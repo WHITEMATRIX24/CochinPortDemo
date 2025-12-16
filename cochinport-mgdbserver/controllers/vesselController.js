@@ -245,29 +245,34 @@ export const getAvgOutputPerShipBerthDay = async (req, res) => {
     const start = startDate ? new Date(startDate) : new Date("2020-01-01");
     const end = endDate ? new Date(endDate) : new Date();
 
-    // Step 1: Aggregate per month
     const stats = await vessels.aggregate([
       {
         $match: {
           ATABerth: { $gte: start, $lte: end },
           ATDUnberth: { $ne: null },
+          MT: { $gt: 0 },
         },
       },
       {
-        $project: {
-          MT: 1,
-          MnthYear: 1,
+        $addFields: {
+          monthDate: {
+            $dateFromParts: {
+              year: { $year: "$ATABerth" },
+              month: { $month: "$ATABerth" },
+              day: 1,
+            },
+          },
           berthDays: {
             $divide: [
               { $subtract: ["$ATDUnberth", "$ATABerth"] },
-              1000 * 60 * 60 * 24, // ms → days
+              1000 * 60 * 60 * 24,
             ],
           },
         },
       },
       {
         $group: {
-          _id: "$MnthYear",
+          _id: "$monthDate",
           totalCargo: { $sum: "$MT" },
           totalBerthDays: { $sum: "$berthDays" },
           vesselCount: { $sum: 1 },
@@ -275,7 +280,8 @@ export const getAvgOutputPerShipBerthDay = async (req, res) => {
       },
       {
         $project: {
-          month: "$_id",
+          _id: 0,
+          monthDate: "$_id",
           avgOutput: {
             $cond: [
               { $eq: ["$totalBerthDays", 0] },
@@ -286,34 +292,34 @@ export const getAvgOutputPerShipBerthDay = async (req, res) => {
           vesselCount: 1,
         },
       },
-      { $sort: { month: 1 } },
+      { $sort: { monthDate: 1 } },
     ]);
 
-    // Step 2: If no data at all → return []
-    if (!stats || stats.length === 0) {
-      return res.json([]);
-    }
+    // Build a map using ISO month key
+    const dataMap = new Map(
+      stats.map((d) => [
+        format(d.monthDate, "MMM-yy"),
+        d,
+      ])
+    );
 
-    // Step 3: Generate all months in range
-    const allMonths = [];
+    // Generate full month range
+    const filled = [];
     let cur = new Date(start);
     cur.setDate(1);
 
     while (cur <= end) {
-      allMonths.push(format(cur, "MMM-yy")); // eg: Apr-24
+      const label = format(cur, "MMM-yy");
+      const entry = dataMap.get(label);
+
+      filled.push({
+        month: label,
+        avgOutput: entry ? Math.round(entry.avgOutput) : 0,
+        vesselCount: entry ? entry.vesselCount : 0,
+      });
+
       cur.setMonth(cur.getMonth() + 1);
     }
-
-    // Step 4: Fill missing months with zeros
-    const dataMap = new Map(stats.map((d) => [d.month, d]));
-    const filled = allMonths.map((m) => {
-      const entry = dataMap.get(m);
-      return {
-        month: m,
-        avgOutput: entry ? entry.avgOutput : 0,
-        vesselCount: entry ? entry.vesselCount : 0,
-      };
-    });
 
     res.json(filled);
   } catch (error) {
@@ -321,6 +327,7 @@ export const getAvgOutputPerShipBerthDay = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 export const getVesselsFormatted = async (req, res) => {
   try {

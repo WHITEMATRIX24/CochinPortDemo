@@ -6,37 +6,36 @@ import { format } from "date-fns";
 const diffHours = (start, end) =>
   start && end ? (new Date(end) - new Date(start)) / (1000 * 60 * 60) : 0;
 
-const TEU_AVG_T = 14.5;      // tonnes per TEU
-const DWT_LOAD_FACTOR = 0.60; // 60% typical usable cargo capacity
-const GRT_TO_MT = 0.90;       // very approximate fallback
-
 //return april months data
 export const getVesselYoYKPIs = async (req, res) => {
   try {
     let { startDate, endDate } = req.query;
-
+    // Default: use current financial year (April–March) and previous year
     const now = new Date();
     let currentFY, previousFY;
 
-    if (now.getMonth() + 1 < 4) currentFY = now.getFullYear() - 1;
-    else currentFY = now.getFullYear();
+    // If today is before April → we are still in last FY
+    if (now.getMonth() + 1 < 4) {
+      // Example: March 2025 → FY 2024–25 is still running
+      currentFY = now.getFullYear() - 1; // FY start year
+    } else {
+      // Example: Aug 2025 → FY 2025–26 is running
+      currentFY = now.getFullYear();
+    }
 
     previousFY = currentFY - 1;
 
+    // Financial year ranges
     const start1 = new Date(`${currentFY}-04-01T00:00:00Z`);
     const end1 = new Date(`${currentFY + 1}-03-31T23:59:59Z`);
     const start2 = new Date(`${previousFY}-04-01T00:00:00Z`);
     const end2 = new Date(`${previousFY + 1}-03-31T23:59:59Z`);
 
+
     const vesselsYear1 = await vessels.find({ ATABerth: { $gte: start1, $lte: end1 } });
     const vesselsYear2 = await vessels.find({ ATABerth: { $gte: start2, $lte: end2 } });
 
-    // Helper: difference in hours
-    const diffHours = (a, b) => {
-      if (!a || !b) return 0;
-      return (new Date(b) - new Date(a)) / 36e5;
-    };
-
+    // Core calculation function
     const calculateKPIs = (vessels) => {
       let totalMT = 0,
         dryMT = 0,
@@ -45,12 +44,7 @@ export const getVesselYoYKPIs = async (req, res) => {
         trtList = [],
         trtContainer = [],
         berthHours = 0,
-        idleHoursList = [],
-        workingHoursList = [],
-        pilotageHoursList = [],
-        imTimeList = [],
-        omTimeList = [],
-        shiftingTimeList = [],
+        idleHours = 0,
         totalPBDSeconds = 0,
         pbdCount = 0;
 
@@ -62,49 +56,21 @@ export const getVesselYoYKPIs = async (req, res) => {
         if (v.CargoType === "Dry Bulk Mechanical") dryMT += v.MT || 0;
         if (v.CargoType === "Liquid Bulk") liquidMT += v.MT || 0;
 
-        // Turnaround Time
+        // Turnaround time (hrs)
         const trt = diffHours(v.ATA, v.ATD);
         if (trt > 0) {
           trtList.push(trt);
           if (v.CargoType === "Containerised") trtContainer.push(trt);
         }
 
-        // Berth hours
-        berthHours += diffHours(v.ATABerth, v.ATDUnberth);
+        // Berth hrs
+        const bh = diffHours(v.ATABerth, v.ATDUnberth);
+        berthHours += bh;
 
-        // ------------ NEW KPIs -------------
+        // Idle hrs
+        idleHours += v.IdleHrs || 0;
 
-        // Idle time (hours)
-        const idle =
-          ((v.Idling_Port || 0) + (v.Idling_NonPort || 0)) / 3600;
-        idleHoursList.push(idle);
-
-        // Working time (SWB + SNWB)
-        const working =
-          ((v.SWB_Port || 0) +
-            (v.SWB_NonPort || 0) +
-            (v.SNWB_Port || 0) +
-            (v.SNWB_NonPort || 0)) / 3600;
-        workingHoursList.push(working);
-
-        // Pilotage Time
-        const pilotHours = diffHours(v.PilotBoarding, v.PilotUnboarding);
-        if (pilotHours > 0) pilotageHoursList.push(pilotHours);
-
-        // NEW: IM Time (hrs)
-        if (v.IMTime != null)
-          imTimeList.push(v.IMTime / 3600);
-
-        // NEW: OM Time (hrs)
-        if (v.OMTime != null)
-          omTimeList.push(v.OMTime / 3600);
-
-        // NEW: Shifting time (hrs)
-        const shifting =
-          ((v.Shifting_Port || 0) + (v.Shifting_NonPort || 0)) / 3600;
-        shiftingTimeList.push(shifting);
-
-        // PBD
+        // Pre-berthing detention from PBD_Total
         if (v.PBD_Total != null) {
           totalPBDSeconds += v.PBD_Total;
           pbdCount += 1;
@@ -131,49 +97,15 @@ export const getVesselYoYKPIs = async (req, res) => {
           ? trtContainer.reduce((a, b) => a + b, 0) / trtContainer.length
           : 0;
 
-      // Output per berth day
+      // Output per Ship Berth Day
       const outputPerBerthDay =
         berthHours > 0 ? (totalMT / berthHours) * 24 : 0;
 
-      // Avg PBD (hours)
+      // Avg Pre-berthing detention in hours
       const avgPBD = pbdCount > 0 ? totalPBDSeconds / pbdCount / 3600 : 0;
 
       // Idle %
-      const idlePercent = berthHours > 0 ? 
-        (idleHoursList.reduce((a, b) => a + b, 0) / berthHours) * 100 : 0;
-
-      // NEW KPIs
-      const avgIdleTime =
-        idleHoursList.length > 0
-          ? idleHoursList.reduce((a, b) => a + b, 0) / idleHoursList.length
-          : 0;
-
-      const avgWorkingTime =
-        workingHoursList.length > 0
-          ? workingHoursList.reduce((a, b) => a + b, 0) / workingHoursList.length
-          : 0;
-
-      const avgPilotageTime =
-        pilotageHoursList.length > 0
-          ? pilotageHoursList.reduce((a, b) => a + b, 0) /
-            pilotageHoursList.length
-          : 0;
-
-      const avgIMTime =
-        imTimeList.length > 0
-          ? imTimeList.reduce((a, b) => a + b, 0) / imTimeList.length
-          : 0;
-
-      const avgOMTime =
-        omTimeList.length > 0
-          ? omTimeList.reduce((a, b) => a + b, 0) / omTimeList.length
-          : 0;
-
-      const avgShiftingTime =
-        shiftingTimeList.length > 0
-          ? shiftingTimeList.reduce((a, b) => a + b, 0) /
-            shiftingTimeList.length
-          : 0;
+      const idlePercent = berthHours > 0 ? (idleHours / berthHours) * 100 : 0;
 
       return {
         totalThroughputMMT: totalMT / 1_000_000,
@@ -186,20 +118,13 @@ export const getVesselYoYKPIs = async (req, res) => {
         outputPerBerthDay,
         avgPBD,
         idlePercent,
-
-        // NEW KPIs
-        avgIdleTime,
-        avgWorkingTime,
-        avgPilotageTime,
-        avgIMTime,
-        avgOMTime,
-        avgShiftingTime,
       };
     };
 
     const year1Vals = calculateKPIs(vesselsYear1);
     const year2Vals = calculateKPIs(vesselsYear2);
 
+    // Variation % helper
     const variation = (c, d) =>
       c && c !== 0 ? ((d - c) / c) * 100 : null;
 
@@ -222,7 +147,6 @@ export const getVesselYoYKPIs = async (req, res) => {
 
 // controllers/throughputController.js
 //dashboard/yoy/throughput
-
 export const getThroughputVariance = async (req, res) => {
   try {
     const { startDate, endDate, mode } = req.query;
@@ -495,10 +419,12 @@ export const getIdleTimeAtBerthYoy = async (req, res) => {
     let start, end;
 
     if (mode === "year") {
+      // Force last 5 years range
       const currentYear = new Date().getFullYear();
       start = new Date(currentYear - 4, 0, 1);
       end = new Date(currentYear, 11, 31);
     } else {
+      // Use requested range or fallback
       start = startDate ? new Date(startDate) : new Date("2020-01-01");
       end = endDate ? new Date(endDate) : new Date();
     }
@@ -565,6 +491,7 @@ export const getIdleTimeAtBerthYoy = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const getAvgOutputPerShipBerthDayYoy = async (req, res) => {
   try {
@@ -1005,207 +932,6 @@ export const getCommodityCodes = async (req, res) => {
   } finally {
   }
 };
-
-export const getOperationalTimeComposition = async (req, res) => {
-  try {
-    let { startDate, endDate, mode } = req.query;
-
-    const start = startDate ? new Date(startDate) : new Date("2020-01-01");
-    const end = endDate ? new Date(endDate) : new Date();
-
-    // 1) MATCH STAGE
-    let matchStage = {
-      ATABerth: { $gte: start, $lte: end },
-      ATDUnberth: { $ne: null },
-    };
-
-    if (mode === "year") {
-      const endYear = end.getFullYear();
-      const startYear = endYear - 4; // last 5 years
-      matchStage.ATABerth = {
-        $gte: new Date(startYear, 0, 1),
-        $lte: new Date(endYear, 11, 31, 23, 59, 59)
-      };
-    }
-
-    // 2) TIME COMPONENTS (Seconds → Hours)
-    const toHours = (field) => ({
-      $divide: [{ $ifNull: [field, 0] }, 3600]
-    });
-
-    // Pilotage time in hours
-    const pilotageHours = {
-      $divide: [
-        { $subtract: ["$PilotUnboarding", "$PilotBoarding"] },
-        1000 * 60 * 60
-      ]
-    };
-
-    // 3) GROUPING STAGE
-    const groupStage =
-      mode === "year"
-        ? {
-            _id: { year: { $year: "$ATABerth" } },
-
-            swb: { $sum: { $add: [toHours("$SWB_Port"), toHours("$SWB_NonPort")] } },
-            snwb: { $sum: { $add: [toHours("$SNWB_Port"), toHours("$SNWB_NonPort")] } },
-            idling: { $sum: { $add: [toHours("$Idling_Port"), toHours("$Idling_NonPort")] } },
-            shifting: { $sum: { $add: [toHours("$Shifting_Port"), toHours("$Shifting_NonPort")] } },
-
-            imtime: { $sum: toHours("$IMTime") },
-            omtime: { $sum: toHours("$OMTime") },
-
-            pilotage: { $sum: pilotageHours },
-
-            vesselCount: { $sum: 1 }
-          }
-        : {
-            _id: {
-              year: { $year: "$ATABerth" },
-              month: { $month: "$ATABerth" }
-            },
-
-            swb: { $sum: { $add: [toHours("$SWB_Port"), toHours("$SWB_NonPort")] } },
-            snwb: { $sum: { $add: [toHours("$SNWB_Port"), toHours("$SNWB_NonPort")] } },
-            idling: { $sum: { $add: [toHours("$Idling_Port"), toHours("$Idling_NonPort")] } },
-            shifting: { $sum: { $add: [toHours("$Shifting_Port"), toHours("$Shifting_NonPort")] } },
-
-            imtime: { $sum: toHours("$IMTime") },
-            omtime: { $sum: toHours("$OMTime") },
-
-            pilotage: { $sum: pilotageHours },
-
-            vesselCount: { $sum: 1 }
-          };
-
-    // 4) PIPELINE
-    const pipeline = [
-      { $match: matchStage },
-      {
-        $project: {
-          SWB_Port: 1,
-          SWB_NonPort: 1,
-          SNWB_Port: 1,
-          SNWB_NonPort: 1,
-          Idling_Port: 1,
-          Idling_NonPort: 1,
-          Shifting_Port: 1,
-          Shifting_NonPort: 1,
-          IMTime: 1,
-          OMTime: 1,
-          PilotBoarding: 1,
-          PilotUnboarding: 1,
-          ATABerth: 1
-        }
-      },
-      { $group: groupStage },
-      {
-        $project: {
-          year: "$_id.year",
-          month: mode === "month" ? "$_id.month" : undefined,
-
-          swb: 1,
-          snwb: 1,
-          idling: 1,
-          shifting: 1,
-          imtime: 1,
-          omtime: 1,
-          pilotage: 1,
-
-          totalHours: {
-            $add: [
-              "$swb",
-              "$snwb",
-              "$idling",
-              "$shifting",
-              "$imtime",
-              "$omtime",
-              "$pilotage"
-            ]
-          },
-
-          vesselCount: 1
-        }
-      }
-    ];
-
-    pipeline.push(mode === "month" ? { $sort: { year: 1, month: 1 } } : { $sort: { year: 1 } });
-
-    const stats = await vessels.aggregate(pipeline);
-
-    // 5) FORMAT RESPONSE
-
-    // ---------- MONTHWISE ----------
-    if (mode === "month") {
-      const allMonths = [];
-      let cur = new Date(start);
-      cur.setDate(1);
-
-      while (cur <= end) {
-        allMonths.push({ y: cur.getFullYear(), m: cur.getMonth() + 1 });
-        cur.setMonth(cur.getMonth() + 1);
-      }
-
-      const dataMap = new Map(
-        stats.map((d) => [`${d.year}-${d.month}`, d])
-      );
-
-      const filled = allMonths.map(({ y, m }) => {
-        const entry = dataMap.get(`${y}-${m}`);
-
-        const monthName = new Date(y, m - 1).toLocaleString("default", {
-          month: "short"
-        });
-
-        return {
-          month: `${monthName}-${String(y).slice(-2)}`,
-          swb: entry ? entry.swb : 0,
-          snwb: entry ? entry.snwb : 0,
-          idling: entry ? entry.idling : 0,
-          shifting: entry ? entry.shifting : 0,
-          imtime: entry ? entry.imtime : 0,
-          omtime: entry ? entry.omtime : 0,
-          pilotage: entry ? entry.pilotage : 0,
-          totalHours: entry ? entry.totalHours : 0,
-          vesselCount: entry ? entry.vesselCount : 0
-        };
-      });
-
-      return res.json(filled);
-    }
-
-    // ---------- YEARWISE ----------
-    else {
-      const endYear = end.getFullYear();
-      const years = [];
-      for (let y = endYear - 4; y <= endYear; y++) years.push(y);
-
-      const dataMap = new Map(stats.map((d) => [d.year, d]));
-
-      const filled = years.map((y) => {
-        const entry = dataMap.get(y);
-        return {
-          year: y,
-          swb: entry ? entry.swb : 0,
-          snwb: entry ? entry.snwb : 0,
-          idling: entry ? entry.idling : 0,
-          shifting: entry ? entry.shifting : 0,
-          imtime: entry ? entry.imtime : 0,
-          omtime: entry ? entry.omtime : 0,
-          pilotage: entry ? entry.pilotage : 0,
-          totalHours: entry ? entry.totalHours : 0,
-          vesselCount: entry ? entry.vesselCount : 0
-        };
-      });
-
-      return res.json(filled);
-    }
-  } catch (error) {
-    console.error("Error fetching Operational Time Composition:", error);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
 
 export default getCommodityCodes;
 

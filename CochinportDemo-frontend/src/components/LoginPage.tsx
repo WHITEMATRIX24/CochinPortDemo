@@ -115,7 +115,7 @@ export default function LoginPage({ register = false }: LoginPageProps) {
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 <img
-                    src="/images/cochin-port1.jpg"
+                    src="/images/loginbg.png"
                     alt="Background"
                     className="w-full h-full object-cover opacity-15"
                 />

@@ -42,5 +42,8 @@ app.use("/api", kpiRoutes);
 import  yoyRoutes from "./routes/y-o-yRoutes.js";
 app.use("/api/y-o-y", yoyRoutes);
 
+import vesselTime from "./routes/vesselTimeRoutes.js"
+app.use("/api/vessels", vesselTime)
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
