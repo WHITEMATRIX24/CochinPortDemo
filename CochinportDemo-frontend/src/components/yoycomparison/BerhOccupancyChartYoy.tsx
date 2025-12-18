@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { serverUrl } from "@/services/serverUrl";
 import {
   ComposedChart,
@@ -20,52 +20,66 @@ interface Props {
   endDate: string;
 }
 
-export default function BerthOccupancyChartYoy({ startDate, endDate }: Props) {
-  const [data, setData] = useState<any[]>([]);
-  const [mode, setMode] = useState<"month" | "year">("year");
+type ChartMode = "month" | "year";
+
+interface BerthOccupancyData {
+  month?: string;
+  year?: number;
+  occupancyPercent: number;
+  vesselsCount: number;
+}
+
+export default function BerthOccupancyChartYoy({
+  startDate,
+  endDate,
+}: Props) {
+  const [data, setData] = useState<BerthOccupancyData[]>([]);
+  const [mode, setMode] = useState<ChartMode>("year");
   const [hiddenKeys, setHiddenKeys] = useState<Record<string, boolean>>({});
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const res = await fetch(
         `${serverUrl}/api/y-o-y/berth-occupancy-yoy?startDate=${startDate}&endDate=${endDate}&mode=${mode}`
       );
-      const json = await res.json();
+      const json: BerthOccupancyData[] = await res.json();
       setData(json);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching berth occupancy data:", err);
     }
-  };
+  }, [startDate, endDate, mode]);
 
   useEffect(() => {
     fetchData();
-  }, [startDate, endDate, mode]);
+  }, [fetchData]);
 
   const handleLegendClick = (entry: LegendPayload) => {
     const key = entry.dataKey;
     if (!key || typeof key === "object") return;
-    const keyStr = String(key);
 
-    setHiddenKeys(prev => ({
+    const keyStr = String(key);
+    setHiddenKeys((prev) => ({
       ...prev,
       [keyStr]: !prev[keyStr],
     }));
   };
 
-  const renderTooltip = (value: any, name: string) => {
-    if (name === "Berth Occupancy (%)") return value.toFixed(2) + "%";
+  const renderTooltip = (value: number, name: string) => {
+    if (name === "Berth Occupancy (%)") {
+      return `${value.toFixed(2)}%`;
+    }
     return value.toString();
   };
 
   return (
     <div className="w-full h-[350px] p-4 bg-white shadow rounded-2xl">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-md  text-black font-semibold">
+        <h2 className="text-md text-black font-semibold">
           Berth Occupancy Trend ({mode === "month" ? "Monthwise" : "Yearwise"})
         </h2>
         <select
           value={mode}
-          onChange={(e) => setMode(e.target.value as "month" | "year")}
+          onChange={(e) => setMode(e.target.value as ChartMode)}
           className="border rounded px-2 py-1 text-sm text-black"
         >
           <option value="month">Monthwise</option>
@@ -74,7 +88,9 @@ export default function BerthOccupancyChartYoy({ startDate, endDate }: Props) {
       </div>
 
       {data.length === 0 ? (
-        <p className="text-center mt-20">No Data from {startDate} to {endDate}</p>
+        <p className="text-center mt-20 text-black">
+          No Data from {startDate} to {endDate}
+        </p>
       ) : (
         <ResponsiveContainer width="100%" height="75%">
           <ComposedChart
@@ -85,10 +101,13 @@ export default function BerthOccupancyChartYoy({ startDate, endDate }: Props) {
             <XAxis dataKey={mode === "month" ? "month" : "year"} />
             <YAxis
               yAxisId="left"
-              tickFormatter={(v) => v.toFixed(1) + "%"}
+              tickFormatter={(v: number) => `${v.toFixed(1)}%`}
             />
             <YAxis yAxisId="right" orientation="right" />
-            <Tooltip formatter={renderTooltip}  contentStyle={{ color: "gray" }}/>
+            <Tooltip
+              formatter={renderTooltip}
+              contentStyle={{ color: "gray" }}
+            />
             <Legend onClick={handleLegendClick} />
 
             <Bar
@@ -97,7 +116,7 @@ export default function BerthOccupancyChartYoy({ startDate, endDate }: Props) {
               name="Berth Occupancy (%)"
               fill="#3B82F6"
               barSize={20}
-              opacity={hiddenKeys["occupancyPercent"] ? 0.2 : 1} // fade if hidden
+              opacity={hiddenKeys["occupancyPercent"] ? 0.2 : 1}
             />
             <Line
               yAxisId="right"
@@ -106,7 +125,7 @@ export default function BerthOccupancyChartYoy({ startDate, endDate }: Props) {
               name="Vessels Count"
               stroke="#F59E0B"
               strokeWidth={2}
-              strokeOpacity={hiddenKeys["vesselsCount"] ? 0.2 : 1} // fade if hidden
+              strokeOpacity={hiddenKeys["vesselsCount"] ? 0.2 : 1}
             />
           </ComposedChart>
         </ResponsiveContainer>

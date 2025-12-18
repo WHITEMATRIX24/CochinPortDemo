@@ -42,8 +42,8 @@ const formatMonth = (label: string) => {
 };
 
   return (
-    <div className="w-full h-100 p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
-      <h2 className="text-md font-semibold text-blue-900  mb-4">
+    <div className="w-full h-100 p-5 bg-white shadow-sm rounded-2xl">
+      <h2 className="text-md text-black font-semibold mb-4">
         Port vs Non-Port Time Split (Avg Hours)
       </h2>
 

@@ -40,7 +40,7 @@ export default function TopCommoditiesChart({ startDate, endDate }: Props) {
 
   if (data.length === 0) {
     return (
-      <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow  items-center  ">
+      <div className="w-full h-85 bg-white rounded-2xl p-4 shadow  items-center  ">
         <h2 className="text-lg font-semibold mb-2">Top Commodities Handled</h2>
         <p className="text-black text-center flex items-center justify-center mt-25 ">
           No Data from {startDate} to {endDate}
@@ -50,7 +50,7 @@ export default function TopCommoditiesChart({ startDate, endDate }: Props) {
   }
 
   return (
-    <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow">
+    <div className="w-full h-85 bg-white rounded-2xl p-4 shadow">
       <h2 className="text-md font-semibold mb-2">Top Commodities Handled</h2>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart

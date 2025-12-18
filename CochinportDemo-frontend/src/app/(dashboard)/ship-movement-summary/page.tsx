@@ -4,6 +4,15 @@
  */
 
 import dynamic from 'next/dynamic'
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+  BreadcrumbEllipsis,
+} from "@/components/ui/breadcrumb";
 
 // 👇 Dynamically import SwimlaneChart, disable SSR
 const SwimlaneChart = dynamic(() => import('@/components/SwimlaneChart'), {
@@ -16,14 +25,38 @@ export default function ShipMovementSummaryPage() {
       <main  className="flex flex-col h-full">
          <div className="flex-shrink-0 p-4">
           {/* Heading */}
-          <div className="mb-6">
-            <h5 className="text-2xl font-bold text-[#003049]">
-             Ship Movement Summary
-            </h5>
-          </div>
-          <div className="text-sm text-gray-500">
-              <span>Dashboard</span> <span className="mx-2">/</span> <span className="text-blue-600">Ship Movement Summary</span>
+          <div className="flex">
+            <div className="p-4">
+              <h1 className="text-2xl font-bold text-gray-800 mb-1">
+                Ship Movement Summary
+              </h1>
+              <Breadcrumb className="h-[18px] ml-[1px] mt-[5px]">
+                <BreadcrumbList className="text-[12px] leading-[1.2]">
+                  <BreadcrumbItem>
+                  <BreadcrumbLink
+                    href="/statistical-dashboard"
+                    className="text-blue-600 hover:text-blue-800 focus:text-blue-800 active:text-blue-800 visited:text-blue-600"
+                  >
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                  <BreadcrumbSeparator className="text-[#C1292E]" />
+                  <BreadcrumbItem>
+                    <BreadcrumbEllipsis className="text-blue-600" />
+                  </BreadcrumbItem>
+                  <>
+                    <BreadcrumbSeparator className="text-[#C1292E]" />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage className="text-blue-600">
+                        Ship Movement Summary
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </>
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
+               
+        </div>
         </div>
         <div className="flex-1 overflow-y-auto">
                           <SwimlaneChart />

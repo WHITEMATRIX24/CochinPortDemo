@@ -1,12 +1,6 @@
 'use client'
 
-import Header from "@/components/header"
-import { KPICards } from "@/components/KPIcards"
-import BerthOccupancyChart from "@/components/statisticalDashboard/BerthOccupancyChart"
-import CargoMixPieChart from "@/components/statisticalDashboard/CargoMixPieChart"
-import CommodityCargoBarChart from "@/components/statisticalDashboard/CommodityCodeWiseBarChart"
-import ThroughputTrendChart from "@/components/statisticalDashboard/ThroughputTrendChart"
-import { FiTrendingUp, FiTrendingDown, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical } from "react-icons/fi"
+import { FiTrendingUp, FiClock, FiActivity, FiMoreVertical } from "react-icons/fi"
 import {
     Breadcrumb,
     BreadcrumbList,
@@ -21,10 +15,30 @@ import TopCommoditiesChart from "@/components/cargoPerformance/TopCommodities"
 import ContainerTrafficTrendChart from "@/components/cargoPerformance/ContainerTrafficTrendChart"
 import CargoShareChart from "@/components/cargoPerformance/CargoShareChart"
 import { serverUrl } from "@/services/serverUrl"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { KPICardsYoY } from "@/components/KPICardsYoY"
 import Loading from "@/components/Loadind"
 
+interface KPIYearData {
+  totalThroughputMMT: number;
+  meanTRT: number;
+  outputPerBerthDay: number;
+  avgPBD: number;
+  idlePercent: number;
+}
+
+interface KPIVariation {
+  totalThroughputMMT?: number;
+  meanTRT?: number;
+  outputPerBerthDay?: number;
+  avgPBD?: number;
+  idlePercent?: number;
+}
+
+interface KPIResponse {
+  year1: KPIYearData;
+  variation: KPIVariation;
+}
 const getSameDayFromPastSixMonth = () => {
   const today = new Date();
   const lastMonth = new Date(today);
@@ -94,36 +108,24 @@ export default function CargoPerformance() {
       const [startDate, setStartDate] = useState<string>("2025-04-01");
       const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
         const [dropdownOpen, setDropdownOpen] = useState(false);
+         const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `${serverUrl}/api/y-o-y/kpi?startDate=${startDate}&endDate=${endDate}`
+      );
+      const data: KPIResponse = await res.json();
+      setKpiData(data);
+    } catch (error) {
+      console.error("Error fetching KPI data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [startDate, endDate]);
 
-    /* 
-          const fetchData = async () => {
-          try {
-            setLoading(true)
-            const res = await fetch(
-              `${serverUrl}/api/statistics/kpis?startDate=${startDate}&endDate=${endDate}`
-            )
-            const data = await res.json()
-            setKpiData(data)
-          } catch (error) {
-            console.error("Error fetching KPI data:", error)
-          } finally {
-            setLoading(false)
-          }
-        } */
-         const fetchData = async () => {
-             try {
-               setLoading(true)
-               const res = await fetch(
-                 `${serverUrl}/api/y-o-y/kpi?startDate=${startDate}&endDate=${endDate}`
-               )
-               const data = await res.json()
-               setKpiData(data)
-             } catch (error) {
-               console.error("Error fetching KPI data:", error)
-             } finally {
-               setLoading(false)
-             }
-           }
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
        
     
 
@@ -134,58 +136,10 @@ const handleSeacrh = ()=>{
     setStartDate(getSameDayFromPastSixMonth())
     setEndDate(new Date().toISOString().split("T")[0])
   }
-// Fetch KPI data whenever date changes
-  useEffect(() => {
-    fetchData()
-  }, []) 
 
   if (loading) return <div className="h-screen flex items-center justify-center"><Loading/></div>
   if (!kpiData) return <p className="p-4 text-red-500">No data available</p>
 
-  /* const cards = [
-    {
-      title: "Total Throughput (MMT)",
-      value: kpiData.totalThroughput,
-      change: "+5%",
-      icon: <FiTrendingUp size={30} className="text-[#4e5166]" />,
-      borderColor: "#4e5166",
-    },
-    {
-      title: "Dry Cargo (MMT)",
-      value: kpiData.dryCargo,
-      change: "-2%",
-      icon: <FiBox size={30} className="text-green-700" />,
-      borderColor: "green",
-    },
-    {
-      title: "Liquid Cargo (MMT)",
-      value: kpiData.liquidCargo,
-      change: "+3%",
-      icon: <FiDroplet size={30} className="text-[#610345]" />,
-      borderColor: "#C1292E",
-    },
-    {
-      title: "Containers (TEUs)",
-      value: kpiData.containers,
-      change: "0",
-      icon: <FiTruck size={30} className="text-[#C1292E]" />,
-      borderColor: "#610345",
-    },
-    {
-      title: "Avg. Vessel Turnaround Time (Hrs.)",
-      value: kpiData.avgTurnaround.toFixed(2),
-      change: "-1.5%",
-      icon: <FiClock size={30} className="text-blue-600" />,
-      borderColor: "#0077b6",
-    },
-    {
-      title: "Idle Time at Berth (Hrs.)",
-      value: kpiData.idleTime.toFixed(2),
-      change: "+0.5%",
-      icon: <FiActivity size={30} className="text-orange-600" />,
-      borderColor: "#ff8800",
-    },
-  ] */
 
 const cards = [
   {

@@ -11,13 +11,15 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { serverUrl } from "@/services/serverUrl";
 
 interface Props {
   startDate: string;
   endDate: string;
 }
+
+type ChartMode = "month" | "year";
 
 interface ChartData {
   month?: string;
@@ -26,12 +28,27 @@ interface ChartData {
   vesselCount: number;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+/* ---------- Tooltip Types ---------- */
+interface TooltipPayloadItem {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadItem[];
+  label?: string | number;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white border p-2 rounded shadow-md text-sm text-gray-400">
-        <p><strong>{label}</strong></p>
-        {payload.map((entry: any, index: number) => (
+        <p>
+          <strong>{label}</strong>
+        </p>
+        {payload.map((entry, index) => (
           <p key={index} style={{ color: entry.color }}>
             {entry.name}:{" "}
             {typeof entry.value === "number"
@@ -45,36 +62,43 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function AvgOutputPerShipBerthDayChartYoY({ startDate, endDate }: Props) {
+export default function AvgOutputPerShipBerthDayChartYoY({
+  startDate,
+  endDate,
+}: Props) {
   const [data, setData] = useState<ChartData[]>([]);
-  const [mode, setMode] = useState<"month" | "year">("year");
+  const [mode, setMode] = useState<ChartMode>("year");
 
-  const fetchData = async (chartMode: "month" | "year") => {
-    try {
-      const res = await fetch(
-        `${serverUrl}/api/y-o-y/avg-output-yoy?mode=${chartMode}&startDate=${startDate}&endDate=${endDate}`
-      );
-      const json = await res.json();
-      setData(json);
-    } catch (err) {
-      console.error("Error fetching Avg Output chart:", err);
-    }
-  };
+  const fetchData = useCallback(
+    async (chartMode: ChartMode) => {
+      try {
+        const res = await fetch(
+          `${serverUrl}/api/y-o-y/avg-output-yoy?mode=${chartMode}&startDate=${startDate}&endDate=${endDate}`
+        );
+        const json: ChartData[] = await res.json();
+        setData(json);
+      } catch (err) {
+        console.error("Error fetching Avg Output chart:", err);
+      }
+    },
+    [startDate, endDate]
+  );
 
   useEffect(() => {
     fetchData(mode);
-  }, [startDate, endDate, mode]);
+  }, [fetchData, mode]);
 
   return (
     <div className="p-4 h-[350px] bg-white rounded-2xl shadow-md">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-md text-black font-semibold">
-          Avg Output per Ship Berth Day ({mode === "month" ? "Monthwise" : "Yearwise"})
+          Avg Output per Ship Berth Day (
+          {mode === "month" ? "Monthwise" : "Yearwise"})
         </h2>
         <select
           value={mode}
-          onChange={(e) => setMode(e.target.value as "month" | "year")}
-          className="border border-gray-300 rounded px-2 py-1 text-sm  text-black"
+          onChange={(e) => setMode(e.target.value as ChartMode)}
+          className="border border-gray-300 rounded px-2 py-1 text-sm text-black"
         >
           <option value="month">Monthwise</option>
           <option value="year">Year-wise</option>
@@ -84,28 +108,32 @@ export default function AvgOutputPerShipBerthDayChartYoY({ startDate, endDate }:
       <ResponsiveContainer width="100%" height="85%">
         <BarChart data={data} margin={{ top: 20, right: 10, bottom: 20, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey={mode === "month" ? "month" : "year"}
-            tickFormatter={(val, idx) =>
-              mode === "month" ? val : `${val}`
-            }
-          />
+          <XAxis dataKey={mode === "month" ? "month" : "year"} />
           <YAxis
             yAxisId="left"
-            orientation="left"
-            label={{ value: "Avg Output (MT/Day)", angle: -90, position: "insideLeft", offset: -5, dy:40}}
-            tickFormatter={(val) => {
-              if (val >= 1000000) return (val / 1000000).toFixed(1) + "M";
-              if (val >= 1000) return (val / 1000).toFixed(1) + "K";
+            label={{
+              value: "Avg Output (MT/Day)",
+              angle: -90,
+              position: "insideLeft",
+              offset: -5,
+              dy: 40,
+            }}
+            tickFormatter={(val: number) => {
+              if (val >= 1_000_000) return (val / 1_000_000).toFixed(1) + "M";
+              if (val >= 1_000) return (val / 1_000).toFixed(1) + "K";
               return val.toFixed(0);
             }}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
-            label={{ value: "Vessels", angle: -90, position: "insideRight" }}
+            label={{
+              value: "Vessels",
+              angle: -90,
+              position: "insideRight",
+            }}
           />
-          <Tooltip content={CustomTooltip}   />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Bar
             yAxisId="left"

@@ -54,7 +54,7 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
       ) : (
         <>
           {/* ✅ Pie Chart */}
-          <ResponsiveContainer width="100%" height="90%">
+          <ResponsiveContainer width="100%" height="95%">
             <PieChart>
               <Pie
                 data={filteredData}
@@ -80,7 +80,7 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
           </ResponsiveContainer>
 
           {/* ✅ Clickable Legend */}
-          <div className="flex justify-center gap-6 mt-2 flex-wrap">
+          <div className="flex justify-center gap- mt-2 flex-wrap">
             {data.map((d, idx) => {
               const isActive = selectedTypes.includes(d.name);
               return (

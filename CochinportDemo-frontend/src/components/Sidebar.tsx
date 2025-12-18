@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   FiLogOut,
   FiMenu,
@@ -28,7 +28,6 @@ export default function Sidebar() {
   const [isMounted, setIsMounted] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);

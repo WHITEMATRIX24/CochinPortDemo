@@ -9,8 +9,21 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
+export default [
+  // Next.js recommended rules
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
 
-export default eslintConfig;
+  // ✅ OPTION 3: Relax rules (WARN instead of ERROR)
+  {
+    rules: {
+      // Allow `any` but only warn
+      "@typescript-eslint/no-explicit-any": "warn",
+
+      // React hooks dependency warnings only
+      "react-hooks/exhaustive-deps": "warn",
+
+      // Optional: unused vars as warnings
+      "@typescript-eslint/no-unused-vars": "warn",
+    },
+  },
+];

@@ -1,8 +1,6 @@
 import {
   Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  
 } from "@/components/ui/Card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactNode } from "react";

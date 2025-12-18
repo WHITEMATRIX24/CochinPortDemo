@@ -1,18 +1,16 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { Berth, ShipDetails } from '@/data/MockDashboardData';
+import { Berth } from '@/data/MockDashboardData';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 type Props = {
   berth: Berth | null;
   isOpen: boolean;
-  onSelectShip: (ship: ShipDetails) => void;
-  onClose: () => void;
+/*   onSelectShip: (ship: ShipDetails) => void;
+ */  onClose: () => void;
 };
 
-export default function ShipListModal({ berth, isOpen, onSelectShip, onClose }: Props) {
-  const router = useRouter();
+export default function ShipListModal({ berth, isOpen, onClose }: Props) {
   if (!isOpen || !berth || !Array.isArray(berth.shipDetails)) return null;
   const today = new Date();
   today.setHours(0, 0, 0, 0); // normalize

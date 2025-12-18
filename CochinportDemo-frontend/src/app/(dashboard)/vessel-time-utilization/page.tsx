@@ -1,13 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Header from "@/components/header"
-import { KPICards } from "@/components/KPIcards"
-import BerthOccupancyChart from "@/components/statisticalDashboard/BerthOccupancyChart"
-import CargoMixPieChart from "@/components/statisticalDashboard/CargoMixPieChart"
-import CommodityCargoBarChart from "@/components/statisticalDashboard/CommodityCodeWiseBarChart"
-import ThroughputTrendChart from "@/components/statisticalDashboard/ThroughputTrendChart"
-import { FiTrendingUp, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical,FiImage,FiFileText} from "react-icons/fi"
+import { FiTrendingUp, FiBox, FiClock, FiActivity, FiMoreVertical,FiImage,FiFileText} from "react-icons/fi"
 
 import {
   Breadcrumb,
@@ -23,11 +17,8 @@ import { serverUrl } from "@/services/serverUrl"
 import { KPICardsRowYoY } from "@/components/KPICardsTwoRow"
 import Loading from "../../../components/Loadind"
 import TimeUtilizationBreakdownChart from "@/components/vesselTimeUtilization/TimeUtilizationBreakdownChart"
-import ProductiveVsNonProductiveChart from "@/components/vesselTimeUtilization/notusing/ProductiveVsNonProductiveChart"
 import AvgWaitingBeforeBerthChart from "@/components/vesselTimeUtilization/AvgWaitingBeforeBerthChart"
-import IdleVsCargoChart from "@/components/vesselTimeUtilization/notusing/IdleVsCargoChart"
 import PortVsNonPortTimeChart from "@/components/vesselTimeUtilization/PortVsNonPortTimeChart"
-import BerthCongestionHeatmap from "@/components/vesselTimeUtilization/notusing/BerthCongestionHeatmap"
 
 const getSameDayFromPastSixMonth = () => {
   const today = new Date();
@@ -52,9 +43,6 @@ const getSameDayFromPastSixMonth = () => {
 
 export default function YearOnYear() {
   const [kpiData, setKpiData] = useState<any>(null)
-   const [selectedKPI, setSelectedKPI] = useState<any>(null);
-   const [commodityCodes, setCommodityCodes] = useState<any[]>([]);
-  const [loadingCommodity, setLoadingCommodity] = useState(false);
   const [loading, setLoading] = useState(true)
 /*   const [startDate, setStartDate] = useState<string>(getSameDayFromPastSixMonth());
  */ 

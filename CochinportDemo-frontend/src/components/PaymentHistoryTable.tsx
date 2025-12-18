@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarDays, MoreVertical, Search } from 'lucide-react';
+import {  MoreVertical, Search } from 'lucide-react';
 
 
 type Payment = {
@@ -125,7 +125,6 @@ export default function PaymentHistoryTable() {
   const [currentPage, setCurrentPage] = useState(1);
 const [itemsPerPage, setItemsPerPage] = useState(10);
 const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
-const [isModalOpen, setIsModalOpen] = useState(false);
 
 const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 

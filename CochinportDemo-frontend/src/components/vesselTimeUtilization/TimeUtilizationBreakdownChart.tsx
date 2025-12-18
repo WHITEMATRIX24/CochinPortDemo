@@ -23,9 +23,9 @@ const COLORS = {
   SNWB: "#2563EB",
   SWB: "#3B82F6",
   Shifting: "#60A5FA",
-  Idling: "#CBD5E1",
+  Idling: "#94A3B8",
   OM: "#93C5FD",
-  IM: "#BFDBFE",
+  IM: "#97b6dbff",
 };
 
 export default function TimeUtilizationBreakdownChart({
@@ -52,8 +52,8 @@ export default function TimeUtilizationBreakdownChart({
 };
 
   return (
-    <div className="w-full h-100 p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
-      <h2 className="text-md font-semibold text-blue-900 mb-4">
+    <div className="w-full h-100 p-5 bg-white  shadow-sm rounded-2xl">
+      <h2 className="text-md text-black font-semibold mb-4">
         Vessel Time Utilization Breakdown (Hours)
       </h2>
 

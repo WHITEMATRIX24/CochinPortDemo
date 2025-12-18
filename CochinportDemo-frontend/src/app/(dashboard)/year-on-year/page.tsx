@@ -1,12 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Header from "@/components/header"
-import { KPICards } from "@/components/KPIcards"
-import BerthOccupancyChart from "@/components/statisticalDashboard/BerthOccupancyChart"
-import CargoMixPieChart from "@/components/statisticalDashboard/CargoMixPieChart"
-import CommodityCargoBarChart from "@/components/statisticalDashboard/CommodityCodeWiseBarChart"
-import ThroughputTrendChart from "@/components/statisticalDashboard/ThroughputTrendChart"
 import { FiTrendingUp, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical,FiImage,FiFileText} from "react-icons/fi"
 
 import {
@@ -19,10 +13,8 @@ import {
   BreadcrumbEllipsis,
 } from "@/components/ui/breadcrumb";
 import { serverUrl } from "@/services/serverUrl"
-import { KPICardsYoY } from "@/components/KPICardsYoY"
 import ThroughputChart from "@/components/yoycomparison/throughputChart"
 import VesselTurnaroundChartYoy from "@/components/yoycomparison/VesselTurnaroundChartYoy"
-import AvgOutputPerShipBerthDayChart from "@/components/vesselPerfromance/AvgOutputPerShipBerthDayChart"
 import IdleTimeAtBerthChartYoy from "@/components/yoycomparison/IdleTimeAtBerthYoy"
 import AvgOutputPerShipBerthDayChartYoY from "@/components/yoycomparison/AvgOutputPerShipDayYoy"
 import PBDChart from "@/components/yoycomparison/PBDChart"
@@ -30,8 +22,6 @@ import { KPICardsRowYoY } from "@/components/KPICardsTwoRow"
 import BerthOccupancyChartYoy from "@/components/yoycomparison/BerhOccupancyChartYoy"
 import Loading from "../../../components/Loadind"
 import { Modal } from "@/components/yoycomparison/CommdityTypeModal"
-import CommodityModal from "@/components/yoycomparison/CommodityTypeModal"
-import OperationalTimeCompositionChartYoY from "@/components/yoycomparison/OperationalTimeCompositionChart"
 import OperationalTimeCompositionTwoCharts from "@/components/yoycomparison/OperationalTimeCompositionChart"
 
 const getSameDayFromPastSixMonth = () => {
@@ -321,11 +311,12 @@ const cards = [
           </div>
         </div>
 
-<KPICardsRowYoY data={cards} onCardClick={handleCardClick} />
       </div>
 
       {/* charts */}
       <div className="flex-1 overflow-y-auto px-5 ">
+<KPICardsRowYoY data={cards} onCardClick={handleCardClick} />
+
         <div className="grid grid-cols-10 gap-4 mx-3">
           <div className="pl-4 col-span-5 ">
                         <ThroughputChart startDate={startDate} endDate={endDate}  />

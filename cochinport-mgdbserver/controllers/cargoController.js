@@ -158,17 +158,31 @@ export const getThroughputTrendByCargoAndYear = async (req, res) => {
     ]);
 
     // Generate complete month range between start and end
-    const months = [];
-    const cursor = new Date(start);
-    while (cursor <= end) {
-      months.push({
-        month: cursor.toLocaleString("default", { month: "short" }) +
-               "-" +
-               cursor.getFullYear(),
-        dateKey: new Date(cursor),
-      });
-      cursor.setMonth(cursor.getMonth() + 1);
-    }
+    const MONTHS = [
+  "Jan","Feb","Mar","Apr","May","Jun",
+  "Jul","Aug","Sep","Oct","Nov","Dec"
+];
+
+const months = [];
+const cursor = new Date(start);
+
+// Normalize to first day of month
+cursor.setDate(1);
+cursor.setHours(0, 0, 0, 0);
+
+const endCursor = new Date(end);
+endCursor.setDate(1);
+endCursor.setHours(0, 0, 0, 0);
+
+while (cursor <= endCursor) {
+  months.push({
+    month: `${MONTHS[cursor.getMonth()]}-${cursor.getFullYear()}`,
+    dateKey: new Date(cursor),
+  });
+
+  cursor.setMonth(cursor.getMonth() + 1);
+}
+
 
     // Reshape to chart data
     const chartDataMap = {};
@@ -200,6 +214,8 @@ if (result.length === 0) {
 
     if (chartData.length === 0) chartData.push({ month: "No Data" });
 
+    console.log(chartData);
+    
     res.json({
   message: "Success",
   data: chartData,

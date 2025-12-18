@@ -331,48 +331,63 @@ export const getAvgOutputPerShipBerthDay = async (req, res) => {
 
 export const getVesselsFormatted = async (req, res) => {
   try {
-    let { startDate, endDate, VslID, cargoType, year, page = 1, limit = 10 } =
-      req.query;
+    let {
+      startDate,
+      endDate,
+      VslID,
+      vesselId,
+      cargoType,
+      year,
+      page = 1,
+      limit = 10,
+    } = req.query;
 
-    // ✅ If year is given, override start/end range
-    let start;
-    let end;
+    const vesselIdValue = vesselId || VslID;
 
-    if (year) {
-      const y = parseInt(year, 10);
-      start = new Date(`${y}-01-01T00:00:00Z`);
-      end = new Date(`${y}-12-31T23:59:59Z`);
-    } else {
-      start = startDate ? new Date(startDate) : new Date("2020-01-01");
-      end = endDate ? new Date(endDate) : new Date();
-    }
-
-    // Convert page/limit to numbers
+    // Pagination
     page = parseInt(page, 10);
     limit = limit === "all" ? 0 : parseInt(limit, 10);
 
-    // Step 1: Build filter
-    const filter = {
-      ATA: { $gte: start, $lte: end },
-    };
+    const filter = {};
 
-    if (VslID) filter.VslID = VslID;
+    // 🔑 Apply vessel ID filter FIRST (no date restriction)
+    if (vesselIdValue) {
+  filter.VslID = {
+    $regex: vesselIdValue.trim(),
+    $options: "i", // case-insensitive
+  };
+}
+
+     else {
+      // Date filter only when vesselId is NOT provided
+      let start, end;
+
+      if (year) {
+        const y = parseInt(year, 10);
+        start = new Date(`${y}-01-01T00:00:00Z`);
+        end = new Date(`${y}-12-31T23:59:59Z`);
+      } else {
+        start = startDate ? new Date(startDate) : new Date("2020-01-01");
+        end = endDate ? new Date(endDate) : new Date();
+      }
+
+      filter.ATA = { $gte: start, $lte: end };
+    }
+
     if (cargoType) filter.CargoType = cargoType;
 
-    // Step 2: Count total docs
     const totalDocs = await vessels.countDocuments(filter);
 
-    // Step 3: Fetch vessels with pagination
     let query = vessels.find(filter).sort({ ATA: -1 });
     if (limit > 0) {
       query = query.skip((page - 1) * limit).limit(limit);
     }
+
     const vesselDocs = await query;
 
-    // Step 4: Map to frontend format
     const formatted = vesselDocs.map((v) => ({
       vesselId: v.VslID,
-      name: v.VslID, // replace if you have vessel name
+      name: v.VslID,
       berthNumber: v.Berth,
       arrivalDate: v.ATA ? v.ATA.toISOString().split("T")[0] : null,
       departureDate: v.ATD ? v.ATD.toISOString().split("T")[0] : null,
@@ -399,4 +414,12 @@ export const getVesselsFormatted = async (req, res) => {
 };
 
 
+export const getAllVessels =async(req,res)=>{
+  try {
+    const vessel = await vessels.find({});
+    res.json(vessel);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch vessels" });
+  }
+}
 

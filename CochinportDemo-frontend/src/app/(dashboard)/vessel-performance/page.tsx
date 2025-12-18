@@ -1,12 +1,6 @@
 'use client'
 
-import Header from "@/components/header"
-import { KPICards } from "@/components/KPIcards"
-import BerthOccupancyChart from "@/components/statisticalDashboard/BerthOccupancyChart"
-import CargoMixPieChart from "@/components/statisticalDashboard/CargoMixPieChart"
-import CommodityCargoBarChart from "@/components/statisticalDashboard/CommodityCodeWiseBarChart"
-import ThroughputTrendChart from "@/components/statisticalDashboard/ThroughputTrendChart"
-import { FiTrendingUp, FiTrendingDown, FiBox, FiTruck, FiClock, FiActivity, FiDroplet, FiMoreVertical } from "react-icons/fi"
+import { FiClock, FiActivity, FiMoreVertical } from "react-icons/fi"
 import {
     Breadcrumb,
     BreadcrumbList,
@@ -17,7 +11,6 @@ import {
     BreadcrumbEllipsis,
 } from "@/components/ui/breadcrumb";
 import VesselTurnaroundChart from "@/components/vesselPerfromance/VesselTurnAroundChart"
-import IdleVsTRTScatterChart from "@/components/vesselPerfromance/IdleVsTRTScatterChart"
 import { useEffect, useState } from "react"
 import { serverUrl } from "@/services/serverUrl"
 import NationalityChart from "@/components/vesselPerfromance/NationalityBarChart"

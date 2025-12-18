@@ -37,8 +37,8 @@ export default function AvgWaitingBeforeBerthChart({ startDate, endDate }: Props
   }, [startDate, endDate]);
 
   return (
-    <div className="w-full h-100 p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
-      <h2 className="text-md font-semibold text-blue-900 mb-4">
+    <div className="w-full h-100 p-5 bg-white shadow-sm rounded-2xl">
+      <h2 className="text-md text-black font-semibold mb-4">
         Avg Waiting Before Berth (Hours)
       </h2>
 

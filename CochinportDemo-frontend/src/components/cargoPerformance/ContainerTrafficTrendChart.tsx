@@ -95,7 +95,7 @@ export default function ContainerTrafficTrendChart({ startDate, endDate }: Props
   }
 
   return (
-    <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow">
+    <div className="w-full h-85 bg-white rounded-2xl p-4 shadow">
       <h2 className="text-lg font-semibold mb-3">Container Traffic Trend By Month</h2>
       <Line data={chartData} options={options}  />
     </div>

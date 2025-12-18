@@ -145,7 +145,7 @@ export default function OperationalTimeCompositionTwoCharts({
 
 
                     <ResponsiveContainer width="100%" height="85%">
-                        <BarChart data={data} stackOffset="expand">
+                        <BarChart data={data} stackOffset="expand" barSize={28}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis tickFormatter={(v) => v + "%"} />
@@ -186,7 +186,7 @@ export default function OperationalTimeCompositionTwoCharts({
 
 
                     <ResponsiveContainer width="100%" height="85%">
-                        <BarChart data={data} stackOffset="expand">
+                        <BarChart data={data} stackOffset="expand" barSize={28}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis tickFormatter={(v) => v + "%"} />

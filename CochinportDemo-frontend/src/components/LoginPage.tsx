@@ -18,8 +18,7 @@ export default function LoginPage({ register = false }: LoginPageProps) {
         email: '',
         password: '',
     });
-    const [error, setError] = useState('');
-    useEffect(() => {
+   useEffect(() => {
         setHydrated(true);
     }, []);
 
@@ -63,9 +62,15 @@ export default function LoginPage({ register = false }: LoginPageProps) {
             } else {
                 toast.error(result?.data?.message || 'Login failed');
             }
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Server error, please try again');
-        }
+        } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Server error, please try again";
+
+    toast.error(message);
+}
+
     };
 
     // const handleLogin = (e: React.FormEvent) => {
@@ -143,11 +148,11 @@ export default function LoginPage({ register = false }: LoginPageProps) {
                     </p>
                 </div>
 
-                {error && (
+               {/*  {error && (
                     <div className="bg-red-100 text-red-700 text-sm py-2 px-4 rounded-md mb-4 text-center">
                         {error}
                     </div>
-                )}
+                )} */}
 
                 <form className="space-y-5">
                     {register && (

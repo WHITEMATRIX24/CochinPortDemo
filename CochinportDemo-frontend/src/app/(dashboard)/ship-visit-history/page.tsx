@@ -36,7 +36,7 @@ export default function ShipVisitTracker() {
   const [visits, setVisits] = useState<ShipVisit[]>([]);
   const [loading, setLoading] = useState(true);
   const [cargoType, setCargoType] = useState<string>(""); // ✅ Selected cargo type
-  const [cargoTypes, setCargoTypes] = useState<string[]>(["Containerised","Liquid Bulk", "Break Bulk", "Dry Bulk Mechanical"]); // ✅ Available cargo types
+  const cargoTypes = ["Containerised","Liquid Bulk", "Break Bulk", "Dry Bulk Mechanical"]; // ✅ Available cargo types
   const [selectedVesselId, setSelectedVesselId] = useState<string>("");
   const [year, setYear] = useState<number | "">("");
   const [startDate, setStartDate] = useState<string>(
@@ -97,6 +97,14 @@ export default function ShipVisitTracker() {
   useEffect(() => {
     fetchVisits(1, rowsPerPage); // reset to first page
   }, [selectedVesselId, year, startDate, endDate, rowsPerPage, cargoType]);
+
+  useEffect(() => {
+  if (selectedVesselId) {
+    setYear("");
+    setStartDate("");
+    setEndDate("");
+  }
+}, [selectedVesselId]);
 
   
   return (

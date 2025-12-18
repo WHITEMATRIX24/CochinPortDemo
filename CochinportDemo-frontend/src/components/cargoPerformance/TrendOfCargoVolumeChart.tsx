@@ -50,7 +50,7 @@ export default function CargoTrendChart({ startDate, endDate }: Props) {
   ];
 
   return (
-    <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow flex flex-col">
+    <div className="w-full h-85 bg-white rounded-2xl p-4 shadow flex flex-col">
       {/* Title + Dropdown */}
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-md font-semibold">Trend of Cargo Volumes</h2>

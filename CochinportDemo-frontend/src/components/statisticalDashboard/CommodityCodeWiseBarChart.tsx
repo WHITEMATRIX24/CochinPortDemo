@@ -1,6 +1,6 @@
 import { serverUrl } from '@/services/serverUrl';
 import { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,  ResponsiveContainer } from 'recharts';
 
 /* const data = [
   { commodity: 'NAVY VESSE', value: 120 },

@@ -15,7 +15,6 @@ type Props = {
 export default function BerthTrackerCard({
   imageSrc,
   berthNumber,
-  countryFlag,
   arrivalDate,
   departureDate,
   currentShipId,
