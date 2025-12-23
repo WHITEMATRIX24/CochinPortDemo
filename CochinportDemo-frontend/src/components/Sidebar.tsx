@@ -52,8 +52,8 @@ export default function Sidebar() {
         { label: 'Year-on-Year Comparison', icon: <FiCalendar />, href: '/year-on-year' },
         { label: 'Berth Tracker', icon: <FiMap />, href: '/dashboard' },
         { label: 'Ship Movement Summary', icon: <FiFileText />, href: '/ship-movement-summary' },
-        { label: 'TRT Dashboard', icon: <FaCalculator />, href: '/TRT-dashboard' },
-        { label: 'Notification', icon: <FiFolder />, href: '#' }
+/*         { label: 'TRT Dashboard', icon: <FaCalculator />, href: '/TRT-dashboard' },
+ */        { label: 'Notification', icon: <FiFolder />, href: '#' }
       ],
     },
     {

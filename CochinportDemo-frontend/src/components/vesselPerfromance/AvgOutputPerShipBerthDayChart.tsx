@@ -75,7 +75,7 @@ export default function AvgOutputPerShipBerthDayChart({ startDate, endDate }: Pr
 
     return (
         <div className="p-4 h-[320px] bg-white rounded-2xl shadow-md">
-            <h2 className="text-md font-semibold mb-4">
+            <h2 className="text-md text-black font-semibold mb-4">
                 Avg Output per Ship Berth Day
             </h2>
             <ResponsiveContainer width="100%" height="95%">

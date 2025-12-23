@@ -98,7 +98,7 @@ export default function VesselTurnaroundChart({ startDate, endDate }: Props) {
 
   return (
     <div className="w-full h-[320px] p-4 bg-white rounded-2xl shadow flex flex-col">
-      <h2 className="text-md font-semibold mb-4 text-center">
+      <h2 className="text-md text-black font-semibold mb-4 text-center">
         Trend of Vessel Turnaround Time
       </h2>
       <ResponsiveContainer width="100%" height="90%">

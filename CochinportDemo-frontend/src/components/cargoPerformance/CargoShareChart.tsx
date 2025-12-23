@@ -45,7 +45,7 @@ export default function CargoShareChart({ startDate, endDate }: Props) {
 
   return (
     <div className="p-4 w-full  bg-white rounded-2xl shadow-md flex flex-col" style={{height:"100%"}}>
-      <h2 className="text-md font-semibold mb-2">Cargo Share by Type</h2>
+      <h2 className="text-md text-black font-semibold mb-2">Cargo Share by Type</h2>
 
       {data.length === 0 ? (
         <p className="text-black text-center flex items-center justify-center mt-25">

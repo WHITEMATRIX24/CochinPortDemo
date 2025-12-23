@@ -78,7 +78,7 @@ export default function NationalityChart({ startDate, endDate }: Props) {
   if (data.length === 0) {
     return (
       <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow  items-center  ">
-        <h2 className="text-lg font-semibold mb-2">Nationality of Vessels</h2>
+        <h2 className="text-lg text-black font-semibold mb-2">Nationality of Vessels</h2>
         <p className="text-gray-600 text-center flex items-center justify-center mt-25 ">
           No Data from {startDate} to {endDate}
         </p>
@@ -89,7 +89,7 @@ export default function NationalityChart({ startDate, endDate }: Props) {
 
   return (
     <div className="p-4 h-[320px] bg-white rounded-2xl shadow-md">
-      <h2 className="text-md font-semibold mb-4">Nationality of Vessels</h2>
+      <h2 className="text-md text-black font-semibold mb-4">Nationality of Vessels</h2>
       <ResponsiveContainer width="100%" height="95%">
         <BarChart
           layout="vertical"

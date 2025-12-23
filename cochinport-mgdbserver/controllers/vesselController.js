@@ -423,3 +423,40 @@ export const getAllVessels =async(req,res)=>{
   }
 }
 
+/* export const getAllVessels = async (req, res) => {
+  try {
+    const { berth, startDate, endDate } = req.query;
+
+    const match = {};
+
+    // ✅ Filter by berth (if provided)
+    if (berth) {
+      match.Berth = berth;
+    }
+
+    // ✅ Filter by date overlap (any event inside range)
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+
+      match.$or = [
+        { ATA: { $gte: start, $lte: end } },
+        { ATABerth: { $gte: start, $lte: end } },
+        { ATDUnberth: { $gte: start, $lte: end } },
+        { ATD: { $gte: start, $lte: end } },
+      ];
+    }
+
+    const vesselsData = await vessels.find(match);
+
+    res.json(vesselsData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch vessels" });
+  }
+} */
+
+

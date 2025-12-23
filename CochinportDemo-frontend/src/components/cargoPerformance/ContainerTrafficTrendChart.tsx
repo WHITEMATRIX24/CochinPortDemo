@@ -86,7 +86,7 @@ export default function ContainerTrafficTrendChart({ startDate, endDate }: Props
   if (nodata) {
     return (
       <div className="w-full h-[320px] bg-white rounded-2xl p-4 shadow  items-center  ">
-        <h2 className="text-lg font-semibold mb-2">Top Commodities Handled</h2>
+        <h2 className="text-lg text-black font-semibold mb-2">Container Traffic Trend By Month</h2>
         <p className="text-black text-center flex items-center justify-center mt-25 ">
           No Data from {startDate} to {endDate}
         </p>
@@ -96,7 +96,7 @@ export default function ContainerTrafficTrendChart({ startDate, endDate }: Props
 
   return (
     <div className="w-full h-85 bg-white rounded-2xl p-4 shadow">
-      <h2 className="text-lg font-semibold mb-3">Container Traffic Trend By Month</h2>
+      <h2 className="text-lg  text-black font-semibold mb-3">Container Traffic Trend By Month</h2>
       <Line data={chartData} options={options}  />
     </div>
   );
