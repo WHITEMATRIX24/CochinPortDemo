@@ -10,7 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 interface CommodityData {
   commodity: string;
   MMT: number;
+  [key: string]: string | number;
 }
+
 
 interface CommodityModalProps {
   isOpen: boolean;
@@ -76,9 +78,12 @@ export default function CommodityModal({ isOpen, onClose, title, data, unit }: C
   cx="50%"
   cy="50%"
   outerRadius={140}
-  label={({ commodity, percent }) =>
-    `${commodity} ${((percent ?? 0) * 100).toFixed(1)}%`
-  }
+  label={({ payload, percent }) =>
+  payload
+    ? `${payload.commodity} ${((percent ?? 0) * 100).toFixed(1)}%`
+    : ""
+}
+
 >
   {data.map((_, index) => (
     <Cell key={index} fill={COLORS[index % COLORS.length]} />

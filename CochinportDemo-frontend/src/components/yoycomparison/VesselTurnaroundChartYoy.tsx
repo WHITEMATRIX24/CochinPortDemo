@@ -173,7 +173,7 @@ export default function VesselTurnaroundChartYoy({
             />
             <YAxis />
             <Tooltip
-              formatter={(val: number) => `${val.toFixed(1)} hrs`}
+              formatter={(val?: number) => `${val?.toFixed(1)} hrs`}
               contentStyle={{ color: "gray" }}
             />
             <Legend onClick={handleLegendClick} />

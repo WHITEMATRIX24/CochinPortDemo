@@ -147,13 +147,16 @@ export default function ThroughputChart({ startDate, endDate }: Props) {
               tickFormatter={(v: number) => `${v.toFixed(1)}%`}
             />
             <Tooltip
-              formatter={(val: number, name: string) =>
-                name.includes("Variance")
+              formatter={(val?: number, name?: string) => {
+                if (val == null || !name) return "";
+
+                return name.includes("Variance")
                   ? [`${val.toFixed(2)}%`, name]
-                  : [val.toLocaleString(), name]
-              }
+                  : [val.toLocaleString(), name];
+              }}
               contentStyle={{ color: "gray" }}
             />
+
             <Legend />
 
             {/* Bars */}

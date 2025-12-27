@@ -16,7 +16,7 @@ import { Chart } from 'react-chartjs-2'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import 'chartjs-adapter-date-fns'
 import { useRef, useState, useEffect, useMemo } from 'react'
-import { serverUrl } from '@/services/serverUrl'
+import { serverUrl } from "@/services/serverUrl";
 interface ShipEvents {
   ATA: Date
   ATB: Date
@@ -53,7 +53,8 @@ const colorMap = {
 
 export default function SwimlaneChart() {
   const [vessels, setVessels] = useState<Vessel[]>([])
-  const [selectedBerth, setSelectedBerth] = useState('All')
+  const [berths, setBerths] = useState<string[]>([])
+  const [selectedBerth, setSelectedBerth] = useState('')
   const [startDate, setStartDate] = useState(() => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -65,11 +66,19 @@ export default function SwimlaneChart() {
     tomorrow.setDate(tomorrow.getDate() + 1)
     return tomorrow
   })
-
   useEffect(() => {
     const fetchVessels = async () => {
       try {
-        const res = await fetch(`${serverUrl}/api/vessel/all-vessels`);
+        const params = new URLSearchParams();
+
+        if (selectedBerth) params.append("berth", selectedBerth);
+        if (startDate) params.append("startDate", startDate.toISOString());
+        if (endDate) params.append("endDate", endDate.toISOString());
+
+        const res = await fetch(
+          `${serverUrl}/api/vessel/all-vessels?${params.toString()}`
+        );
+
         const rawData = await res.json();
 
         const normalized = rawData
@@ -96,9 +105,29 @@ export default function SwimlaneChart() {
     };
 
     fetchVessels();
-  }, []);
+  }, [selectedBerth, startDate, endDate]);
 
-  console.log(vessels);
+  useEffect(() => {
+    const fetchBerths = async () => {
+      try {
+        const res = await fetch(`${serverUrl}/api/berthData/berths`)
+        const data = await res.json()
+        setBerths(data)
+
+        // default selection
+        if (data.length > 0) {
+          setSelectedBerth(data[0])
+        }
+      } catch (err) {
+        console.error("Failed to fetch berths", err)
+      }
+    }
+
+    fetchBerths()
+  }, [])
+
+
+  // console.log(vessels);
   const handleDateChange = (type: 'start' | 'end', value: string) => {
     if (!value) {
       // Reset to default values
@@ -122,24 +151,12 @@ export default function SwimlaneChart() {
     if (type === 'end') setEndDate(parsedDate)
   }
 
-
   const chartRef = useRef<ChartJS<'line', { x: number; y: string }[], unknown>>(null)
 
-  const allBerths = [...new Set(vessels.map(ship => ship.berth))]
-  const isWithinSelectedRange = (date: Date) => {
-    return date >= startDate && date <= endDate
-  }
 
-  const filteredByDate = vessels.filter(ship =>
-    (Object.values(ship.events) as Date[]).some(d =>
-      isWithinSelectedRange(d)
-    )
-  )
 
-  const filteredShips =
-    selectedBerth === 'All'
-      ? filteredByDate
-      : filteredByDate.filter(ship => ship.berth === selectedBerth)
+
+  const filteredShips = vessels;
 
   /* 👇 PLACE THIS HERE */
   const allTimestamps: number[] = filteredShips.flatMap(ship => [
@@ -337,14 +354,19 @@ export default function SwimlaneChart() {
             return `${label} duration: ${durationStr}`;
           },
           afterBody: (tooltipItems) => {
-            const hoveredTime = new Date(tooltipItems[0].parsed.x);
-            const hoveredTimeStr = hoveredTime.toLocaleString('en-IN', {
+            const x = tooltipItems[0].parsed.x;
+
+            if (x === null) return '';
+
+            const hoveredTime = new Date(x);
+
+            return `Time: ${hoveredTime.toLocaleString('en-IN', {
               dateStyle: 'medium',
               timeStyle: 'short',
               hour12: false,
-            });
-            return `Time: ${hoveredTimeStr}`;
+            })}`;
           },
+
         },
       },
       zoom: {
@@ -395,18 +417,17 @@ export default function SwimlaneChart() {
               Select Berth:
             </label>
             <select
-              id="berth"
               value={selectedBerth}
               onChange={e => setSelectedBerth(e.target.value)}
-              className="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-gray-900"
+              className="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white"
             >
-              <option value="All">All</option>
-              {allBerths.map(berth => (
+              {berths.map(berth => (
                 <option key={berth} value={berth}>
                   {berth}
                 </option>
               ))}
             </select>
+
           </div>
 
           <div className="flex items-center space-x-5">

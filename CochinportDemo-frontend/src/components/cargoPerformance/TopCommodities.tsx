@@ -63,26 +63,29 @@ export default function TopCommoditiesChart({ startDate, endDate }: Props) {
             type="number"
             tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}MMT`}
           />
-<YAxis
-  type="category"
-  dataKey="commodity"
-  width={120}
-  tick={{ fontSize: 12 }}
-  tickFormatter={(value: any) => {
-    if (!value) return "";
-    const str = String(value); // ensure it's a string
-    return str
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  }}
-/>
+          <YAxis
+            type="category"
+            dataKey="commodity"
+            width={120}
+            tick={{ fontSize: 12 }}
+            tickFormatter={(value: any) => {
+              if (!value) return "";
+              const str = String(value); // ensure it's a string
+              return str
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(" ");
+            }}
+          />
 
           <Tooltip
-            formatter={(value: number) =>
-              `${(value / 1_000_000).toFixed(2)} MMT`
+            formatter={(value?: number) =>
+              value != null
+                ? `${(value / 1_000_000).toFixed(2)} MMT`
+                : ""
             }
           />
+
           <Bar dataKey="volume" radius={[0, 8, 8, 0]}>
             {data.map((_, index) => (
               <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

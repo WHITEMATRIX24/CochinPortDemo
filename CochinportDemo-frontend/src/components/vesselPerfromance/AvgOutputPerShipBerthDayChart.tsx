@@ -85,7 +85,7 @@ export default function AvgOutputPerShipBerthDayChart({ startDate, endDate }: Pr
                     <YAxis
                         yAxisId="left"
                         orientation="left"
-                        label={{ value: "Avg Output (MT/Day)", angle: -90, position: "insideLeft", offset:"-5"}}
+                        label={{ value: "Avg Output (MT/Day)", angle: -90, position: "insideLeft", offset:-5}}
                         tickFormatter={(val) => {
                             if (val >= 1000000) return (val / 1000000).toFixed(1) + "M";
                             if (val >= 1000) return (val / 1000).toFixed(1) + "K";

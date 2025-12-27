@@ -9,7 +9,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  
+
   ResponsiveContainer,
 } from "recharts";
 
@@ -40,15 +40,15 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
           `${serverUrl}/api/cargo/throughput-trend-cargo?startDate=${startDate}&endDate=${endDate}`
         );
         const result = await res.json();
-       setData(result.data)
-       if(result.message === "Success"){
-        setIsData(true)
-       }
-       else{
-        setIsData(false)
-       }
+        setData(result.data)
+        if (result.message === "Success") {
+          setIsData(true)
+        }
+        else {
+          setIsData(false)
+        }
         console.log(result);
-        
+
 
         // Extract cargos
         const cargos = new Set<string>();
@@ -80,10 +80,10 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
     return (
       <div className="w-full h-80 p-4 bg-white shadow rounded-2xl " >
         <h2 className="text-md text-black font-semibold mb-4">
-        Throughput Trend by Cargo Type
-      </h2>
+          Throughput Trend by Cargo Type
+        </h2>
         <div className="w-full h-full p-4  flex items-center justify-center">
-          
+
           <p className="text-black text-center">
             No Data from {startDate} to {endDate}
           </p>
@@ -121,11 +121,12 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
           />
           {/* ✅ Tooltip with unit */}
           <Tooltip
-            formatter={(value: number) =>
-              `${value.toLocaleString()} MT`
+            formatter={(value?: number) =>
+              value != null ? `${value.toLocaleString()} MT` : ""
             }
             contentStyle={{ color: "gray" }}
           />
+
 
           {/* Legend replaced by clickable buttons */}
           {selectedTypes.map((cargo, index) => (

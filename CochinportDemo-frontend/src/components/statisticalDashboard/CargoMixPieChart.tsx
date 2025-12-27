@@ -5,7 +5,7 @@ import {
   Pie,
   Cell,
   Tooltip,
-  
+
   ResponsiveContainer,
 } from "recharts";
 
@@ -19,7 +19,9 @@ interface Props {
 interface CargoData {
   name: string;
   value: number;
+  [key: string]: string | number;
 }
+
 
 export default function CargoMixPieChart({ startDate, endDate }: Props) {
   const [data, setData] = useState<CargoData[]>([]);
@@ -113,8 +115,12 @@ export default function CargoMixPieChart({ startDate, endDate }: Props) {
                 />
               ))}
             </Pie>
-            <Tooltip formatter={(value: number) => value.toLocaleString()} />
-{/*             <Legend verticalAlign="bottom" align="center" wrapperStyle={{ marginTop: 0 }} />
+            <Tooltip
+              formatter={(value?: number) =>
+                value != null ? value.toLocaleString() : ""
+              }
+            />
+            {/*             <Legend verticalAlign="bottom" align="center" wrapperStyle={{ marginTop: 0 }} />
  */}          </PieChart>
         </ResponsiveContainer>
       )}

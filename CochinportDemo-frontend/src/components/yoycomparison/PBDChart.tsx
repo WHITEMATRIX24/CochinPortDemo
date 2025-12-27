@@ -90,7 +90,9 @@ export default function PBDChart({ startDate, endDate }: Props) {
             />
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip
-              formatter={(value: number) => `${value.toFixed(2)} hrs`}
+              formatter={(value?: number) =>
+                value != null ? `${value.toFixed(2)} hrs` : ""
+              }
               contentStyle={{ color: "gray" }}
             />
             <Bar dataKey="avgPBD" radius={[4, 4, 0, 0]} barSize={30}>

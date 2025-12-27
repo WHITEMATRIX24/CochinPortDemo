@@ -414,7 +414,7 @@ export const getVesselsFormatted = async (req, res) => {
 };
 
 
-export const getAllVessels =async(req,res)=>{
+/* export const getAllVessels =async(req,res)=>{
   try {
     const vessel = await vessels.find({});
     res.json(vessel);
@@ -422,8 +422,8 @@ export const getAllVessels =async(req,res)=>{
     res.status(500).json({ message: "Failed to fetch vessels" });
   }
 }
-
-/* export const getAllVessels = async (req, res) => {
+ */
+ export const getAllVessels = async (req, res) => {
   try {
     const { berth, startDate, endDate } = req.query;
 
@@ -457,6 +457,6 @@ export const getAllVessels =async(req,res)=>{
     console.error(err);
     res.status(500).json({ message: "Failed to fetch vessels" });
   }
-} */
+} 
 
 

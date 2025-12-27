@@ -215,7 +215,9 @@ export default function Sidebar() {
               alt="User Avatar"
               className="w-10 h-10 rounded-full object-cover border border-white shadow"
             />
-            <span className="font-medium">John Doe</span>
+{/*             <span className="font-medium">John Doe</span>
+ */}            
+            <span className='text-md  '>Admin</span>
           </div>
           <hr className="border-white/30 mb-8" />
           <div className="flex justify-center">

@@ -101,28 +101,32 @@ export default function CargoTrendChart({ startDate, endDate }: Props) {
               />
             </YAxis>
 
-            <Tooltip formatter={(value: number) => `${value.toLocaleString()} MT`} />
+            <Tooltip
+              formatter={(value?: number) =>
+                value != null ? `${value.toLocaleString()} MT` : ""
+              }
+            />
             <Legend />
 
             {/* ✅ Render lines based on dropdown */}
             {selectedCargo === "All"
               ? cargoTypes.map((cargo, idx) => (
-                  <Line
-                    key={cargo}
-                    type="monotone"
-                    dataKey={cargo}
-                    stroke={COLORS[idx % COLORS.length]}
-                    strokeWidth={2}
-                  />
-                ))
+                <Line
+                  key={cargo}
+                  type="monotone"
+                  dataKey={cargo}
+                  stroke={COLORS[idx % COLORS.length]}
+                  strokeWidth={2}
+                />
+              ))
               : (
-                  <Line
-                    type="monotone"
-                    dataKey={selectedCargo}
-                    stroke={COLORS[0]}
-                    strokeWidth={2}
-                  />
-                )}
+                <Line
+                  type="monotone"
+                  dataKey={selectedCargo}
+                  stroke={COLORS[0]}
+                  strokeWidth={2}
+                />
+              )}
           </LineChart>
         </ResponsiveContainer>
       )}

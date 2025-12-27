@@ -14,6 +14,8 @@ import {
   ResponsiveContainer,
   LegendPayload,
 } from "recharts";
+import { TooltipProps } from "recharts";
+
 
 interface Props {
   startDate: string;
@@ -64,12 +66,18 @@ export default function BerthOccupancyChartYoy({
     }));
   };
 
-  const renderTooltip = (value: number, name: string) => {
-    if (name === "Berth Occupancy (%)") {
-      return `${value.toFixed(2)}%`;
-    }
-    return value.toString();
-  };
+  const renderTooltip: TooltipProps<number, string>["formatter"] = (
+  value,
+  name
+) => {
+  if (value == null) return "";
+
+  if (name === "Berth Occupancy (%)") {
+    return `${value.toFixed(2)}%`;
+  }
+
+  return value.toString();
+};
 
   return (
     <div className="w-full h-[350px] p-4 bg-white shadow rounded-2xl">
