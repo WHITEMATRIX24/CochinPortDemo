@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  Cell,
+  ReferenceArea,
 } from "recharts";
 import { serverUrl } from "@/services/serverUrl";
 
@@ -31,33 +31,39 @@ export default function PBDChart({ startDate, endDate }: Props) {
   const [mode, setMode] = useState<ChartMode>("year");
 
   const fetchData = useCallback(async () => {
-    try {
-      const res = await fetch(
-        `${serverUrl}/api/y-o-y/pbd-data-yoy?startDate=${startDate}&endDate=${endDate}&mode=${mode}`
-      );
-      const result: PBDChartData[] = await res.json();
-      setData(result);
-    } catch (err) {
-      console.error("Error fetching PBD data:", err);
-    }
+    const res = await fetch(
+      `${serverUrl}/api/y-o-y/pbd-data-yoy?startDate=${startDate}&endDate=${endDate}&mode=${mode}`
+    );
+    const result = await res.json();
+    setData(result);
   }, [startDate, endDate, mode]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const colors = [
-    "#5d82e6",
-    "#0284c7",
-    "#236683",
-    "#6366f1",
-    "#1fafec",
-    "#38bdf8",
-    "#10b981",
-    "#f59e0b",
-    "#ef4444",
-    "#8b5cf6",
-  ];
+  if (data.length === 0) {
+    return (
+      <div className="w-full h-[350px] bg-white rounded-2xl p-4 shadow">
+        <p className="text-center mt-24 text-black">
+          No data from {startDate} to {endDate}
+        </p>
+      </div>
+    );
+  }
+
+  /* ---------- Dynamic zones ---------- */
+  const values = data.map(d => d.avgPBD);
+  const min = Math.min(...values, 0);
+  const max = Math.max(...values, 0);
+  const range = max - min || max || 1;
+
+  const zones = {
+    greenMax: min + range * 0.33,
+    yellowMax: min + range * 0.66,
+  };
+
+  const yAxisMax = Math.ceil(max * 1)+1; // 🔥 REQUIRED
 
   return (
     <div className="w-full h-[350px] bg-white rounded-2xl p-4 shadow">
@@ -65,6 +71,7 @@ export default function PBDChart({ startDate, endDate }: Props) {
         <h2 className="font-semibold text-md text-black">
           Avg. Pre-Berthing Detention
         </h2>
+
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as ChartMode)}
@@ -75,37 +82,39 @@ export default function PBDChart({ startDate, endDate }: Props) {
         </select>
       </div>
 
-      {data.length === 0 ? (
-        <p className="text-center mt-20 text-black">No data available</p>
-      ) : (
-        <ResponsiveContainer width="100%" height="80%">
-          <BarChart
-            data={data}
-            margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey={mode === "month" ? "month" : "year"}
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip
-              formatter={(value?: number) =>
-                value != null ? `${value.toFixed(2)} hrs` : ""
-              }
-              contentStyle={{ color: "gray" }}
-            />
-            <Bar dataKey="avgPBD" radius={[4, 4, 0, 0]} barSize={30}>
-              {data.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={colors[index % colors.length]}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      )}
+      <ResponsiveContainer width="100%" height="85%">
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+
+          <XAxis
+            dataKey={mode === "month" ? "month" : "year"}
+            tick={{ fontSize: 12 }}
+          />
+
+          <YAxis
+            domain={[0, yAxisMax]}
+            tick={{ fontSize: 12 }}
+          />
+
+          <Tooltip
+            formatter={(v?: number) =>
+              v != null ? `${v.toFixed(2)} hrs` : "—"
+            }
+          />
+
+          {/* 🟢🟡🔴 Risk Zones */}
+          <ReferenceArea y1={0} y2={zones.greenMax} fill="#DCFCE7" />
+          <ReferenceArea y1={zones.greenMax} y2={zones.yellowMax} fill="#FEF9C3" />
+          <ReferenceArea y1={zones.yellowMax} y2={yAxisMax} fill="#f5c6c6ff" />
+
+          <Bar
+            dataKey="avgPBD"
+            fill="#2563EB"
+            radius={[6, 6, 0, 0]}
+            barSize={32}
+          />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }

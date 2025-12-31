@@ -18,7 +18,8 @@ export default function LoginPage({ register = false }: LoginPageProps) {
         email: '',
         password: '',
     });
-   useEffect(() => {
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
         setHydrated(true);
     }, []);
 
@@ -33,64 +34,40 @@ export default function LoginPage({ register = false }: LoginPageProps) {
         }
 
         try {
+            setLoading(true); // ⏳ start loader
+
             const result = await loginApi({ email, password });
-            console.log(result);
 
             if (result.status === 200) {
                 toast.success('Login successful');
 
-              
                 if (typeof window !== 'undefined') {
-                    // Store to sessionStorage for persistence
-                    sessionStorage.setItem('token', password);
-                    sessionStorage.setItem('existingUser', email);
+                    sessionStorage.setItem('token', result.data.token); // ⚠️ never store password
+                    sessionStorage.setItem(
+                        'existingUser',
+                        JSON.stringify(result.data.existingUser)
+                    );
                     sessionStorage.setItem('isLoggedIn', 'true');
                 }
 
-                // Clear form
-                setUserDetails({
-                    username: '',
-                    email: '',
-                    password: '',
-                });
+                setUserDetails({ username: '', email: '', password: '' });
 
-                // Delay and navigate
                 setTimeout(() => {
-                    console.log('Navigating to dashboard...');
-                    router.replace('/statistical-dashboard'); // ✅ works in Next.js app router
-                }, 200);
+                    router.replace('/statistical-dashboard');
+                }, 300);
             } else {
                 toast.error(result?.data?.message || 'Login failed');
             }
         } catch (err) {
-    const message =
-      err instanceof Error
-        ? err.message
-        : "Server error, please try again";
-
-    toast.error(message);
-}
-
+            const message =
+                err instanceof Error ? err.message : 'Server error, please try again';
+            toast.error(message);
+        } finally {
+            setLoading(false); // ✅ stop loader
+        }
     };
 
-    // const handleLogin = (e: React.FormEvent) => {
-    //   e.preventDefault();
 
-    //   const { email, password } = userDetails;
-
-    //   if (email === 'admin@example.com' && password === 'admin123') {
-    //     localStorage.setItem('isLoggedIn', 'true');
-    //     localStorage.setItem('userEmail', email);
-
-    //     toast.success('Login successful');
-
-    //     setTimeout(() => {
-    //       router.push('/dashboard'); // ✅ Client-side navigation
-    //     }, 500);
-    //   } else {
-    //     setError('Invalid email or password');
-    //   }
-    // };
 
     const handleRegister = async () => {
         const { username, email, password } = userDetails;
@@ -114,7 +91,7 @@ export default function LoginPage({ register = false }: LoginPageProps) {
         }
     };
 
-    if (!hydrated) return null; 
+    if (!hydrated) return null;
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-tr from-blue-900 via-cyan-800 to-sky-600 relative">
             {/* Background */}
@@ -148,7 +125,7 @@ export default function LoginPage({ register = false }: LoginPageProps) {
                     </p>
                 </div>
 
-               {/*  {error && (
+                {/*  {error && (
                     <div className="bg-red-100 text-red-700 text-sm py-2 px-4 rounded-md mb-4 text-center">
                         {error}
                     </div>
@@ -211,19 +188,16 @@ export default function LoginPage({ register = false }: LoginPageProps) {
                                 <button
                                     type="button"
                                     onClick={handleLogin}
-                                    className="w-full py-3 font-bold rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 text-white hover:from-blue-600 hover:to-cyan-500 transition"
+                                    disabled={loading}
+                                    className={`w-full py-3 font-bold rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 text-white hover:from-blue-600 hover:to-cyan-500 transitionflex items-center justify-center gap-2${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 >
-                                    Login
+                                    {loading && (
+                                        <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                    )}
+                                    {loading ? 'Logging in…' : 'Login'}
                                 </button>
-                                {/* <p className="mt-2 text-sm text-center">
-                                    New user?{' '}
-                                    <Link
-                                        href="/register"
-                                        className="text-cyan-300 hover:underline"
-                                    >
-                                        Register
-                                    </Link>
-                                </p> */}
+
+                               
                             </>
                         )}
                     </div>

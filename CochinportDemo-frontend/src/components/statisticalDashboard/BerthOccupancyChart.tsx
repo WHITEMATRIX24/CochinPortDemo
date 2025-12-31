@@ -10,10 +10,10 @@ import {
 } from "recharts";
 
 interface Props {
-  startDate:string;
-  endDate:string;
+  startDate: string;
+  endDate: string;
 }
-export default function BerthOccupancyChart({startDate, endDate}:Props) {
+export default function BerthOccupancyChart({ startDate, endDate }: Props) {
   const [occupancy, setOccupancy] = useState<number>(0);
   const [berths, setBerths] = useState<string[]>([]);
   const [selectedBerth, setSelectedBerth] = useState<string>("All");
@@ -37,9 +37,10 @@ export default function BerthOccupancyChart({startDate, endDate}:Props) {
     const fetchOccupancy = async () => {
       try {
         const queryParams = new URLSearchParams({
-          startDate:startDate,
-          endDate: endDate,
-          totalBerths: selectedBerth === "All" ? berths.length.toString() : "1",
+          startDate: new Date(startDate).toISOString(),
+          endDate: new Date(endDate).toISOString(),
+          totalBerths:
+            selectedBerth === "All" ? berths.length.toString() : "1",
         });
 
         if (selectedBerth !== "All") {
@@ -83,27 +84,26 @@ export default function BerthOccupancyChart({startDate, endDate}:Props) {
         </select>
       </div>
 
-      {occupancy===0?
-      <p className='text-black text-center '>No Data from {startDate} to {endDate}</p>:
-      <>
-        <ResponsiveContainer width="100%" height="100%">
-          <RadialBarChart
-            cx="50%"
-            cy="50%"
-            innerRadius="70%"
-            outerRadius="100%"
-            barSize={20}
-            data={chartData}
-            startAngle={90}
-            endAngle={-270}
-          >
-            <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-            <RadialBar dataKey="value" cornerRadius={10} background />
-          </RadialBarChart>
-        </ResponsiveContainer>
-  
-        <p className="text-lg font-bold mt-2 text-black">{occupancy.toFixed(1)}%</p>
-      </>}
+      {
+        <>
+          <ResponsiveContainer width="100%" height="100%">
+            <RadialBarChart
+              cx="50%"
+              cy="50%"
+              innerRadius="70%"
+              outerRadius="100%"
+              barSize={20}
+              data={chartData}
+              startAngle={90}
+              endAngle={-270}
+            >
+              <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
+              <RadialBar dataKey="value" cornerRadius={10} background />
+            </RadialBarChart>
+          </ResponsiveContainer>
+
+          <p className="text-lg font-bold mt-2 text-black">{occupancy.toFixed(1)}%</p>
+        </>}
     </div>
   );
 }

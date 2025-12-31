@@ -6,31 +6,56 @@ export const getBerthOccupancy = async (req, res) => {
   try {
     const { startDate, endDate, totalBerths, berth } = req.query;
 
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        message: "startDate and endDate are required",
+      });
+    }
+
     if (!totalBerths) {
-      return res.status(400).json({ message: "totalBerths is required" });
+      return res.status(400).json({
+        message: "totalBerths is required",
+      });
     }
 
-    // Build filter
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // -----------------------------
+    // Match ONLY berth (NOT dates)
+    // -----------------------------
     const matchFilter = {};
-    if (startDate || endDate) {
-      matchFilter.ATABerth = {};
-      if (startDate) matchFilter.ATABerth.$gte = new Date(startDate);
-      if (endDate) matchFilter.ATABerth.$lte = new Date(endDate);
-    }
-
-    // If a specific berth is selected, filter by it
     if (berth && berth !== "All") {
       matchFilter.Berth = berth;
     }
 
+    // -----------------------------
+    // Aggregate with CLIPPED duration
+    // -----------------------------
     const result = await vessels.aggregate([
       { $match: matchFilter },
       {
         $project: {
           berthDurationHours: {
             $divide: [
-              { $subtract: ["$ATDUnberth", "$ATABerth"] },
-              1000 * 60 * 60, // convert ms → hours
+              {
+                $subtract: [
+                  { $min: ["$ATDUnberth", end] },
+                  { $max: ["$ATABerth", start] },
+                ],
+              },
+              1000 * 60 * 60,
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          berthDurationHours: {
+            $cond: [
+              { $gt: ["$berthDurationHours", 0] },
+              "$berthDurationHours",
+              0,
             ],
           },
         },
@@ -45,27 +70,52 @@ export const getBerthOccupancy = async (req, res) => {
 
     const totalOccupiedHours = result[0]?.totalOccupiedHours || 0;
 
-    // Calculate total available hours in the given range
-    const start = startDate ? new Date(startDate) : new Date("1970-01-01");
-    const end = endDate ? new Date(endDate) : new Date();
-    const totalHours = Math.abs(end - start) / (1000 * 60 * 60);
-    const totalAvailableHours = totalHours * Number(totalBerths);
+    // -----------------------------
+    // Available hours (CRITICAL FIX)
+    // -----------------------------
+    const totalHours =
+      Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60);
+
+    const effectiveBerths =
+      berth && berth !== "All" ? 1 : Number(totalBerths);
+
+    const totalAvailableHours = totalHours * effectiveBerths;
+
+    // -----------------------------
+    // CAP OCCUPANCY (MANDATORY)
+    // -----------------------------
+    const adjustedOccupiedHours = Math.min(
+      totalOccupiedHours,
+      totalAvailableHours
+    );
 
     const occupancy =
       totalAvailableHours > 0
-        ? (totalOccupiedHours / totalAvailableHours) * 100
+        ? (adjustedOccupiedHours / totalAvailableHours) * 100
         : 0;
 
-/*     console.log("Occupancy:", occupancy, "Total Available Hours:", totalAvailableHours, "Total Occupied Hours:", totalOccupiedHours);
- */
+    console.log(
+      "Berth:",
+      berth || "All",
+      "Occupied:",
+      adjustedOccupiedHours,
+      "Available:",
+      totalAvailableHours,
+      "Occupancy:",
+      occupancy
+    );
+
     res.json({
       berth: berth || "All Berths",
-      totalOccupiedHours,
-      totalAvailableHours,
-      occupancy: Math.round(occupancy * 100) / 100, // 2 decimals
+      totalOccupiedHours: Math.round(adjustedOccupiedHours * 100) / 100,
+      totalAvailableHours: Math.round(totalAvailableHours * 100) / 100,
+      occupancy: Math.round(occupancy * 100) / 100,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error calculating berth occupancy", error });
+    res.status(500).json({
+      message: "Error calculating berth occupancy",
+      error,
+    });
   }
 };
 
@@ -150,5 +200,83 @@ export const getVessels = async (req, res) => {
     res.status(500).json({ message: "Error fetching vessels", error });
   }
 };
+
+
+
+
+export const getBerthVesselTimeline = async (req, res) => {
+  try {
+    const { berthId } = req.params;
+    const { date } = req.query;
+
+    // -----------------------------
+    // Normalize date (full day)
+    // -----------------------------
+    let startOfDay, endOfDay;
+
+    if (date) {
+      const d = new Date(date);
+      startOfDay = new Date(d.setHours(0, 0, 0, 0));
+      endOfDay = new Date(d.setHours(23, 59, 59, 999));
+    } else {
+      const today = new Date();
+      startOfDay = new Date(today.setHours(0, 0, 0, 0));
+      endOfDay = new Date(today.setHours(23, 59, 59, 999));
+    }
+
+    // -----------------------------
+    // 🟢 CURRENT (max 1)
+    // -----------------------------
+    const current = await vessels
+      .findOne({
+        Berth: berthId,
+        ATA: { $lte: endOfDay },
+        $or: [{ ATD: null }, { ATD: { $gte: startOfDay } }],
+      })
+      .sort({ ATA: -1 }) // latest arrival wins
+      .lean();
+
+    // -----------------------------
+    // ⚫ PAST (last 2 only)
+    // -----------------------------
+    const past = await vessels
+      .find({
+        Berth: berthId,
+        ATD: { $lt: startOfDay },
+      })
+      .sort({ ATD: -1 }) // most recent first
+      .limit(2)
+      .lean();
+
+    // -----------------------------
+    // 🔵 FUTURE (next 2 only)
+    // -----------------------------
+    const future = await vessels
+      .find({
+        Berth: berthId,
+        ATA: { $gt: endOfDay },
+      })
+      .sort({ ATA: 1 }) // earliest first
+      .limit(2)
+      .lean();
+
+    // -----------------------------
+    // Response
+    // -----------------------------
+    res.status(200).json({
+      berthId,
+      date: { startOfDay, endOfDay },
+      current,
+      past,
+      future,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching berth vessel timeline",
+      error,
+    });
+  }
+};
+
 
 

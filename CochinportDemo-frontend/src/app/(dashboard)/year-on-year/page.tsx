@@ -271,8 +271,7 @@ const cards = [
         </div>
 
         {/* Date filters */}
-         <div className="flex flex-wrap gap-4 items-center ms-auto bg-white p-3 rounded-xl ">
-          {/* From Date */}
+         {/* <div className="flex flex-wrap gap-4 items-center ms-auto bg-white p-3 rounded-xl ">
           <div className="flex gap-2 items-center">
             <label className="text-[#003049] font-semibold">From</label>
             <input
@@ -283,7 +282,6 @@ const cards = [
             />
           </div>
 
-          {/* To Date */}
           <div className="flex gap-2 items-center">
             <label className="text-[#003049] font-semibold">To</label>
             <input
@@ -294,7 +292,6 @@ const cards = [
             />
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3 ms-auto">
             <button
               onClick={handleSeacrh}
@@ -309,13 +306,57 @@ const cards = [
               Clear
             </button>
           </div>
-        </div>
+        </div> */}
 
       </div>
 
       {/* charts */}
       <div className="flex-1 overflow-y-auto px-5 ">
 <KPICardsRowYoY data={cards} onCardClick={handleCardClick} />
+<div className="sticky top-[-1px] z-40 bg-white">
+      <div className="mx- mb-4 p-3 rounded-xl flex flex-wrap gap-4 items-center">
+
+        <div className="ms-auto flex gap-3">
+          {/* From Date */}
+          <div className="flex gap-2 items-center">
+            <label className="text-[#003049] font-semibold">From</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm"
+            />
+          </div>
+  
+          {/* To Date */}
+          <div className="flex gap-2 items-center">
+            <label className="text-[#003049] font-semibold">To</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-gray-50 rounded-lg h-9 px-3 text-gray-700 text-sm"
+            />
+          </div>
+  
+          {/* Actions */}
+          <div className=" flex gap-3">
+            <button
+              onClick={handleSeacrh}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#003049] text-white hover:bg-[#01497c]"
+            >
+              Search
+            </button>
+            <button
+              onClick={handleClearFilter}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-[#003049] hover:bg-[#669bbc] hover:text-white"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
         <div className="grid grid-cols-10 gap-4 mx-3">
           <div className="pl-4 col-span-5 ">

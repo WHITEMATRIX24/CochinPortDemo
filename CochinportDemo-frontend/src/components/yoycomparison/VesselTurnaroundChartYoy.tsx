@@ -1,7 +1,7 @@
 "use client";
 
 import { serverUrl } from "@/services/serverUrl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -12,6 +12,7 @@ import {
   Legend,
   ResponsiveContainer,
   LegendPayload,
+  ReferenceArea,
 } from "recharts";
 
 interface Props {
@@ -20,7 +21,6 @@ interface Props {
 }
 
 type ChartMode = "month" | "year";
-
 type TRTKey = "meanOverall" | "medianOverall" | "containerAvg";
 
 interface VesselTurnaroundData {
@@ -96,15 +96,11 @@ export default function VesselTurnaroundChartYoy({
   /* ---------- Fetch data ---------- */
   const fetchData = useCallback(
     async (chartMode: ChartMode) => {
-      try {
-        const res = await fetch(
-          `${serverUrl}/api/y-o-y/turnaround-trend-yoy?mode=${chartMode}&startDate=${startDate}&endDate=${endDate}`
-        );
-        const result: VesselTurnaroundData[] = await res.json();
-        setData(fillMissing(result, chartMode, startDate, endDate));
-      } catch (error) {
-        console.error("Error fetching vessel turnaround trend:", error);
-      }
+      const res = await fetch(
+        `${serverUrl}/api/y-o-y/turnaround-trend-yoy?mode=${chartMode}&startDate=${startDate}&endDate=${endDate}`
+      );
+      const result: VesselTurnaroundData[] = await res.json();
+      setData(fillMissing(result, chartMode, startDate, endDate));
     },
     [startDate, endDate, fillMissing]
   );
@@ -113,24 +109,41 @@ export default function VesselTurnaroundChartYoy({
     fetchData(mode);
   }, [fetchData, mode]);
 
+  /* ---------- COLORS ---------- */
   const COLORS: Record<TRTKey, string> = {
     meanOverall: "#1E40AF",
     medianOverall: "#F59E0B",
     containerAvg: "#10B981",
   };
 
-  /* ---------- Legend click (fade) ---------- */
+  /* ---------- Legend toggle ---------- */
   const handleLegendClick = (entry: LegendPayload) => {
-    const key = entry.dataKey;
-    if (!key || typeof key !== "string") return;
-
-    const typedKey = key as TRTKey;
+    const key = entry.dataKey as TRTKey;
     setInactiveKeys((prev) =>
-      prev.includes(typedKey)
-        ? prev.filter((k) => k !== typedKey)
-        : [...prev, typedKey]
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   };
+
+  /* ---------- Dynamic Risk Zones ---------- */
+  const { zones, yAxisMax } = useMemo(() => {
+    const allValues = data.flatMap((d) => [
+      d.meanOverall,
+      d.medianOverall,
+      d.containerAvg,
+    ]);
+
+    const max = Math.max(...allValues, 0);
+    const paddedMax = Math.ceil(max * 1.2 || 10);
+    const range = paddedMax;
+
+    return {
+      zones: {
+        greenMax: range * 0.33,
+        yellowMax: range * 0.66,
+      },
+      yAxisMax: paddedMax,
+    };
+  }, [data]);
 
   return (
     <div className="w-full h-[350px] p-4 bg-white shadow rounded-2xl">
@@ -139,6 +152,7 @@ export default function VesselTurnaroundChartYoy({
           Vessel Turn Round Time Trend (
           {mode === "month" ? "Monthwise" : "Yearwise"})
         </h2>
+
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as ChartMode)}
@@ -154,9 +168,10 @@ export default function VesselTurnaroundChartYoy({
           No Data from {startDate} to {endDate}
         </p>
       ) : (
-        <ResponsiveContainer width="100%" height="75%">
+        <ResponsiveContainer width="100%" height="85%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
+
             <XAxis
               dataKey={mode === "month" ? "month" : "year"}
               tickFormatter={(val, idx) =>
@@ -171,13 +186,31 @@ export default function VesselTurnaroundChartYoy({
                   : val
               }
             />
-            <YAxis />
+
+            <YAxis domain={[0, yAxisMax]} />
+
             <Tooltip
-              formatter={(val?: number) => `${val?.toFixed(1)} hrs`}
-              contentStyle={{ color: "gray" }}
+              formatter={(v?: number) =>
+                v != null ? `${v.toFixed(1)} hrs` : "—"
+              }
             />
+
             <Legend onClick={handleLegendClick} />
 
+            {/* 🟢🟡🔴 Background Risk Zones */}
+            <ReferenceArea y1={0} y2={zones.greenMax} fill="#DCFCE7" />
+            <ReferenceArea
+              y1={zones.greenMax}
+              y2={zones.yellowMax}
+              fill="#FEF9C3"
+            />
+            <ReferenceArea
+              y1={zones.yellowMax}
+              y2={yAxisMax}
+              fill="#f5c6c6ff"
+            />
+
+            {/* 🔵 Lines */}
             <Line
               type="monotone"
               dataKey="meanOverall"
@@ -186,8 +219,10 @@ export default function VesselTurnaroundChartYoy({
               strokeOpacity={
                 inactiveKeys.includes("meanOverall") ? 0.2 : 1
               }
+              dot
               name="Mean TRT (Overall)"
             />
+
             <Line
               type="monotone"
               dataKey="medianOverall"
@@ -196,8 +231,10 @@ export default function VesselTurnaroundChartYoy({
               strokeOpacity={
                 inactiveKeys.includes("medianOverall") ? 0.2 : 1
               }
+              dot
               name="Median TRT"
             />
+
             <Line
               type="monotone"
               dataKey="containerAvg"
@@ -206,6 +243,7 @@ export default function VesselTurnaroundChartYoy({
               strokeOpacity={
                 inactiveKeys.includes("containerAvg") ? 0.2 : 1
               }
+              dot
               name="Avg TRT (Container)"
             />
           </LineChart>

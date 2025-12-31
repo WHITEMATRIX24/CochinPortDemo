@@ -67,13 +67,13 @@ export default function Sidebar() {
     { label: 'Cargo Management', icon: <FiArchive />, href: '#' },
     { label: 'User Management', icon: <FiUsers />, href: '#' },
     { label: 'Port Schedule', icon: <FiCalendar />, href: '#' },
-    {
+    /* {
       label: 'Payment Management',
       icon: <FiFileText />,
       children: [
         { label: 'Payment History', icon: <FiFileText />, href: '/berth-payment-history' },
       ],
-    },
+    }, */
     { label: 'Reports & Analytics', icon: <FiBarChart2 />, href: '#' },
     { label: 'Live Shipping Tracking', icon: <FiMapPin />, href: '#' },
   ];

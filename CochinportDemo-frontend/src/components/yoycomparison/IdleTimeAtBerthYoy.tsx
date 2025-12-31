@@ -1,7 +1,7 @@
 "use client";
 
 import { serverUrl } from "@/services/serverUrl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ReferenceArea,
 } from "recharts";
 
 interface Props {
@@ -31,7 +32,7 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
   const [data, setData] = useState<IdleTimeData[]>([]);
   const [mode, setMode] = useState<ChartMode>("year");
 
-  // ---------- Fill missing months / years ----------
+  /* ---------- Fill missing months / years ---------- */
   const fillMissing = useCallback(
     (
       raw: IdleTimeData[],
@@ -41,13 +42,11 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
     ): IdleTimeData[] => {
       const startDt = new Date(start);
       const endDt = new Date(end);
-
       const map: Record<string, IdleTimeData> = {};
+
       raw.forEach((d) => {
         const key =
-          chartMode === "month"
-            ? `${d.year}-${d.month}`
-            : `${d.year}`;
+          chartMode === "month" ? `${d.year}-${d.month}` : `${d.year}`;
         map[key] = d;
       });
 
@@ -68,9 +67,8 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
           current.setMonth(current.getMonth() + 1);
         }
       } else {
-        // Always show last 5 years
-        const currentYear = new Date().getFullYear();
-        for (let y = currentYear - 4; y <= currentYear; y++) {
+        const endYear = endDt.getFullYear();
+        for (let y = endYear - 4; y <= endYear; y++) {
           result.push(
             map[`${y}`] || {
               year: y,
@@ -86,18 +84,14 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
     []
   );
 
-  // ---------- Fetch data ----------
+  /* ---------- Fetch data ---------- */
   const fetchData = useCallback(
     async (chartMode: ChartMode) => {
-      try {
-        const res = await fetch(
-          `${serverUrl}/api/y-o-y/idle-time-yoy?mode=${chartMode}&startDate=${startDate}&endDate=${endDate}`
-        );
-        const result: IdleTimeData[] = await res.json();
-        setData(fillMissing(result, chartMode, startDate, endDate));
-      } catch (error) {
-        console.error("Error fetching Idle Time data:", error);
-      }
+      const res = await fetch(
+        `${serverUrl}/api/y-o-y/idle-time-yoy?mode=${chartMode}&startDate=${startDate}&endDate=${endDate}`
+      );
+      const result: IdleTimeData[] = await res.json();
+      setData(fillMissing(result, chartMode, startDate, endDate));
     },
     [startDate, endDate, fillMissing]
   );
@@ -106,9 +100,24 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
     fetchData(mode);
   }, [fetchData, mode]);
 
+  /* ---------- Dynamic background zones (based on Idle %) ---------- */
+  const { zones, percentMax } = useMemo(() => {
+    const values = data.map((d) => d.idlePercent);
+    const max = Math.max(...values, 0);
+    const paddedMax = Math.ceil(max * 1.2 || 10);
+
+    return {
+      percentMax: paddedMax,
+      zones: {
+        greenMax: paddedMax * 0.33,
+        yellowMax: paddedMax * 0.66,
+      },
+    };
+  }, [data]);
+
   const COLORS = {
     idlePercent: "#EF4444",
-    totalIdle: "#3B82F6",
+    totalIdle: "#2563EB",
   };
 
   return (
@@ -117,6 +126,7 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
         <h2 className="text-md text-black font-semibold">
           Idle Time at Berth ({mode === "month" ? "Monthwise" : "Yearwise"})
         </h2>
+
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as ChartMode)}
@@ -132,9 +142,10 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
           No Data from {startDate} to {endDate}
         </p>
       ) : (
-        <ResponsiveContainer width="100%" height="75%">
+        <ResponsiveContainer width="100%" height="85%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
+
             <XAxis
               dataKey={mode === "month" ? "month" : "year"}
               tickFormatter={(val, idx) =>
@@ -146,6 +157,8 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
                   : val
               }
             />
+
+            {/* Left axis → Idle Hours */}
             <YAxis
               yAxisId="left"
               label={{
@@ -154,31 +167,68 @@ export default function IdleTimeChart({ startDate, endDate }: Props) {
                 position: "insideLeft",
               }}
             />
+
+            {/* Right axis → Idle % */}
             <YAxis
               yAxisId="right"
               orientation="right"
+              domain={[0, percentMax]}
               label={{
                 value: "Idle %",
                 angle: -90,
                 position: "insideRight",
               }}
             />
-            <Tooltip contentStyle={{ color: "gray" }} />
+
+            <Tooltip
+              formatter={(v?: number, name?: string) =>
+                name === "Idle %"
+                  ? `${v?.toFixed(2)} %`
+                  : `${v?.toFixed(2)} hrs`
+              }
+            />
+
             <Legend />
+
+            {/* 🟢🟡🔴 Background zones (Idle %) */}
+            <ReferenceArea
+              yAxisId="right"
+              y1={0}
+              y2={zones.greenMax}
+              fill="#DCFCE7"
+            />
+            <ReferenceArea
+              yAxisId="right"
+              y1={zones.greenMax}
+              y2={zones.yellowMax}
+              fill="#FEF9C3"
+            />
+            <ReferenceArea
+              yAxisId="right"
+              y1={zones.yellowMax}
+              y2={percentMax}
+              fill="#f5c6c6ff"
+            />
+
+            {/* 🔵 Idle Hours */}
             <Line
               yAxisId="left"
               type="monotone"
               dataKey="totalIdle"
               stroke={COLORS.totalIdle}
               strokeWidth={2}
+              dot
               name="Idle Hours"
             />
+
+            {/* 🔴 Idle % */}
             <Line
               yAxisId="right"
               type="monotone"
               dataKey="idlePercent"
               stroke={COLORS.idlePercent}
               strokeWidth={2}
+              dot
               name="Idle %"
             />
           </LineChart>

@@ -151,7 +151,7 @@ export default function ThroughputTrendChart({ startDate, endDate }: Props) {
             <button
               key={cargo}
               onClick={() => toggleCargoType(cargo)}
-              className={`flex items-center gap-2 text-xs cursor-pointer transition ${isActive ? "opacity-100 font-medium" : "opacity-40"
+              className={`flex items-center gap-2 text-xs  text-black cursor-pointer transition ${isActive ? "opacity-100 font-medium" : "opacity-40"
                 }`}
             >
               <span

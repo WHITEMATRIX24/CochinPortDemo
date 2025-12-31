@@ -8,6 +8,16 @@ import { useEffect, useState } from 'react';
 import DashboardNotificationSidebar from '@/components/DashboardNotificationSidebar';
 import { useRouter } from 'next/navigation';
 import { serverUrl } from '@/services/serverUrl';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+  BreadcrumbEllipsis,
+} from "@/components/ui/breadcrumb";
+import BerthDetailsModal from '@/components/BerthDetailsModal';
 
 export interface Vessel {
   _id: string;
@@ -38,6 +48,10 @@ export default function HomePage() {
   const [berthData, setBerthData] = useState<BerthStatus[]>([]);
   const [cargoTypesList, setCargoTypesList] = useState<string[]>(['All']);
   const [countries, setCountries] = useState<string[]>(['All']);
+  const [selectedBerth, setSelectedBerth] = useState<BerthStatus | null>(null);
+  const [berthShips, setBerthShips] = useState<any>(null);
+  const [loadingShips, setLoadingShips] = useState(false);
+
 
   // UI states
   const [showNotif, setShowNotif] = useState(false);
@@ -95,13 +109,32 @@ setCountries(['All', ...countrySet]);
   });
 
   // ✅ Handle berth click
-  const handleBerthClick = (berth: BerthStatus) => {
-    if (berth.isOccupied && berth.currentVessel) {
-      alert(`Ship at berth ${berth.berthId}: ${berth.currentVessel.VslID}`);
-    } else {
-      alert(`Berth ${berth.berthId} is available`);
+  const handleBerthClick = async (berth: BerthStatus) => {
+  setSelectedBerth(berth);
+  setLoadingShips(true);
+
+  try {
+    const params = new URLSearchParams();
+
+    // ✅ pass selected date
+    if (startDate) {
+      params.append("date", startDate.toISOString());
     }
-  };
+
+    const res = await fetch(
+      `${serverUrl}/api/berthData/berths/${berth.berthId}/vessels?${params.toString()}`
+    );
+
+    const data = await res.json();
+    setBerthShips(data);
+  } catch (err) {
+    console.error("Error fetching berth ships", err);
+  } finally {
+    setLoadingShips(false);
+  }
+};
+
+
 
   // ✅ Reset filters
   const handleReset = () => {
@@ -117,13 +150,34 @@ setCountries(['All', ...countrySet]);
         <div className="flex-shrink-0 p-4">
           <div className="mb-4 p-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <h5 className="text-2xl font-bold text-[#003049]">
-                Welcome, <span className="text-[#8B0000]">John Doe</span>
-              </h5>
-              <div className="text-sm text-gray-500 mt-1">
-                <span>Dashboard</span> <span className="mx-2">/</span>{' '}
-                <span className="text-blue-600">Berth Tracker</span>
-              </div>
+              <h1 className="text-2xl font-bold text-gray-800 mb-1">
+              Berth Tracker
+            </h1>
+              <Breadcrumb className="h-[18px] ml-[1px] mt-[5px]">
+              <BreadcrumbList className="text-[12px] leading-[1.2]">
+                <BreadcrumbItem>
+                  <BreadcrumbLink
+                    href="/dashboard"
+                    className="text-blue-600 hover:text-blue-800 focus:text-blue-800 active:text-blue-800 visited:text-blue-600"
+                  >
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+
+                <BreadcrumbSeparator className="text-[#C1292E]" />
+                <BreadcrumbItem>
+                  <BreadcrumbEllipsis className="text-blue-600" />
+                </BreadcrumbItem>
+                <>
+                  <BreadcrumbSeparator className="text-[#C1292E]" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="text-blue-600">
+                      Berth Tracker
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              </BreadcrumbList>
+            </Breadcrumb>
             </div>
             <div className="flex items-center gap-4 mr-2">
               <button className="relative" onClick={() => setShowNotif(true)}>
@@ -197,7 +251,7 @@ setCountries(['All', ...countrySet]);
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredData.map((berth, index) => (
               <BerthTrackerCard
-                key={index}
+              key={index}
                 berth={berth}
                 onClick={() => handleBerthClick(berth)}
               />
@@ -210,6 +264,18 @@ setCountries(['All', ...countrySet]);
         show={showNotif}
         onClose={() => setShowNotif(false)}
       />
+      {selectedBerth && (
+  <BerthDetailsModal
+    berthId={selectedBerth.berthId}
+    data={berthShips}
+    loading={loadingShips}
+    onClose={() => {
+      setSelectedBerth(null);
+      setBerthShips(null);
+    }}
+  />
+)}
+
     </div>
   );
 }
